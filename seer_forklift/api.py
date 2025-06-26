@@ -4,8 +4,15 @@ from typing import Optional, Dict
 from .packer import MessagePacker
 from .exceptions import ConnectionError, TimeoutError
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)s [%(name)s] %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+)
+
 class SeerClient:
     def __init__(self, ip: str, port: int, timeout: float):
+        # Initialize the SeerClient with IP, port, and timeout
         self.ip = ip
         self.port = port
         self.timeout = timeout
@@ -14,11 +21,12 @@ class SeerClient:
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def connect(self):
+        # Create a socket connection to the Seer server
         try:
             self.sock = socket.create_connection((self.ip, self.port), timeout=self.timeout)
         except socket.timeout as e:
             raise TimeoutError(e)
-        self.logger.debug(f"Connected to {self.ip}:{self.port}")
+        self.logger.debug(f"Connected to {self.ip}:{self.port}") 
 
     def close(self):
         if self.sock:
