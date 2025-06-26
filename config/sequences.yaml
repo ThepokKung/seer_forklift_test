@@ -67,6 +67,7 @@ pick_pallet_22:
       source: AP50
       target: LM51
       operation: ForkHeight
+      end_height: 0.15
 
     - type: nav
       source: LM51

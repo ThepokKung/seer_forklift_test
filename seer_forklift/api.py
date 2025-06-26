@@ -3,12 +3,18 @@ import logging
 from typing import Optional, Dict
 from .packer import MessagePacker
 from .exceptions import ConnectionError, TimeoutError
+import os
 
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s %(levelname)s [%(name)s] %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S',
+    filename=os.path.join('logs', 'seer_forklift.log'),  # Log to logs folder
+    filemode='a'                   # Optional: append mode
 )
+
+# Create logs directory if it doesn't exist
+os.makedirs('logs', exist_ok=True)
 
 class SeerClient:
     def __init__(self, ip: str, port: int, timeout: float):
