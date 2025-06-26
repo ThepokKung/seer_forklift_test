@@ -1,33 +1,36 @@
 #!/usr/bin/env python
-import argparse
-import yaml
+import argparse, yaml
 from sequences.pallet_and_nav import SequenceExecutor
 
 def main():
-    p = argparse.ArgumentParser(description="Run predefined sequences")
-    p.add_argument(
-        "--preset",
-        required=True,
-        help="Name of the preset from config/sequences.yaml (e.g., pick_pallet_23)"
-    )
+    p = argparse.ArgumentParser()
+    p.add_argument("--preset", required=True,
+                   help="ชื่อ preset ใน config/sequences.yaml")
     args = p.parse_args()
 
-    # Load presets from YAML
-    with open("config/sequences.yaml") as f:
-        presets = yaml.safe_load(f)
-
+    presets = yaml.safe_load(open("config/sequences.yaml"))
     if args.preset not in presets:
-        print(f"Error: preset '{args.preset}' can not be found in config/sequences.yaml")
+        print(f"ERROR: preset '{args.preset}' ไม่พบ")
         exit(1)
 
     cfg = presets[args.preset]
-    task_id = cfg["task_id"]
-    steps   = cfg["steps"]
+    task_id  = cfg["task_id"]
+    steps    = cfg["steps"]
+    use_batch = cfg.get("batch_nav", False)
 
-    # Run sequence
-    seq = SequenceExecutor("config/settings.yaml")
-    results = seq.run_mixed_sequence(task_id, steps)
-    print("Results:", results)
+    executor = SequenceExecutor("config/settings.yaml")
+
+    if use_batch:
+        # สำหรับ batch navigation
+        # เตรียม list เฉพาะ nav ก้าว
+        nav_steps = [(s["source"], s["target"])
+                     for s in steps if s["type"] == "nav"]
+        result = executor.run_batch_navigation(task_id, nav_steps)
+    else:
+        # สำหรับ mixed (fork + nav ทีละก้าว)
+        result = executor.run_mixed_sequence(task_id, steps)
+
+    print("Result:", result)
 
 if __name__ == "__main__":
     main()

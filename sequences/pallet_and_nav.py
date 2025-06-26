@@ -1,6 +1,7 @@
 import yaml
 import logging
 import os
+import time
 from seer_forklift.api import SeerClient
 from seer_forklift.tasks import PalletLiftTask, PathNavigationTask, ControlTask
 
@@ -46,7 +47,6 @@ class SequenceExecutor:
         ) as nav_client, SeerClient(
             self.status_cfg["status_ip"], self.status_cfg["status_port"], self.timeout
         ) as status_client:
-            # Assign API numbers
             for src, dst in steps:
                 task = PathNavigationTask(
                     nav_client,
@@ -100,3 +100,29 @@ class SequenceExecutor:
                 res = task.run()
                 results.append(res)
         return results
+
+    def run_batch_navigation(self, task_id: str, steps: list):
+        """
+        Send a batch move_task_list to API 3066 on nav port.
+        steps: list of tuples (source_id, target_id)
+        """
+        # Build move_task_list payload
+        move_list = [
+            { "source_id": src, "id": dst, "task_id": task_id }
+            for src, dst in steps
+        ]
+        payload = { "move_task_list": move_list }
+
+        # Send batch nav and poll
+        with SeerClient(
+            self.nav_cfg["nav_ip"], self.nav_cfg["nav_port"], self.timeout
+        ) as nav_client, SeerClient(
+            self.status_cfg["status_ip"], self.status_cfg["status_port"], self.timeout
+        ) as status_client:
+            nav_client.send_request(1, 3066, payload)
+            while True:
+                stat = status_client.send_request(2, self.status_cfg["status_api"], {"simple": True})
+                if stat.get("task_status") == 4:
+                    break
+                time.sleep(0.5)
+        return stat

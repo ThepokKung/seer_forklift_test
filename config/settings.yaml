@@ -8,9 +8,6 @@ seer:
   nav_ip: "192.168.0.181"
   nav_port: 19206
   nav_api: 3051
+  nav_batch_api: 3066
 
   timeout_sec: 5
-
-logging:
-  level: "DEBUG"
-  filepath: "logs/run.log"
