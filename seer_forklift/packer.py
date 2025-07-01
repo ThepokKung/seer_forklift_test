@@ -13,6 +13,7 @@ class MessagePacker:
     def header_size(self) -> int:
         return self._header_size
 
+    # Packs a message with the given request ID, message type, and optional payload.
     def pack(
         self,
         req_id: int,
@@ -37,6 +38,7 @@ class MessagePacker:
             raise MessagePackError(f"Header pack failed: {e}")
         return header + body.encode('ascii')
 
+    # Unpacks the header from the given data.
     def unpack_header(self, data: bytes):
         if len(data) < self._header_size:
             raise MessagePackError("Insufficient data for header")

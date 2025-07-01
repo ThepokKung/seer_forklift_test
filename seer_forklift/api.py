@@ -35,11 +35,13 @@ class SeerClient:
         self.logger.debug(f"Connected to {self.ip}:{self.port}") 
 
     def close(self):
+        # Close the socket connection if it exists
         if self.sock:
             self.sock.close()
             self.logger.debug("Connection closed")
 
     def send_request(self, req_id: int, msg_type: int, payload: Optional[Dict] = None) -> Dict:
+        # Send a request to the Seer server and return the response
         if self.sock is None:
             raise ConnectionError("Not connected")
         body_dict = payload or {}
