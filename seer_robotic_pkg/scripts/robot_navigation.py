@@ -103,9 +103,35 @@ class RobotNavigation(Node):
         # Create RobotNavigationAPI instance
         self.robot_navigation_api = RobotNavigationAPI(self.robot_ip)
         
-        # Create PalletLoader instance (you can specify the yaml file path if needed)
-
-        self.pallet_loader = PalletLoader('pallet.yaml')
+        # Create PalletLoader instance with better path resolution
+        try:
+            # Try to find the pallet.yaml file in different locations
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            possible_yaml_paths = [
+                os.path.join(current_dir, '..', '..', 'data', 'pallet.yaml'),  # Source directory
+                os.path.join(current_dir, '..', '..', '..', 'share', 'seer_robotic_pkg', 'data', 'pallet.yaml'),  # Install directory
+                'pallet.yaml'  # Fallback
+            ]
+            
+            yaml_file_path = 'pallet.yaml'  # Default fallback
+            for path in possible_yaml_paths:
+                if os.path.exists(path):
+                    yaml_file_path = path
+                    break
+            
+            self.pallet_loader = PalletLoader(yaml_file_path)
+            
+            # Check if data was loaded successfully
+            if self.pallet_loader.is_data_loaded():
+                self.get_logger().info(f'PalletLoader initialized with: {yaml_file_path}')
+                self.get_logger().info(f'Loaded {len(self.pallet_loader.get_all_pallets())} pallets')
+            else:
+                self.get_logger().error(f'PalletLoader could not load data from: {yaml_file_path}')
+                
+        except Exception as e:
+            self.get_logger().error(f'Error initializing PalletLoader: {e}')
+            # Create with default fallback - but this will also have no data if file doesn't exist
+            self.pallet_loader = PalletLoader('pallet.yaml')
         
         # Connection status
         self.connection_attempted = False
@@ -126,8 +152,19 @@ class RobotNavigation(Node):
         #####################################################
         temp = self.pallet_loader.get_pallet_info(20)
         print(f"Loaded pallet info: {temp}")
+        
+        # Test pallet level info (this should now work with the fixed method)
         temp3 = self.pallet_loader.get_pallet_level_info(1)
         print(f"Loaded pallet level info: {temp3}")
+        
+        # Test getting heights for pallet 20
+        heights = self.pallet_loader.get_pallet_heights(20)
+        print(f"Pallet 20 heights: {heights}")
+        
+        # Test getting heights for each level
+        for level in [1, 2, 3]:
+            level_info = self.pallet_loader.get_pallet_level_info(level)
+            print(f"Level {level} info: {level_info}")
 
         # Start log
         self.get_logger().info(f'Robot Navigation API initialized for {self.robot_ip}')
