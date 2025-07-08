@@ -1,0 +1,5 @@
+.vscode
+.pytest_cache
+__pycache__
+scripts/backend/tests
+scripts/backend/tests_by_agent
