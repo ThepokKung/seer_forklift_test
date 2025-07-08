@@ -104,9 +104,8 @@ class RobotNavigation(Node):
         self.robot_navigation_api = RobotNavigationAPI(self.robot_ip)
         
         # Create PalletLoader instance (you can specify the yaml file path if needed)
+
         self.pallet_loader = PalletLoader('pallet.yaml')
-        temp = self.pallet_loader.get_pallet_info(20)
-        print(f"Loaded pallet info: {temp}")
         
         # Connection status
         self.connection_attempted = False
@@ -121,7 +120,16 @@ class RobotNavigation(Node):
         
         # Timer 
         self.timer = self.create_timer(1.0, self.call_check_robot_navigation_status)
-        
+
+        #####################################################
+        ###                    Test                       ###
+        #####################################################
+        temp = self.pallet_loader.get_pallet_info(20)
+        print(f"Loaded pallet info: {temp}")
+        temp3 = self.pallet_loader.get_pallet_level_info(1)
+        print(f"Loaded pallet level info: {temp3}")
+
+        # Start log
         self.get_logger().info(f'Robot Navigation API initialized for {self.robot_ip}')
     
     def ensure_connection(self):
@@ -142,26 +150,6 @@ class RobotNavigation(Node):
         except Exception as e:
             self.get_logger().error(f"Exception during connection: {e}")
             return False
-    
-    def test_systemp(self, request, response):
-        result = self.Test_go()
-        response.success = result
-        response.message = "Test navigation path requested"
-        return response
-
-    def Test_go(self):
-        if self.ensure_connection():
-            payload = {
-                "source_id": "LM52",
-                "id": "LM53",
-                "task_id": "TestTask123"
-                }
-            temp = self.robot_navigation_api.get_navigation_path(id2go='LM52')
-            print(f"Navigation path: {temp}")
-
-            # self.robot_navigation_api.navigation_to_goal(id='LM53', source_id='LM52', task_id='TestTask123')
-            # self.get_logger().info("Navigation path requested successfully")
-        return True
     
     def call_check_robot_navigation_status(self):
         """Call the check_robot_navigation_status service"""
@@ -266,7 +254,6 @@ class RobotNavigation(Node):
     def navigation_to_pallet_callback(self, request, response):
         self.get_logger().info(f'Received request to pick pallet {request.pallet_id} at level {request.pallet_level}')
 
-        
         # Ensure connection before making API call
         if not self.ensure_connection():
             self.get_logger().error('Failed to connect to robot navigation API')
@@ -312,6 +299,24 @@ class RobotNavigation(Node):
         
         return response
     
+    #####################################################
+    ###                    Test                       ###
+    #####################################################
+
+    def test_systemp(self, request, response):
+        result = self.Test_go()
+        response.success = result
+        response.message = "Test navigation path requested"
+        return response
+
+    def Test_go(self):
+        if self.ensure_connection():
+            temp = self.robot_navigation_api.get_navigation_path(id2go='LM52')
+            print(f"Navigation path: {temp}")
+
+            # self.robot_navigation_api.navigation_to_goal(id='LM53', source_id='LM52', task_id='TestTask123')
+            # self.get_logger().info("Navigation path requested successfully")
+        return True
 
 def main(args=None):
     rclpy.init(args=args)

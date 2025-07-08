@@ -22,12 +22,7 @@ class PalletLoader:
                 return pallet
         return None
 
-    def select_pallet(self, pallet_id):
-        """Select and return pallet information by ID"""
-        pallet_info = self.get_pallet_info(pallet_id)
-        if pallet_info:
-            print(f"Selected pallet ID: {pallet_id}")
-            return pallet_info
-        else:
-            print(f"Pallet ID {pallet_id} not found")
-            return None
+    def get_pallet_level_info(self, level):
+        for pallet_level in self.pallet_data.get('pallet_level', []):
+            if pallet_level.get('level') == level:
+                return pallet_level
