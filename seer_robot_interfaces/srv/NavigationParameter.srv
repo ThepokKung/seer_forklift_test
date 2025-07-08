@@ -1,0 +1,10 @@
+string id
+string source_id
+string task_id
+string operation
+int8 end_height
+bool recognize
+string recfile
+---
+bool success
+string message

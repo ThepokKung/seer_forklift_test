@@ -1,0 +1,4 @@
+int8 pallet_id
+---
+bool success
+string message

@@ -46,43 +46,9 @@ def import_robot_api():
                         continue
             
             raise ImportError("Could not import RobotStatusAPI from any location")
-
-# def import_robot_navigation_api():
-#     """Import RobotNavigationAPI with fallback for different installation methods"""
-#     try:
-#         # Try standard import first
-#         from backend.robot_navigation_api import RobotStatusAPI as RobotNavigationAPI
-#         return RobotNavigationAPI
-#     except ModuleNotFoundError:
-#         try:
-#             # Try direct import from installed location
-#             from robot_navigation_api import RobotStatusAPI as RobotNavigationAPI
-#             return RobotNavigationAPI
-#         except ModuleNotFoundError:
-#             # Add path and try again
-#             current_dir = os.path.dirname(os.path.abspath(__file__))
-            
-#             # Try different possible locations
-#             possible_paths = [
-#                 os.path.join(current_dir, 'backend'),
-#                 os.path.join(current_dir, '..', 'scripts', 'backend'),
-#                 os.path.join(current_dir, '..', '..', 'scripts', 'backend'),
-#             ]
-            
-#             for path in possible_paths:
-#                 if os.path.exists(os.path.join(path, 'robot_navigation_api.py')):
-#                     sys.path.insert(0, path)
-#                     try:
-#                         from robot_navigation_api import RobotStatusAPI as RobotNavigationAPI
-#                         return RobotNavigationAPI
-#                     except ImportError:
-#                         continue
-            
-#             raise ImportError("Could not import RobotNavigationAPI from any location")
-
-# Import RobotStatusAPI and RobotNavigationAPI
+        
+# Import RobotStatusAPI
 RobotStatusAPI = import_robot_api()
-# RobotNavigationAPI = import_robot_navigation_api()
 
 
 class RobotState(Node):
@@ -124,10 +90,8 @@ class RobotState(Node):
         self.robot_current_station_pub = self.create_publisher(String, 'robot_current_station', 10)
         self.robot_last_station_pub = self.create_publisher(String, 'robot_last_station', 10)
 
-
         # Service Server topics
-        self.check_robot_status_service = self.create_service(
-            CheckRobotNavigationTaskStatus, 'check_robot_navigation_status', self.check_robot_status_callback)
+        self.check_robot_status_service = self.create_service(CheckRobotNavigationTaskStatus, 'check_robot_navigation_status', self.check_robot_status_callback)
 
         # Timer
         self.timer = self.create_timer(1.0, self.update_robot_callbacks)
@@ -143,8 +107,8 @@ class RobotState(Node):
         if self.ensure_connection():
             temp = self.robot_status_api.battery_status()
             self.robot_battery = temp * 100 # Convert to percentage
-            print(f"Robot ID: {self.robot_id}, Battery Level: {self.robot_battery}")
-            
+            self.get_logger().info(f"Robot ID: {self.robot_id}, Battery Level: {self.robot_battery}")
+
             # Publish the battery level if we got valid data
             if self.robot_battery is not None:
                 battery_msg = Float32()
@@ -190,7 +154,7 @@ class RobotState(Node):
                 self.robot_current_station = current_position
                 self.robot_last_station = last_station
         else:
-            # print(f"Robot ID: {self.robot_id}, Not connected to robot")
+            self.get_logger().error(f"Robot ID: {self.robot_id}, Not connected to robot")
             self.robot_position = None
 
     def update_robot_navigation_status(self):
@@ -201,29 +165,10 @@ class RobotState(Node):
 
             # Publish the navigation status if we got valid data
             if temp_navigation is not None:
-                print(f"Robot ID: {self.robot_id}, Navigation Status: {temp_navigation}")
+                # print(f"Robot ID: {self.robot_id}, Navigation Status: {temp_navigation}")
                 self.robot_task_status = temp_navigation.get('task_status', 0)
-                # # Unpack the dictionary returned from navigation_status()
-                # task_status = temp_navigation.get('task_status')
-                # task_type = temp_navigation.get('task_type')
-                # target_id = temp_navigation.get('target_id')
-                # finished_path = temp_navigation.get('finished_path')
-                # unfinished_path = temp_navigation.get('unfinished_path')
-                # containers = temp_navigation.get('containers')
-
-                # # Create a message for each piece of navigation data
-                # navigation_msg = NavigationStatus()
-                # navigation_msg.header.frame_id = self.robot_name  # Use robot name as frame ID
-                # navigation_msg.header.stamp = self.get_clock().now().to_msg()
-                # navigation_msg.task_status = task_status
-                # navigation_msg.task_type = task_type
-                # navigation_msg.target_id = target_id
-                # navigation_msg.finished_path = finished_path
-                # navigation_msg.unfinished_path = unfinished_path
-                # navigation_msg.containers = containers
-                # self.robot_navigation_pub.publish(navigation_msg)
         else:
-            print(f"Robot ID: {self.robot_id}, Not connected to robot")
+            self.get_logger().error(f"Robot ID: {self.robot_id}, Not connected to robot")
             self.robot_navigation = None
 
     def ensure_connection(self):
@@ -245,13 +190,10 @@ class RobotState(Node):
         return self.ensure_connection()
     
     #####################################################
-    ### Service Callbacks
+    ###             Service Callbacks                 ###
     #####################################################
 
     def check_robot_status_callback(self, request, response):
-        self.get_logger().info("Checking robot status...")
-        # Here you would implement the logic to check the robot's status
-        # For now, we'll just simulate a successful response
         response.success = True
         response.task_status = self.robot_task_status
         return response

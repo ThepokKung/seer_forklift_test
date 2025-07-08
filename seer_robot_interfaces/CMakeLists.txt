@@ -9,7 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
-# find_package(<dependency> REQUIRED)
+# find_package(<dependency> REQUIRED)<
 
 find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
@@ -18,6 +18,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   # "msg/Num.msg"
   # "msg/Sphere.msg"
   "srv/CheckRobotNavigationTaskStatus.srv"
+  "srv/GetNavigationPath.srv"
+  "srv/NavigationParameter.srv"
+  "srv/Pickpallet.srv"
   DEPENDENCIES geometry_msgs # Add packages that above messages depend on, in this case geometry_msgs for Sphere.msg
 )
 
