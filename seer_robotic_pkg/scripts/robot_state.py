@@ -11,6 +11,7 @@ from geometry_msgs.msg import PointStamped
 
 # srv imports
 from std_srvs.srv import Trigger
+from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus
 
 # My backend imports - robust import for ROS2
 def import_robot_api():
@@ -105,6 +106,7 @@ class RobotState(Node):
         self.robot_task_id = None
         self.robot_state = None
         self.robot_have_good = None
+        self.robot_task_status = 0
         
         # Create RobotStatusAPI instance but don't auto-connect
         self.robot_status_api = RobotStatusAPI(self.robot_ip)
@@ -125,8 +127,7 @@ class RobotState(Node):
 
         # Service Server topics
         self.check_robot_status_service = self.create_service(
-            Trigger, 'check_robot_status', self.check_robot_status_callback)
-        
+            CheckRobotNavigationTaskStatus, 'check_robot_navigation_status', self.check_robot_status_callback)
 
         # Timer
         self.timer = self.create_timer(1.0, self.update_robot_callbacks)
@@ -140,7 +141,8 @@ class RobotState(Node):
     def update_robot_battery(self):
         # Ensure we have a connection
         if self.ensure_connection():
-            self.robot_battery = self.robot_status_api.battery_status()
+            temp = self.robot_status_api.battery_status()
+            self.robot_battery = temp * 100 # Convert to percentage
             print(f"Robot ID: {self.robot_id}, Battery Level: {self.robot_battery}")
             
             # Publish the battery level if we got valid data
@@ -200,6 +202,7 @@ class RobotState(Node):
             # Publish the navigation status if we got valid data
             if temp_navigation is not None:
                 print(f"Robot ID: {self.robot_id}, Navigation Status: {temp_navigation}")
+                self.robot_task_status = temp_navigation.get('task_status', 0)
                 # # Unpack the dictionary returned from navigation_status()
                 # task_status = temp_navigation.get('task_status')
                 # task_type = temp_navigation.get('task_type')
@@ -250,7 +253,7 @@ class RobotState(Node):
         # Here you would implement the logic to check the robot's status
         # For now, we'll just simulate a successful response
         response.success = True
-        response.message = "Robot is operational"
+        response.task_status = self.robot_task_status
         return response
 
 def main(args=None):

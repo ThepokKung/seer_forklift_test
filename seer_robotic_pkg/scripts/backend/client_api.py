@@ -36,7 +36,7 @@ class ClientAPI:
             return
 
         packed_message = self.packer.pack_message(req_id, msg_type, payload)
-        print(f"raw_data = {packed_message}")
+        # print(f"raw_data = {packed_message}")
         self.sock.sendall(packed_message)
 
     def receive_response(self):

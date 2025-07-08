@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(intern_pkg)
+project(seer_robotic_pkg)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)

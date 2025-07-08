@@ -5,7 +5,9 @@ from rclpy.node import Node
 import sys
 import os
 
+# srv import
 from std_srvs.srv import Trigger
+from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus
 
 # My backend imports - robust import for ROS2
 def import_robot_navigation_api():
@@ -50,7 +52,7 @@ class RobotNavigation(Node):
         self.get_logger().info('Robot Navigation node has been started')
         
         # Declare parameters
-        self.declare_parameter('robot_ip', '192.168.0.180')
+        self.declare_parameter('robot_ip', '192.168.0.181')
         
         # Get parameters
         self.robot_ip = self.get_parameter('robot_ip').get_parameter_value().string_value
@@ -61,8 +63,18 @@ class RobotNavigation(Node):
         # Connection status
         self.connection_attempted = False
 
-        # Service call 
+        
+        # Service server
         self.robot_test_service = self.create_service(Trigger, 'robot_navigation/test_go', self.test_systemp)
+
+        # Service client
+        self.check_robot_navigation_status_client = self.create_client(
+            CheckRobotNavigationTaskStatus,
+            'check_robot_navigation_status'
+        )
+        
+        # Timer 
+        self.timer = self.create_timer(1.0, self.call_check_robot_navigation_status)
         
         self.get_logger().info(f'Robot Navigation API initialized for {self.robot_ip}')
     
@@ -91,6 +103,32 @@ class RobotNavigation(Node):
             self.robot_navigation_api.get_navigation_path(id2go=payload)
             self.get_logger().info("Navigation path requested successfully")
         return True
+    
+    def call_check_robot_navigation_status(self):
+        """Call the check_robot_navigation_status service"""
+        if not self.check_robot_navigation_status_client.service_is_ready():
+            self.get_logger().warn('check_robot_navigation_status service not available')
+            return None
+            
+        request = CheckRobotNavigationTaskStatus.Request()
+        future = self.check_robot_navigation_status_client.call_async(request)
+        
+        # Add callback to handle the response instead of blocking
+        future.add_done_callback(self.handle_navigation_status_response)
+    
+    def handle_navigation_status_response(self, future):
+        """Handle the response from the navigation status service"""
+        try:
+            response = future.result()
+            if response is not None:
+                self.get_logger().info(f'Task status: {response.task_status}, Success: {response.success}')
+                print(f'Task status: {response.task_status}, Success: {response.success}')
+                return response.task_status
+            else:
+                self.get_logger().error('Service call failed - no response')
+        except Exception as e:
+            self.get_logger().error(f'Service call exception: {e}')
+        return None
 
 def main(args=None):
     rclpy.init(args=args)
