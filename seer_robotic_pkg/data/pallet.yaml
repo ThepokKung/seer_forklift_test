@@ -2,111 +2,147 @@ pallet:
   - pallet_id: 1
     pallet_level: 1
     station_id: AP2
+    pre_station_id: LM26
   - pallet_id: 2
     pallet_level: 2
     station_id: AP2
+    pre_station_id: LM26
   - pallet_id: 3
     pallet_level: 3
     station_id: AP2
+    pre_station_id: LM26
   - pallet_id: 4
     pallet_level: 1
     station_id: AP3
+    pre_station_id: LM27
   - pallet_id: 5
     pallet_level: 2
     station_id: AP3
+    pre_station_id: LM27
   - pallet_id: 6
     pallet_level: 3
     station_id: AP3
+    pre_station_id: LM27
   - pallet_id: 7
     pallet_level: 1
     station_id: AP4
+    pre_station_id: LM28
   - pallet_id: 8
     pallet_level: 2
     station_id: AP4
+    pre_station_id: LM28
   - pallet_id: 9
     pallet_level: 3
     station_id: AP4
+    pre_station_id: LM28
   - pallet_id: 10 
     pallet_level: 1
     station_id: AP5
+    pre_station_id: LM29
   - pallet_id: 11 
     pallet_level: 2
     station_id: AP5
+    pre_station_id: LM29
   - pallet_id: 12 
     pallet_level: 3
     station_id: AP5
+    pre_station_id: LM29
   - pallet_id: 13 
     pallet_level: 1
     station_id: AP6
+    pre_station_id: LM30
   - pallet_id: 14 
     pallet_level: 2
-    station_id: AP5
+    station_id: AP6
+    pre_station_id: LM30
   - pallet_id: 15 
     pallet_level: 3
     station_id: AP6
+    pre_station_id: LM30
   - pallet_id: 16 
     pallet_level: 1
     station_id: AP7
+    pre_station_id: LM31
   - pallet_id: 17 
     pallet_level: 2
     station_id: AP7
+    pre_station_id: LM31
   - pallet_id: 18 
     pallet_level: 3
     station_id: AP7
+    pre_station_id: LM31
   - pallet_id: 19 
     pallet_level: 1
     station_id: AP8
+    pre_station_id: LM32
   - pallet_id: 20 
     pallet_level: 2
     station_id: AP8
+    pre_station_id: LM32
   - pallet_id: 21 
     pallet_level: 3
     station_id: AP8
+    pre_station_id: LM32
   - pallet_id: 22 
     pallet_level: 1
     station_id: AP9
+    pre_station_id: LM33
   - pallet_id: 23 
     pallet_level: 2
     station_id: AP9
+    pre_station_id: LM33
   - pallet_id: 24 
     pallet_level: 3
     station_id: AP9
+    pre_station_id: LM33
   - pallet_id: 25 
     pallet_level: 1
     station_id: AP10
+    pre_station_id: LM34
   - pallet_id: 26 
     pallet_level: 2
     station_id: AP10
+    pre_station_id: LM34
   - pallet_id: 27 
     pallet_level: 3
     station_id: AP10
+    pre_station_id: LM34
   - pallet_id: 28 
     pallet_level: 1
     station_id: AP11
+    pre_station_id: LM35
   - pallet_id: 29 
     pallet_level: 2
     station_id: AP11
+    pre_station_id: LM35
   - pallet_id: 30 
     pallet_level: 3
     station_id: AP11
+    pre_station_id: LM35
   - pallet_id: 31 
     pallet_level: 1
     station_id: AP12
+    pre_station_id: LM36
   - pallet_id: 32 
     pallet_level: 2
     station_id: AP12
+    pre_station_id: LM36
   - pallet_id: 33 
     pallet_level: 3
     station_id: AP12
+    pre_station_id: LM36
   - pallet_id: 34 
     pallet_level: 1
     station_id: AP13
+    pre_station_id: LM37
   - pallet_id: 35 
     pallet_level: 2
     station_id: AP13
+    pre_station_id: LM37
   - pallet_id: 36 
     pallet_level: 3
     station_id: AP13
+    pre_station_id: LM37
 
 pallet_level:
   - pallet_level: 1

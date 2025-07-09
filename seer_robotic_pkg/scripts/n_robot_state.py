@@ -95,8 +95,8 @@ class RobotState(Node):
         # Ensure we have a connection
         if self.ensure_connection():
             temp = self.robot_status_api.get_battery_status()
-            self.robot_battery = (temp.get('battery_level', None) * 100)
-            self.robot_charge_status = temp.get('charging', False)
+            self.robot_battery = (temp.get('battery_level', None) * 100) # type: ignore
+            self.robot_charge_status = temp.get('charging', False) # type: ignore
 
             # Publish the battery level if we got valid data
             if self.robot_battery is not None:
