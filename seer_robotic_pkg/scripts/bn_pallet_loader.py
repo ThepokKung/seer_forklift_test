@@ -41,7 +41,6 @@ class PalletLoader:
                     continue
         return None
         
-    
     def get_pallet_info(self, pallet_id):
         """Get pallet information by ID, handling different yaml formats"""
         if self.pallet_data is None:

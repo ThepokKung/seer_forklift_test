@@ -13,42 +13,8 @@ from geometry_msgs.msg import PointStamped
 from std_srvs.srv import Trigger
 from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus
 
-# My backend imports - robust import for ROS2
-def import_robot_api():
-    """Import RobotStatusAPI with fallback for different installation methods"""
-    try:
-        # Try standard import first
-        from backend.robot_status_api import RobotStatusAPI
-        return RobotStatusAPI
-    except ModuleNotFoundError:
-        try:
-            # Try direct import from installed location
-            from robot_status_api import RobotStatusAPI
-            return RobotStatusAPI
-        except ModuleNotFoundError:
-            # Add path and try again
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            
-            # Try different possible locations
-            possible_paths = [
-                os.path.join(current_dir, 'backend'),
-                os.path.join(current_dir, '..', 'scripts', 'backend'),
-                os.path.join(current_dir, '..', '..', 'scripts', 'backend'),
-            ]
-            
-            for path in possible_paths:
-                if os.path.exists(os.path.join(path, 'robot_status_api.py')):
-                    sys.path.insert(0, path)
-                    try:
-                        from robot_status_api import RobotStatusAPI
-                        return RobotStatusAPI
-                    except ImportError:
-                        continue
-            
-            raise ImportError("Could not import RobotStatusAPI from any location")
-        
-# Import RobotStatusAPI
-RobotStatusAPI = import_robot_api()
+# backend imports
+from bn_robot_status_api import RobotStatusAPI
 
 class RobotState(Node):
     def __init__(self):
@@ -128,7 +94,7 @@ class RobotState(Node):
     def update_robot_battery(self):
         # Ensure we have a connection
         if self.ensure_connection():
-            temp = self.robot_status_api.battery_status()
+            temp = self.robot_status_api.get_battery_status()
             self.robot_battery = (temp.get('battery_level', None) * 100)
             self.robot_charge_status = temp.get('charging', False)
 
@@ -143,7 +109,7 @@ class RobotState(Node):
     def update_robot_position(self):
         # Ensure we have a connection
         if self.ensure_connection():
-            temp_position = self.robot_status_api.position_status()
+            temp_position = self.robot_status_api.get_position_status()
             # print(f"Robot ID: {self.robot_id}, Position: {temp_position}")
 
             # Publish the position if we got valid data
@@ -182,8 +148,8 @@ class RobotState(Node):
     def update_robot_navigation_status(self):
         # Ensure we have a connection
         if self.ensure_connection():
-            temp_navigation = self.robot_status_api.navigation_status()
-            print(f"Robot ID: {self.robot_id}, Navigation Status: {temp_navigation}")
+            temp_navigation = self.robot_status_api.get_navigation_status()
+            # print(f"Robot ID: {self.robot_id}, Navigation Status: {temp_navigation}")
 
             # Publish the navigation status if we got valid data
             if temp_navigation is not None:

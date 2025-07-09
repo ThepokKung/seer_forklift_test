@@ -12,78 +12,9 @@ import os
 from std_srvs.srv import Trigger
 from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus, GetNavigationPath, NavigationParameter
 
-# My backend imports - robust import for ROS2
-def import_robot_navigation_api():
-    """Import RobotNavigationAPI with fallback for different installation methods"""
-    try:
-        # Try standard import first
-        from backend.robot_navigation_api import RobotNavigationAPI
-        return RobotNavigationAPI
-    except ModuleNotFoundError:
-        try:
-            # Try direct import from installed location
-            from robot_navigation_api import RobotNavigationAPI
-            return RobotNavigationAPI
-        except ModuleNotFoundError:
-            # Add path and try again
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            
-            # Try different possible locations
-            possible_paths = [
-                os.path.join(current_dir, 'backend'),
-                os.path.join(current_dir, '..', 'scripts', 'backend'),
-                os.path.join(current_dir, '..', '..', 'scripts', 'backend'),
-            ]
-            
-            for path in possible_paths:
-                if os.path.exists(os.path.join(path, 'robot_navigation_api.py')):
-                    sys.path.insert(0, path)
-                    try:
-                        from robot_navigation_api import RobotNavigationAPI
-                        return RobotNavigationAPI
-                    except ImportError:
-                        continue
-            
-            raise ImportError("Could not import RobotNavigationAPI from any location")
-
-# Import RobotNavigationAPI
-RobotNavigationAPI = import_robot_navigation_api()
-
-def import_pallet_loader():
-    """Import PalletLoader with fallback for different installation methods"""
-    try:
-        # Try standard import first
-        from backend.pallet_loader import PalletLoader
-        return PalletLoader
-    except ModuleNotFoundError:
-        try:
-            # Try direct import from installed location
-            from pallet_loader import PalletLoader
-            return PalletLoader
-        except ModuleNotFoundError:
-            # Add path and try again
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            
-            # Try different possible locations
-            possible_paths = [
-                os.path.join(current_dir, 'backend'),
-                os.path.join(current_dir, '..', 'scripts', 'backend'),
-                os.path.join(current_dir, '..', '..', 'scripts', 'backend'),
-            ]
-            
-            for path in possible_paths:
-                if os.path.exists(os.path.join(path, 'pallet_loader.py')):
-                    sys.path.insert(0, path)
-                    try:
-                        from pallet_loader import PalletLoader
-                        return PalletLoader
-                    except ImportError:
-                        continue
-            
-            raise ImportError("Could not import PalletLoader from any location")
-
-# Import PalletLoader
-PalletLoader = import_pallet_loader()
+# backend imports
+from bn_robot_navigation_api import RobotNavigationAPI
+from bn_pallet_loader import PalletLoader
 
 class RobotNavigation(Node):
     def __init__(self):

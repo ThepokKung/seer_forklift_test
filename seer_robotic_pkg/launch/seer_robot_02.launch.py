@@ -5,7 +5,7 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='seer_robotic_pkg',
-            executable='robot_state.py',
+            executable='n_robot_state.py',
             name='robot_state_node',
             namespace='robot_02',
             output='screen',
@@ -17,7 +17,7 @@ def generate_launch_description():
         ),
         Node(
             package='seer_robotic_pkg',
-            executable='robot_navigation.py',
+            executable='n_robot_navigation.py',
             name='robot_navigation_node',
             namespace='robot_02',
             output='screen',

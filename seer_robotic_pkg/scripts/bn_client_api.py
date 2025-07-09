@@ -2,7 +2,7 @@
 
 import socket
 import json
-from msg_packer import MsgPacker
+from bn_msg_packer import MsgPacker
 
 class ClientAPI:
     # def __init__(self, ip=None ):

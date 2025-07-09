@@ -35,8 +35,15 @@ install(DIRECTORY scripts/backend/
 install(PROGRAMS
   # scripts/dummy_script.py
   ### Main scripts ###
-  scripts/robot_state.py
-  scripts/robot_navigation.py
+  scripts/n_robot_state.py
+  scripts/n_robot_navigation.py
+  scripts/n_test_only.py
+  ### Backend scripts ###
+  scripts/bn_client_api.py
+  scripts/bn_msg_packer.py
+  scripts/bn_pallet_loader.py
+  scripts/bn_robot_navigation_api.py
+  scripts/bn_robot_status_api.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

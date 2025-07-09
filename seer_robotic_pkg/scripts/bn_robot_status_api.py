@@ -3,12 +3,7 @@
 import sys
 import os
 
-# Fix import for ROS2 installation
-try:
-    from backend.client_api import ClientAPI
-except ModuleNotFoundError:
-    # Import from same directory when running in ROS2
-    from client_api import ClientAPI
+from bn_client_api import ClientAPI
 
 class RobotStatusAPI:
     def __init__(self, robot_ip):
@@ -35,7 +30,7 @@ class RobotStatusAPI:
             self.client.disconnect()
             self.connected = False
 
-    def battery_status(self):
+    def get_battery_status(self):
         """
         Request the battery status from the robot.
         
@@ -77,7 +72,7 @@ class RobotStatusAPI:
         else:
             return None
 
-    def position_status(self):
+    def get_position_status(self):
         """
         Request the position status from the robot.
 
@@ -109,7 +104,7 @@ class RobotStatusAPI:
         else:
             return None
 
-    def navigation_status(self):
+    def get_navigation_status(self):
         """
         Request the navigation status from the robot.
 
