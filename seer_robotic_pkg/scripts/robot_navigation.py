@@ -91,10 +91,10 @@ class RobotNavigation(Node):
         self.get_logger().info('Robot Navigation node has been started')
         
         # Declare parameters
-        self.declare_parameter('robot_id', 'robot_02')
-        self.declare_parameter('robot_name', 'SEER_Robot_02')
-        self.declare_parameter('robot_ip', '192.168.0.181')
-        
+        self.declare_parameter('robot_id', 'robot_01')
+        self.declare_parameter('robot_name', 'SEER_Robot_01')
+        self.declare_parameter('robot_ip', '192.168.0.180')
+
         # Get parameters
         self.robot_id = self.get_parameter('robot_id').get_parameter_value().string_value
         self.robot_name = self.get_parameter('robot_name').get_parameter_value().string_value
@@ -145,22 +145,8 @@ class RobotNavigation(Node):
         self.check_robot_navigation_status_client = self.create_client(CheckRobotNavigationTaskStatus,'check_robot_navigation_status')
         
         # Timer 
-        self.timer = self.create_timer(1.0, self.call_check_robot_navigation_status)
+        self.timer = self.create_timer(1.0, self.timer_update_status_callback)
 
-        #####################################################
-        ###                    Test                       ###
-        #####################################################
-        temp = self.pallet_loader.get_pallet_info(20)
-        print(f"Loaded pallet info: {temp}")
-        
-        # Test pallet level info (this should now work with the fixed method)
-        temp3 = self.pallet_loader.get_pallet_level_info(1)
-        print(f"Loaded pallet level info: {temp3}")
-        
-        # Test getting heights for pallet 20
-        heights = self.pallet_loader.get_pallet_heights(20)
-        print(f"Pallet 20 heights: {heights}")
-        
         # Test getting heights for each level
         for level in [1, 2, 3]:
             level_info = self.pallet_loader.get_pallet_level_info(level)
@@ -168,6 +154,10 @@ class RobotNavigation(Node):
 
         # Start log
         self.get_logger().info(f'Robot Navigation API initialized for {self.robot_ip}')
+
+    #####################################################
+    ###               Check Connection                ###
+    #####################################################
     
     def ensure_connection(self):
         """Ensure connection to robot navigation API"""
@@ -188,6 +178,18 @@ class RobotNavigation(Node):
             self.get_logger().error(f"Exception during connection: {e}")
             return False
     
+
+    #####################################################
+    ###                     Timer                     ###
+    #####################################################
+
+    def timer_update_status_callback(self):
+        self.call_check_robot_navigation_status()
+
+    #####################################################
+    ###             Service client call               ###
+    #####################################################
+
     def call_check_robot_navigation_status(self):
         """Call the check_robot_navigation_status service"""
         if not self.check_robot_navigation_status_client.service_is_ready():
@@ -205,8 +207,7 @@ class RobotNavigation(Node):
         try:
             response = future.result()
             if response is not None:
-                self.get_logger().info(f'Task status: {response.task_status}, Success: {response.success}')
-                print(f'Task status: {response.task_status}, Success: {response.success}')
+                # self.get_logger().info(f'Task status: {response.task_status}, Success: {response.success}')
                 return response.task_status
             else:
                 self.get_logger().error('Service call failed - no response')
@@ -310,8 +311,6 @@ class RobotNavigation(Node):
             # Log pallet information
             self.get_logger().info(f'Found pallet info: {pallet_info}')
             
-            # Use navigation_to_goal to navigate to the pallet location
-            # You may need to extract location ID from pallet_info
             pallet_location = pallet_info.get('location_id', f'PALLET_{request.pallet_id}')
             
             result = self.robot_navigation_api.navigation_to_goal(
@@ -349,7 +348,7 @@ class RobotNavigation(Node):
     def Test_go(self):
         if self.ensure_connection():
             temp = self.robot_navigation_api.get_navigation_path(id2go='LM52')
-            print(f"Navigation path: {temp}")
+            # print(f"Navigation path: {temp}")
 
             # self.robot_navigation_api.navigation_to_goal(id='LM53', source_id='LM52', task_id='TestTask123')
             # self.get_logger().info("Navigation path requested successfully")

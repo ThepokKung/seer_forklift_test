@@ -54,10 +54,26 @@ class RobotStatusAPI:
             return None
         
         req_id, msg_type, data = temp
+
+        # Extract battery data from response
+        battery_data = {
+            'battery_level': data.get('battery_level'),
+            'charging': data.get('charging'),
+            'auto_charge': data.get('auto_charge'),
+            'manual_charge': data.get('manual_charge'),
+            'battery_cycle': data.get('battery_cycle'),
+            'battery_temp': data.get('battery_temp'),
+            'current': data.get('current'),
+            'voltage': data.get('voltage'),
+            'max_charge_current': data.get('max_charge_current'),
+            'max_charge_voltage': data.get('max_charge_voltage'),
+            'battery_user_data': data.get('battery_user_data'),
+            'create_on': data.get('create_on')
+        }
         
         # Return the battery level if request was successful
         if data.get('ret_code') == 0:
-            return data.get('battery_level')
+            return battery_data
         else:
             return None
 

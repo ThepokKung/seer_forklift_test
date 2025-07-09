@@ -50,16 +50,15 @@ def import_robot_api():
 # Import RobotStatusAPI
 RobotStatusAPI = import_robot_api()
 
-
 class RobotState(Node):
     def __init__(self):
         super().__init__('robot_state_node')
         self.get_logger().info("Robot State Node has been started.")
 
         # Declare parameters
-        self.declare_parameter('robot_id', 'robot_02')
-        self.declare_parameter('robot_name', 'SEER_Robot_02')
-        self.declare_parameter('robot_ip', '192.168.0.181')
+        self.declare_parameter('robot_id', 'robot_01')
+        self.declare_parameter('robot_name', 'SEER_Robot_01')
+        self.declare_parameter('robot_ip', '192.168.0.180')
 
         # Parameters
         self.robot_id = self.get_parameter('robot_id').get_parameter_value().string_value
@@ -73,12 +72,10 @@ class RobotState(Node):
         self.robot_state = None
         self.robot_have_good = None
         self.robot_task_status = 0
+        self.robot_charge_status = False
         
         # Create RobotStatusAPI instance but don't auto-connect
         self.robot_status_api = RobotStatusAPI(self.robot_ip)
-        
-        # Create RobotNavigationAPI instance but don't auto-connect
-        # self.robot_navigation_api = RobotNavigationAPI(self.robot_ip)
         
         # Connection status tracking
         self.connection_attempted = False
@@ -96,6 +93,32 @@ class RobotState(Node):
         # Timer
         self.timer = self.create_timer(1.0, self.update_robot_callbacks)
 
+    #####################################################
+    ###               Check Connection                ###
+    #####################################################
+
+    def ensure_connection(self):
+        """Ensure connection to robot with retry logic"""
+        if not self.robot_status_api.connected:
+            if self.robot_status_api.connect():
+                self.get_logger().info(f"Successfully connected to robot at {self.robot_ip}")
+                return True
+            else:
+                self.get_logger().warn(f"Failed to connect to robot at {self.robot_ip}")
+                return False
+        return True
+
+    def force_reconnect(self):
+        """Force a reconnection attempt"""
+        self.get_logger().info("Forcing reconnection...")
+        self.robot_status_api.disconnect()
+        self.connection_attempted = False
+        return self.ensure_connection()
+
+    #####################################################
+    ###                 Update State                  ###
+    #####################################################
+
     def update_robot_callbacks(self):
         """Update robot state by calling battery and position updates."""
         self.update_robot_battery()
@@ -106,8 +129,8 @@ class RobotState(Node):
         # Ensure we have a connection
         if self.ensure_connection():
             temp = self.robot_status_api.battery_status()
-            self.robot_battery = temp * 100 # Convert to percentage
-            self.get_logger().info(f"Robot ID: {self.robot_id}, Battery Level: {self.robot_battery}")
+            self.robot_battery = (temp.get('battery_level', None) * 100)
+            self.robot_charge_status = temp.get('charging', False)
 
             # Publish the battery level if we got valid data
             if self.robot_battery is not None:
@@ -115,7 +138,6 @@ class RobotState(Node):
                 battery_msg.data = float(self.robot_battery)
                 self.robot_battery_pub.publish(battery_msg)
         else:
-            # print(f"Robot ID: {self.robot_id}, Not connected to robot")
             self.robot_battery = None
 
     def update_robot_position(self):
@@ -170,24 +192,6 @@ class RobotState(Node):
         else:
             self.get_logger().error(f"Robot ID: {self.robot_id}, Not connected to robot")
             self.robot_navigation = None
-
-    def ensure_connection(self):
-        """Ensure connection to robot with retry logic"""
-        if not self.robot_status_api.connected:
-            if self.robot_status_api.connect():
-                self.get_logger().info(f"Successfully connected to robot at {self.robot_ip}")
-                return True
-            else:
-                self.get_logger().warn(f"Failed to connect to robot at {self.robot_ip}")
-                return False
-        return True
-
-    def force_reconnect(self):
-        """Force a reconnection attempt"""
-        self.get_logger().info("Forcing reconnection...")
-        self.robot_status_api.disconnect()
-        self.connection_attempted = False
-        return self.ensure_connection()
     
     #####################################################
     ###             Service Callbacks                 ###
