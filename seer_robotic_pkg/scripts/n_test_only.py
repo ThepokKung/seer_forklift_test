@@ -7,6 +7,11 @@ from std_srvs.srv import Trigger
 
 from bn_robot_navigation_api import RobotNavigationAPI
 from bn_robot_status_api import RobotStatusAPI
+from bn_pallet_loader import PalletLoader
+
+import os
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
 
 class TestPickPlace(Node):
     def __init__(self):
@@ -31,10 +36,24 @@ class TestPickPlace(Node):
         # API call
         self.navigation_api = RobotNavigationAPI(self.robot_ip)
         self.status_api = RobotStatusAPI(self.robot_ip)
+        # self.pallet_loader = PalletLoader()
+        db_host = os.getenv("DB_HOST")
+        db_port = os.getenv("DB_PORT")
+        db_name = os.getenv("DB_NAME")
+        db_user = os.getenv("DB_USER")
+        db_pass = os.getenv("DB_PASS")
+
+        self.get_logger().info(f'Connecting to database {db_name} at {db_host}:{db_port} as user {db_user}')
+
+        # Create an instance of PalletLoader
+        print("🔧 Initializing PalletLoader...")
+        # self.pallet_loader = PalletLoader(db_host, db_port, db_name, db_user, db_pass)
+        self.pallet_loader = PalletLoader(db_host, db_port, db_name, db_user, db_pass)
 
         # Service server
         self.pick_service = self.create_service(Trigger, 'pick', self.pick_callback)
         self.place_service = self.create_service(Trigger, 'place', self.place_callback)
+        self.test_db_service = self.create_service(Trigger, 'test_db_connection', self.test_db_callback)
         self.test_connection_service = self.create_service(Trigger, 'test_connection', self.test_connection_callback)
 
     def pick_callback(self, request, response):
@@ -426,6 +445,33 @@ class TestPickPlace(Node):
         elapsed_time = time.time() - start_time
         self.get_logger().error(f'{step_name} - ⏰ TIMEOUT after {elapsed_time:.1f}s - never reached status=4 (COMPLETED)')
         return False
+    
+    #####################################################
+    ###                    Test                       ###
+    #####################################################
+
+    def test_db_callback(self, request, response):
+        """Test database connection and return success/failure"""
+        self.get_logger().info('=== Testing Database Connection ===')
+        
+        try:
+            if self.pallet_loader.connect_db():
+                self.get_logger().info('Database connection test successful')
+                pallet_data = self.pallet_loader.get_all_pallet_data()
+                response.success = True
+                response.message = "Database connection test successful"
+                self.get_logger().info('Database connection test successful')
+            else:
+                response.success = False
+                response.message = "Database connection test failed"
+                self.get_logger().error('Database connection test failed')
+                
+        except Exception as e:
+            response.success = False
+            response.message = f"Database connection error: {str(e)}"
+            self.get_logger().error(f'Database connection error: {e}')
+            
+        return response
 
 def main(args=None):
     rclpy.init(args=args)

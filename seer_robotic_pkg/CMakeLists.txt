@@ -28,6 +28,8 @@ ament_python_install_package(${PROJECT_NAME})
 # Install Python executables
 install(PROGRAMS
   # scripts/dummy_script.py
+  ### Dot env ###
+  scripts/.env
   ### Main scripts ###
   scripts/n_robot_state.py
   scripts/n_robot_navigation.py
@@ -38,6 +40,8 @@ install(PROGRAMS
   scripts/bn_pallet_loader.py
   scripts/bn_robot_navigation_api.py
   scripts/bn_robot_status_api.py
+  ### Test scripts ###
+  scripts/t_pallet_loader_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

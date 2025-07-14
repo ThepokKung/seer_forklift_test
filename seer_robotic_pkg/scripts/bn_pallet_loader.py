@@ -23,7 +23,7 @@ class PalletLoader:
             return self.engine
         except OperationalError as e:
             # print(f"❌ DB connection error: {e}")
-            return None
+            return False
 
     def _ensure_connection(self):
         if self.engine is None and self.connect_db() is None:
