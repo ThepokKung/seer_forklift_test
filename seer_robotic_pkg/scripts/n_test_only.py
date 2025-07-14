@@ -14,9 +14,14 @@ class TestPickPlace(Node):
         self.get_logger().info('Test Pick Place node started')
 
         # Declare parameters
-        self.declare_parameter('robot_id', 'robot_01')
-        self.declare_parameter('robot_name', 'SEER_Robot_01')
-        self.declare_parameter('robot_ip', '192.168.0.180')
+        # robot 1
+        # self.declare_parameter('robot_id', 'robot_01')
+        # self.declare_parameter('robot_name', 'SEER_Robot_01')
+        # self.declare_parameter('robot_ip', '192.168.0.180')
+        # robot 2
+        self.declare_parameter('robot_id', 'robot_02')
+        self.declare_parameter('robot_name', 'SEER_Robot_02')
+        self.declare_parameter('robot_ip', '192.168.0.181')
 
         # Parameters
         self.robot_id = self.get_parameter('robot_id').get_parameter_value().string_value
@@ -31,8 +36,6 @@ class TestPickPlace(Node):
         self.pick_service = self.create_service(Trigger, 'pick', self.pick_callback)
         self.place_service = self.create_service(Trigger, 'place', self.place_callback)
         self.test_connection_service = self.create_service(Trigger, 'test_connection', self.test_connection_callback)
-        self.pick_no_wait_service = self.create_service(Trigger, 'pick_no_wait', self.pick_no_wait_callback)
-        self.check_status_service = self.create_service(Trigger, 'check_status', self.check_status_callback)
 
     def pick_callback(self, request, response):
         """Execute complete pick operation with 4 steps and navigation status checking"""
@@ -424,199 +427,6 @@ class TestPickPlace(Node):
         self.get_logger().error(f'{step_name} - ⏰ TIMEOUT after {elapsed_time:.1f}s - never reached status=4 (COMPLETED)')
         return False
 
-    def pick_no_wait_callback(self, request, response):
-        """Execute pick operation without waiting for navigation status (for testing)"""
-        self.get_logger().info('=== Starting Pick Operation (No Wait Mode) ===')
-        
-        try:
-            # Generate unique task ID
-            import time
-            task_id = f"PICK_NO_WAIT_{int(time.time())}"
-            self.get_logger().info(f'Task ID: {task_id}')
-            
-            # Execute all 4 steps without waiting
-            steps = [
-                {
-                    "step": 1,
-                    "description": "ไป LM47 --> LM32 (Set fork height)",
-                    "payload": {
-                        "source_id": "LM47",
-                        "id": "LM32",
-                        "task_id": task_id,
-                        "operation": "ForkHeight",
-                        "end_height": 0.085
-                    }
-                },
-                {
-                    "step": 2,
-                    "description": "เข้าไปยก LM32 --> AP8 (Pick pallet)",
-                    "payload": {
-                        "source_id": "LM32",
-                        "id": "AP8",
-                        "task_id": task_id,
-                        "operation": "ForkLoad",
-                        "end_height": 0.155
-                    }
-                },
-                {
-                    "step": 3,
-                    "description": "ถอยมา AP8 --> LM32 (Retreat with pallet)",
-                    "payload": {
-                        "source_id": "AP8",
-                        "id": "LM32",
-                        "task_id": task_id
-                    }
-                },
-                {
-                    "step": 4,
-                    "description": "กลับ LM32 --> LM47 (Return to home)",
-                    "payload": {
-                        "source_id": "LM32",
-                        "id": "LM47",
-                        "task_id": task_id
-                    }
-                }
-            ]
-            
-            successful_steps = 0
-            for step in steps:
-                step_num = step["step"]
-                description = step["description"]
-                payload = step["payload"]
-                
-                self.get_logger().info(f'Step {step_num}/4: {description}')
-                self.get_logger().info(f'Payload: {payload}')
-                
-                if self.send_command_only(payload, f"Step {step_num}"):
-                    successful_steps += 1
-                    self.get_logger().info(f'Step {step_num} - Command sent successfully')
-                else:
-                    self.get_logger().error(f'Step {step_num} - Failed to send command')
-                    break
-                
-                # Small delay between commands
-                time.sleep(1)
-            
-            if successful_steps == 4:
-                response.success = True
-                response.message = f"All 4 pick commands sent successfully (no wait mode)"
-            else:
-                response.success = False
-                response.message = f"Only {successful_steps}/4 commands sent successfully"
-                
-        except Exception as e:
-            response.success = False
-            response.message = f"Pick no-wait operation error: {str(e)}"
-            self.get_logger().error(f'Pick no-wait operation error: {e}')
-            
-        return response
-
-    def send_command_only(self, payload, step_name):
-        """Send navigation command without waiting for completion"""
-        try:
-            # Connect to navigation API
-            self.get_logger().info(f'{step_name} - Connecting to navigation API at {self.robot_ip}')
-            if not self.navigation_api.connect():
-                self.get_logger().error(f'{step_name} - Failed to connect to navigation API at {self.robot_ip}')
-                return False
-            
-            self.get_logger().info(f'{step_name} - Connected successfully, sending navigation command')
-            
-            # Send the command
-            result = self.navigation_api.navigation_to_goal(
-                id=payload["id"],
-                source_id=payload["source_id"],
-                task_id=payload["task_id"],
-                operation=payload.get("operation"),
-                end_height=payload.get("end_height")
-            )
-            
-            self.get_logger().info(f'{step_name} - Navigation API result: {result}')
-            self.navigation_api.disconnect()
-            
-            if not result:
-                self.get_logger().error(f'{step_name} - Navigation API returned None')
-                return False
-                
-            # Handle different result formats
-            if isinstance(result, dict):
-                success = result.get('success', True)  # Default to True if success key not found
-                if not success:
-                    self.get_logger().error(f'{step_name} - Navigation command failed: {result}')
-                    return False
-            elif not result:
-                self.get_logger().error(f'{step_name} - Navigation command returned False')
-                return False
-            
-            self.get_logger().info(f'{step_name} - Command sent successfully (not waiting for completion)')
-            return True
-                
-        except Exception as e:
-            self.get_logger().error(f'{step_name} - Error: {e}')
-            return False
-
-    def check_status_callback(self, request, response):
-        """Check current navigation status and return detailed information"""
-        self.get_logger().info('=== Checking Current Navigation Status ===')
-        
-        # Status code meanings for reference
-        status_meanings = {
-            0: "NONE (Not started)",
-            1: "WAITING (Queued)",
-            2: "RUNNING (In progress)",
-            3: "SUSPENDED (Paused)",
-            4: "COMPLETED (Success)",
-            5: "FAILED (Error)",
-            6: "CANCELED (Aborted)"
-        }
-        
-        try:
-            # Connect to status API
-            if not self.status_api.connect():
-                response.success = False
-                response.message = "Failed to connect to status API"
-                self.get_logger().error('Status API connection failed')
-                return response
-            
-            self.get_logger().info('Status API connected successfully')
-            
-            # Get navigation status
-            status = self.status_api.get_navigation_status()
-            self.status_api.disconnect()
-            
-            if status is not None:
-                # Handle different status formats
-                if isinstance(status, dict):
-                    task_status = status.get('task_status', status.get('status', 0))
-                    self.get_logger().info(f'Raw status response: {status}')
-                else:
-                    task_status = status
-                
-                # Get status meaning
-                if isinstance(task_status, int):
-                    status_meaning = status_meanings.get(task_status, "UNKNOWN")
-                else:
-                    status_meaning = "INVALID_TYPE"
-                    task_status = -1
-                
-                # EXPLICIT STATUS LOGGING
-                self.get_logger().info(f'📊 CURRENT navigation_status = {task_status} ({status_meaning})')
-                
-                response.success = True
-                response.message = f"Status: {task_status} ({status_meaning})"
-                self.get_logger().info('=== Status Check Completed ===')
-                
-            else:
-                response.success = False
-                response.message = "No status returned from API"
-                self.get_logger().warning('No status returned from API')
-                
-        except Exception as e:
-            response.success = False
-            response.message = f"Status check error: {str(e)}"
-            self.get_logger().error(f'Status check error: {e}')
-            
-        return response
 def main(args=None):
     rclpy.init(args=args)
     node = TestPickPlace()
