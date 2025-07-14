@@ -1,138 +1,162 @@
-import yaml
-import sys
-import os
+import pandas as pd
+from sqlalchemy import create_engine, text
+from sqlalchemy.exc import SQLAlchemyError, OperationalError
+from sqlalchemy.orm import sessionmaker
+
+"""
+PostgreSQL Pallet Loader with SQLAlchemy
+Connects to PostgreSQL database and loads pallet data using SQLAlchemy ORM
+
+Connection parameters:
+    host=DB_HOST,
+    port=DB_PORT,
+    dbname=DB_NAME,
+    user=DB_USER,
+    password=DB_PASS
+"""
 
 class PalletLoader:
-    def __init__(self, yaml_file):
-        self.yaml_file = yaml_file
-        self.pallet_data = self.load_pallet_data()
+    def __init__(self, db_host, db_port, db_name, db_user, db_pass):
+        self.db_host = db_host
+        self.db_port = db_port
+        self.db_name = db_name
+        self.db_user = db_user
+        self.db_pass = db_pass
+        self.engine = None
+        self.Session = None
 
-    def load_pallet_data(self):
-        # Try multiple possible locations for the yaml file
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        
-        # Possible paths to check
-        possible_paths = [
-            # Absolute path if provided
-            self.yaml_file if os.path.isabs(self.yaml_file) else None,
-            # Relative to current directory
-            os.path.join(current_dir, self.yaml_file),
-            # Standard package data directory (source)
-            os.path.join(current_dir, '..', '..', 'data', self.yaml_file),
-            # Standard package data directory (install)
-            os.path.join(current_dir, '..', '..', '..', 'share', 'seer_robotic_pkg', 'data', self.yaml_file),
-            # Fallback locations
-            os.path.join(current_dir, '..', 'data', self.yaml_file),
-            os.path.join(current_dir, 'data', self.yaml_file),
-        ]
-        
-        # Remove None values
-        possible_paths = [path for path in possible_paths if path is not None]
-        
-        # Try each path until we find the file
-        for yaml_path in possible_paths:
-            if os.path.exists(yaml_path):
-                print(f"Loading pallet data from: {yaml_path}")
-                try:
-                    with open(yaml_path, 'r') as file:
-                        return yaml.safe_load(file)
-                except Exception as e:
-                    print(f"Error loading {yaml_path}: {e}")
-                    continue
-        return None
-        
-    def get_pallet_info(self, pallet_id):
-        """Get pallet information by ID, handling different yaml formats"""
-        if self.pallet_data is None:
-            print(f"Warning: No pallet data loaded, cannot find pallet {pallet_id}")
-            return None
-            
-        # Convert pallet_id to string and int for comparison
-        pallet_id_str = str(pallet_id)
+    def connect_db(self):
+        """Establish connection to PostgreSQL database using SQLAlchemy"""
         try:
-            pallet_id_int = int(pallet_id)
-        except (ValueError, TypeError):
-            pallet_id_int = None
-        
-        # Search in pallet data
-        for pallet in self.pallet_data.get('pallet', []):
-            # Check different possible ID formats
-            stored_id = pallet.get('pallet_id')
-            if stored_id is not None:
-                stored_id_str = str(stored_id)
-                # Try exact match (string), numeric match, or ID format match
-                if (stored_id == pallet_id or 
-                    stored_id_str == pallet_id_str or
-                    (pallet_id_int is not None and stored_id == pallet_id_int)):
-                    return pallet
-        return None
-
-    def get_pallet_level_info(self, level):
-        if self.pallet_data is None:
-            print(f"Warning: No pallet data loaded, cannot find pallet level {level}")
-            return None
+            connection_string = f"postgresql://{self.db_user}:{self.db_pass}@{self.db_host}:{self.db_port}/{self.db_name}"
+            self.engine = create_engine(connection_string)
+            self.Session = sessionmaker(bind=self.engine)
             
-        for pallet_level in self.pallet_data.get('pallet_level', []):
-            if pallet_level.get('pallet_level') == level:  # Fixed: use 'pallet_level' instead of 'level'
-                return pallet_level
-        return None
+            # Test connection
+            with self.engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+            
+            return self.engine
+        except OperationalError as e:
+            print(f"❌ Database connection error: {e}")
+            return None
+        except Exception as e:
+            print(f"❌ Unexpected error connecting to database: {e}")
+            return None
 
-    def is_data_loaded(self):
-        """Check if pallet data was successfully loaded"""
-        return self.pallet_data is not None
-
-    def get_all_pallets(self):
-        """Get all pallet information"""
-        if self.pallet_data is None:
-            print("Warning: No pallet data loaded")
-            return []
-        return self.pallet_data.get('pallet', [])
+    def disconnect_db(self):
+        """Close database connection"""
+        if self.engine:
+            self.engine.dispose()
+            self.engine = None
+            self.Session = None
+            print("🔌 Database connection closed")
+    
+    def get_all_pallet_data(self):
+        """Load pallet data from PostgreSQL database"""
+        query = "SELECT pallet_id,pallet_level,pallet_level,pre_station_id FROM pallets;"
+        
+        try:
+            if self.engine is None:
+                if self.connect_db() is None:
+                    return None
+            
+            print("📊 Executing query: SELECT * FROM pallets;")
+            df = pd.read_sql_query(query, self.engine) # type: ignore
+            
+            if df.empty:
+                print("⚠️  No data found in pallets table")
+            else:
+                print(f"✅ Successfully loaded {len(df)} records from pallets table")
+                
+            return df
+            
+        except SQLAlchemyError as e:
+            print(f"❌ SQLAlchemy error: {e}")
+            return None
+        except pd.errors.DatabaseError as e:
+            print(f"❌ Pandas database error: {e}")
+            return None
+        except Exception as e:
+            print(f"❌ Unexpected error loading pallet data: {e}")
+            return None
 
     def get_all_pallet_levels(self):
-        """Get all pallet level information"""
-        if self.pallet_data is None:
-            print("Warning: No pallet data loaded")
-            return []
-        return self.pallet_data.get('pallet_level', [])
-
-    def get_pick_height(self, level):
-        """Get pick height for a specific pallet level"""
-        level_info = self.get_pallet_level_info(level)
-        if level_info:
-            return level_info.get('pick_height', 0.0)
-        return 0.0
-
-    def get_place_height(self, level):
-        """Get place height for a specific pallet level"""
-        level_info = self.get_pallet_level_info(level)
-        if level_info:
-            return level_info.get('place_height', 0.0)
-        return 0.0
-
-    def get_default_height(self, level):
-        """Get default height for a specific pallet level"""
-        level_info = self.get_pallet_level_info(level)
-        if level_info:
-            return level_info.get('default_height', 0.0)
-        return 0.0
-
-    def get_pallet_heights(self, pallet_id):
-        """Get all heights for a specific pallet based on its level"""
-        pallet_info = self.get_pallet_info(pallet_id)
-        if not pallet_info:
-            return None
+        """Load pallet levels from PostgreSQL database"""
+        query = "SELECT * FROM pallet_levels;"
         
-        pallet_level = pallet_info.get('pallet_level')
-        if pallet_level is None:
+        try:
+            if self.engine is None:
+                if self.connect_db() is None:
+                    return None
+            
+            print("📊 Executing query: SELECT * FROM pallet_levels;")
+            df = pd.read_sql_query(query, self.engine) # type: ignore
+            
+            if df.empty:
+                print("⚠️  No data found in pallet_levels table")
+            else:
+                print(f"✅ Successfully loaded {len(df)} records from pallet_levels table")
+            return df
+            
+        except SQLAlchemyError as e:
+            print(f"❌ SQLAlchemy error: {e}")
             return None
+        except pd.errors.DatabaseError as e:
+            print(f"❌ Pandas database error: {e}")
+            return None
+        except Exception as e:
+            print(f"❌ Unexpected error loading pallet data: {e}")
+            return None
+
+    def get_pallet_by_id(self, pallet_id):
+        """Get a specific pallet by its ID"""
+        query = f"SELECT pallet_id,pallet_level,pallet_level,pre_station_id FROM pallets WHERE pallet_id = {pallet_id};"
         
-        level_info = self.get_pallet_level_info(pallet_level)
-        if level_info:
-            return {
-                'pallet_id': pallet_id,
-                'pallet_level': pallet_level,
-                'pick_height': level_info.get('pick_height', 0.0),
-                'place_height': level_info.get('place_height', 0.0),
-                'default_height': level_info.get('default_height', 0.0)
-            }
-        return None
+        try:
+            if self.engine is None:
+                if self.connect_db() is None:
+                    return None
+            
+            # Convert to int to handle numpy.int64 issues
+            pallet_id = int(pallet_id)
+            
+            print(f"📊 Executing query: SELECT * FROM pallets WHERE pallet_id = {pallet_id};")
+            df = pd.read_sql_query(query, self.engine, params={"pallet_id": pallet_id}) # type: ignore
+            
+            if df.empty:
+                print(f"⚠️  No pallet found with ID: {pallet_id}")
+                return None
+            else:
+                print(f"✅ Found pallet with ID: {pallet_id}")
+                return df.iloc[0].to_dict()
+                
+        except Exception as e:
+            print(f"❌ Error getting pallet by ID: {e}")
+            return None
+
+
+    def get_pallets_level(self, pallet_level):
+        """Get all pallets at a specific level"""
+        query = f"SELECT * FROM pallet_levels WHERE pallet_level = {pallet_level};"
+        
+        try:
+            if self.engine is None:
+                if self.connect_db() is None:
+                    return None
+            
+            # Convert to int to handle numpy types
+            pallet_level = int(pallet_level)
+
+            df = pd.read_sql_query(query, self.engine, params={"pallet_levels": pallet_level}) # type: ignore
+
+            if df.empty:
+                print(f"⚠️  No pallets found at level: {pallet_level}")
+                return None
+            else:
+                print(f"✅ Found {len(df)} pallets at level: {pallet_level}")
+                return df
+                
+        except Exception as e:
+            print(f"❌ Error getting pallets by level: {e}")
+            return None

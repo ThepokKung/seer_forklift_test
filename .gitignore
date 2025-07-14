@@ -2,3 +2,7 @@
 seer_robotic/logs
 seer_robotic
 seer_robotic_pkg/scripts/drop
+server
+.env
+
+t_*.py

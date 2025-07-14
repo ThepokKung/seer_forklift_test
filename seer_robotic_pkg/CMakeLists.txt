@@ -25,12 +25,6 @@ find_package(rclpy REQUIRED)                	# python (optional)
 # Install Python Module
 ament_python_install_package(${PROJECT_NAME})
 
-# Install Python backend package
-install(DIRECTORY scripts/backend/
-  DESTINATION lib/${PROJECT_NAME}/backend
-  FILES_MATCHING PATTERN "*.py"
-)
-
 # Install Python executables
 install(PROGRAMS
   # scripts/dummy_script.py
@@ -66,7 +60,7 @@ install(DIRECTORY
   # add directories here
   configs
   launch
-  data
+  # data
   DESTINATION share/${PROJECT_NAME})
 
 ament_package()

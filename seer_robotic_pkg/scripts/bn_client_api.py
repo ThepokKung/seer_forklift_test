@@ -33,7 +33,7 @@ class ClientAPI:
     def send_request(self, req_id, msg_type, payload=None):
         if self.sock is None:
             print("Not connected")
-            return
+            return None
 
         packed_message = self.packer.pack_message(req_id, msg_type, payload)
         # print(f"raw_data = {packed_message}")

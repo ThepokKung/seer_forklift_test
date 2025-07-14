@@ -33,37 +33,7 @@ class RobotNavigation(Node):
         
         # Create RobotNavigationAPI instance
         self.robot_navigation_api = RobotNavigationAPI(self.robot_ip)
-        
-        # Create PalletLoader instance with better path resolution
-        try:
-            # Try to find the pallet.yaml file in different locations
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            possible_yaml_paths = [
-                os.path.join(current_dir, '..', '..', 'data', 'pallet.yaml'),  # Source directory
-                os.path.join(current_dir, '..', '..', '..', 'share', 'seer_robotic_pkg', 'data', 'pallet.yaml'),  # Install directory
-                'pallet.yaml'  # Fallback
-            ]
-            
-            yaml_file_path = 'pallet.yaml'  # Default fallback
-            for path in possible_yaml_paths:
-                if os.path.exists(path):
-                    yaml_file_path = path
-                    break
-            
-            self.pallet_loader = PalletLoader(yaml_file_path)
-            
-            # Check if data was loaded successfully
-            if self.pallet_loader.is_data_loaded():
-                self.get_logger().info(f'PalletLoader initialized with: {yaml_file_path}')
-                self.get_logger().info(f'Loaded {len(self.pallet_loader.get_all_pallets())} pallets')
-            else:
-                self.get_logger().error(f'PalletLoader could not load data from: {yaml_file_path}')
                 
-        except Exception as e:
-            self.get_logger().error(f'Error initializing PalletLoader: {e}')
-            # Create with default fallback - but this will also have no data if file doesn't exist
-            self.pallet_loader = PalletLoader('pallet.yaml')
-        
         # Connection status
         self.connection_attempted = False
         
@@ -77,11 +47,6 @@ class RobotNavigation(Node):
         
         # Timer 
         self.timer = self.create_timer(1.0, self.timer_update_status_callback)
-
-        # Test getting heights for each level
-        for level in [1, 2, 3]:
-            level_info = self.pallet_loader.get_pallet_level_info(level)
-            print(f"Level {level} info: {level_info}")
 
         # Start log
         self.get_logger().info(f'Robot Navigation API initialized for {self.robot_ip}')
@@ -220,51 +185,51 @@ class RobotNavigation(Node):
         
         return response
     
-    def navigation_to_pallet_callback(self, request, response):
-        self.get_logger().info(f'Received request to pick pallet {request.pallet_id} at level {request.pallet_level}')
+    # def navigation_to_pallet_callback(self, request, response):
+    #     self.get_logger().info(f'Received request to pick pallet {request.pallet_id} at level {request.pallet_level}')
 
-        # Ensure connection before making API call
-        if not self.ensure_connection():
-            self.get_logger().error('Failed to connect to robot navigation API')
-            response.success = False
-            response.message = 'Failed to connect to robot for picking pallet'
-            return response
+    #     # Ensure connection before making API call
+    #     if not self.ensure_connection():
+    #         self.get_logger().error('Failed to connect to robot navigation API')
+    #         response.success = False
+    #         response.message = 'Failed to connect to robot for picking pallet'
+    #         return response
         
-        try:
-            # Use PalletLoader to get pallet information
-            pallet_info = self.pallet_loader.get_pallet_info(request.pallet_id)
+    #     try:
+    #         # Use PalletLoader to get pallet information
+    #         pallet_info = self.pallet_loader.get_pallet_info(request.pallet_id)
             
-            if pallet_info is None:
-                response.success = False
-                response.message = f'Pallet ID {request.pallet_id} not found'
-                return response
+    #         if pallet_info is None:
+    #             response.success = False
+    #             response.message = f'Pallet ID {request.pallet_id} not found'
+    #             return response
             
-            # Log pallet information
-            self.get_logger().info(f'Found pallet info: {pallet_info}')
+    #         # Log pallet information
+    #         self.get_logger().info(f'Found pallet info: {pallet_info}')
             
-            pallet_location = pallet_info.get('location_id', f'PALLET_{request.pallet_id}')
+    #         pallet_location = pallet_info.get('location_id', f'PALLET_{request.pallet_id}')
             
-            result = self.robot_navigation_api.navigation_to_goal(
-                id=pallet_location,
-                source_id=request.get('source_id', 'current'),  # Use current position if not specified
-                task_id=f'pick_pallet_{request.pallet_id}_{request.pallet_level}'
-            )
+    #         result = self.robot_navigation_api.navigation_to_goal(
+    #             id=pallet_location,
+    #             source_id=request.get('source_id', 'current'),  # Use current position if not specified
+    #             task_id=f'pick_pallet_{request.pallet_id}_{request.pallet_level}'
+    #         )
             
-            if isinstance(result, dict):
-                response.success = result.get('success', True)
-                response.message = result.get('message', f'Navigation to pallet {request.pallet_id} initiated')
-            elif result is not None:
-                response.success = True
-                response.message = f'Navigation to pallet {request.pallet_id} at level {request.pallet_level} initiated'
-            else:
-                response.success = False
-                response.message = 'Failed to initiate navigation to pallet - no response from API'
-        except Exception as e:
-            self.get_logger().error(f'Error during picking pallet: {e}')
-            response.success = False
-            response.message = f'Error during picking pallet: {e}'
+    #         if isinstance(result, dict):
+    #             response.success = result.get('success', True)
+    #             response.message = result.get('message', f'Navigation to pallet {request.pallet_id} initiated')
+    #         elif result is not None:
+    #             response.success = True
+    #             response.message = f'Navigation to pallet {request.pallet_id} at level {request.pallet_level} initiated'
+    #         else:
+    #             response.success = False
+    #             response.message = 'Failed to initiate navigation to pallet - no response from API'
+    #     except Exception as e:
+    #         self.get_logger().error(f'Error during picking pallet: {e}')
+    #         response.success = False
+    #         response.message = f'Error during picking pallet: {e}'
         
-        return response
+    #     return response
     
     #####################################################
     ###                    Test                       ###
