@@ -36,25 +36,45 @@ class TestPickPlace(Node):
         # API call
         self.navigation_api = RobotNavigationAPI(self.robot_ip)
         self.status_api = RobotStatusAPI(self.robot_ip)
-        # self.pallet_loader = PalletLoader()
-        db_host = os.getenv("DB_HOST")
-        db_port = os.getenv("DB_PORT")
-        db_name = os.getenv("DB_NAME")
-        db_user = os.getenv("DB_USER")
-        db_pass = os.getenv("DB_PASS")
-
-        self.get_logger().info(f'Connecting to database {db_name} at {db_host}:{db_port} as user {db_user}')
-
-        # Create an instance of PalletLoader
-        print("🔧 Initializing PalletLoader...")
-        # self.pallet_loader = PalletLoader(db_host, db_port, db_name, db_user, db_pass)
-        self.pallet_loader = PalletLoader(db_host, db_port, db_name, db_user, db_pass)
+        
+        # Database configuration (lazy loading)
+        self.db_config = {
+            'host': os.getenv("DB_HOST"),
+            'port': os.getenv("DB_PORT"),
+            'name': os.getenv("DB_NAME"),
+            'user': os.getenv("DB_USER"),
+            'pass': os.getenv("DB_PASS")
+        }
+        
+        # Initialize PalletLoader as None - will be created when needed
+        self._pallet_loader = None
+        
+        self.get_logger().info(f'Database config ready: {self.db_config["name"]} at {self.db_config["host"]}:{self.db_config["port"]} as user {self.db_config["user"]}')
 
         # Service server
         self.pick_service = self.create_service(Trigger, 'pick', self.pick_callback)
         self.place_service = self.create_service(Trigger, 'place', self.place_callback)
         self.test_db_service = self.create_service(Trigger, 'test_db_connection', self.test_db_callback)
         self.test_connection_service = self.create_service(Trigger, 'test_connection', self.test_connection_callback)
+
+    @property
+    def pallet_loader(self):
+        """Lazy initialization of PalletLoader"""
+        if self._pallet_loader is None:
+            self.get_logger().info('🔧 Initializing PalletLoader on first use...')
+            try:
+                self._pallet_loader = PalletLoader(
+                    self.db_config['host'],
+                    self.db_config['port'],
+                    self.db_config['name'],
+                    self.db_config['user'],
+                    self.db_config['pass']
+                )
+                self.get_logger().info('✅ PalletLoader initialized successfully')
+            except Exception as e:
+                self.get_logger().error(f'❌ Failed to initialize PalletLoader: {e}')
+                raise
+        return self._pallet_loader
 
     def pick_callback(self, request, response):
         """Execute complete pick operation with 4 steps and navigation status checking"""
@@ -455,21 +475,38 @@ class TestPickPlace(Node):
         self.get_logger().info('=== Testing Database Connection ===')
         
         try:
-            if self.pallet_loader.connect_db():
-                self.get_logger().info('Database connection test successful')
-                pallet_data = self.pallet_loader.get_all_pallet_data()
-                response.success = True
-                response.message = "Database connection test successful"
-                self.get_logger().info('Database connection test successful')
+            # This will trigger lazy initialization
+            self.get_logger().info('Accessing PalletLoader (will initialize if needed)...')
+            loader = self.pallet_loader
+            
+            # Test the connection
+            self.get_logger().info('Testing database connection...')
+            connection_result = loader.connect_db()
+            
+            if connection_result:
+                self.get_logger().info('✅ Database connection test successful')
+                
+                # Try to load some data
+                self.get_logger().info('Testing data retrieval...')
+                pallet_data = loader.get_all_pallet_data()
+                
+                if pallet_data is not None and not pallet_data.empty:
+                    response.success = True
+                    response.message = f"Database test successful. Found {len(pallet_data)} pallet records."
+                    self.get_logger().info(f'✅ Database test successful. Found {len(pallet_data)} pallet records.')
+                else:
+                    response.success = True
+                    response.message = "Database connection successful but no data found."
+                    self.get_logger().warning('⚠️  Database connection successful but no data found.')
             else:
                 response.success = False
                 response.message = "Database connection test failed"
-                self.get_logger().error('Database connection test failed')
+                self.get_logger().error('❌ Database connection test failed')
                 
         except Exception as e:
             response.success = False
-            response.message = f"Database connection error: {str(e)}"
-            self.get_logger().error(f'Database connection error: {e}')
+            response.message = f"Database test error: {str(e)}"
+            self.get_logger().error(f'💥 Database test error: {e}')
             
         return response
 
