@@ -33,7 +33,7 @@ class PalletLoader:
         self._ensure_connection()
         query = text("""
             SELECT pallet_id, pallet_level, station_id, pre_station_id
-              FROM pallets
+              FROM pallet
         """)
         try:
             df = pd.read_sql_query(query, self.engine) # type: ignore
@@ -48,7 +48,7 @@ class PalletLoader:
         pallet_id = int(pallet_id)
         query = text("""
             SELECT pallet_id, pallet_level, station_id, pre_station_id
-              FROM pallets
+              FROM pallet
              WHERE pallet_id = :pallet_id
         """)
         try:
@@ -63,7 +63,7 @@ class PalletLoader:
 
     def get_all_pallet_levels(self):
         self._ensure_connection()
-        query = text("SELECT * FROM pallet_levels;")
+        query = text("SELECT * FROM pallet_level;")
         try:
             df = pd.read_sql_query(query, self.engine) # type: ignore
             # print(f"✅ Loaded {len(df)} levels")
@@ -77,7 +77,7 @@ class PalletLoader:
         level = int(level)
         query = text("""
             SELECT * 
-              FROM pallet_levels 
+              FROM pallet_level 
              WHERE pallet_level = :level
         """)
         try:

@@ -10,7 +10,7 @@ import os
 
 # srv import
 from std_srvs.srv import Trigger
-from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus, GetNavigationPath, NavigationParameter
+from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus, GetNavigationPath, NavigationParameter,Pickpallet, CheckRobotCurrentLocation
 
 # backend imports
 from bn_robot_navigation_api import RobotNavigationAPI
@@ -41,9 +41,11 @@ class RobotNavigation(Node):
         self.robot_test_service = self.create_service(Trigger, 'robot_navigation/test_go', self.test_systemp) # Test only
         self.get_navigation_path_service = self.create_service(GetNavigationPath, 'robot_navigation/get_navigation_path', self.get_navigation_path_callback)
         self.navigation_to_station_service = self.create_service(NavigationParameter, 'robot_navigation/navigation_to_station', self.navigation_to_station_callback)
+        self.pickup_pallet_for_init_service = self.create_service(Pickpallet, 'robot_navigation/pickup_pallet_for_init', self.pickup_pallet_for_init_callback)
 
         # Service client
         self.check_robot_navigation_status_client = self.create_client(CheckRobotNavigationTaskStatus,'check_robot_navigation_status')
+        self.check_robot_current_location_client = self.create_client(CheckRobotNavigationTaskStatus, 'check_robot_current_location')
         
         # Timer 
         self.timer = self.create_timer(1.0, self.timer_update_status_callback)
@@ -74,7 +76,6 @@ class RobotNavigation(Node):
             self.get_logger().error(f"Exception during connection: {e}")
             return False
     
-
     #####################################################
     ###                     Timer                     ###
     #####################################################
@@ -105,6 +106,31 @@ class RobotNavigation(Node):
             if response is not None:
                 # self.get_logger().info(f'Task status: {response.task_status}, Success: {response.success}')
                 return response.task_status
+            else:
+                self.get_logger().error('Service call failed - no response')
+        except Exception as e:
+            self.get_logger().error(f'Service call exception: {e}')
+        return None
+    
+    def call_check_robot_current_location(self):
+        """Call the check_robot_current_location service"""
+        if not self.check_robot_current_location_client.service_is_ready():
+            self.get_logger().warn('check_robot_current_location service not available')
+            return None
+
+        request = CheckRobotCurrentLocation.Request()
+        future = self.check_robot_current_location_client.call_async(request)
+
+        # Add callback to handle the response instead of blocking
+        future.add_done_callback(self.handle_current_location_response)
+
+    def handle_current_location_response(self, future):
+        """Handle the response from the current location service"""
+        try:
+            response = future.result()
+            if response is not None:
+                # self.get_logger().info(f'Current location: {response.current_location}, Success: {response.success}')
+                return response.current_location
             else:
                 self.get_logger().error('Service call failed - no response')
         except Exception as e:
@@ -185,51 +211,8 @@ class RobotNavigation(Node):
         
         return response
     
-    # def navigation_to_pallet_callback(self, request, response):
-    #     self.get_logger().info(f'Received request to pick pallet {request.pallet_id} at level {request.pallet_level}')
-
-    #     # Ensure connection before making API call
-    #     if not self.ensure_connection():
-    #         self.get_logger().error('Failed to connect to robot navigation API')
-    #         response.success = False
-    #         response.message = 'Failed to connect to robot for picking pallet'
-    #         return response
-        
-    #     try:
-    #         # Use PalletLoader to get pallet information
-    #         pallet_info = self.pallet_loader.get_pallet_info(request.pallet_id)
-            
-    #         if pallet_info is None:
-    #             response.success = False
-    #             response.message = f'Pallet ID {request.pallet_id} not found'
-    #             return response
-            
-    #         # Log pallet information
-    #         self.get_logger().info(f'Found pallet info: {pallet_info}')
-            
-    #         pallet_location = pallet_info.get('location_id', f'PALLET_{request.pallet_id}')
-            
-    #         result = self.robot_navigation_api.navigation_to_goal(
-    #             id=pallet_location,
-    #             source_id=request.get('source_id', 'current'),  # Use current position if not specified
-    #             task_id=f'pick_pallet_{request.pallet_id}_{request.pallet_level}'
-    #         )
-            
-    #         if isinstance(result, dict):
-    #             response.success = result.get('success', True)
-    #             response.message = result.get('message', f'Navigation to pallet {request.pallet_id} initiated')
-    #         elif result is not None:
-    #             response.success = True
-    #             response.message = f'Navigation to pallet {request.pallet_id} at level {request.pallet_level} initiated'
-    #         else:
-    #             response.success = False
-    #             response.message = 'Failed to initiate navigation to pallet - no response from API'
-    #     except Exception as e:
-    #         self.get_logger().error(f'Error during picking pallet: {e}')
-    #         response.success = False
-    #         response.message = f'Error during picking pallet: {e}'
-        
-    #     return response
+    def pickup_pallet_for_init_callback(self, request, response):
+        pass
     
     #####################################################
     ###                    Test                       ###
