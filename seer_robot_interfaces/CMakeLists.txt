@@ -18,7 +18,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/CheckRobotNavigationTaskStatus.srv"
   "srv/GetNavigationPath.srv"
   "srv/NavigationParameter.srv"
-  "srv/Pickpallet.srv"
+  "srv/PalletID.srv"
   "srv/CheckRobotCurrentLocation.srv"
   DEPENDENCIES geometry_msgs # Add packages that above messages depend on, in this case geometry_msgs for Sphere.msg
 )

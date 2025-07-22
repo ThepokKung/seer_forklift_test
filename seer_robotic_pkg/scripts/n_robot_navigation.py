@@ -10,11 +10,12 @@ import os
 
 # srv import
 from std_srvs.srv import Trigger
-from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus, GetNavigationPath, NavigationParameter,Pickpallet, CheckRobotCurrentLocation
+from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus, GetNavigationPath, NavigationParameter,PalletID, CheckRobotCurrentLocation
 
 # backend imports
 from bn_robot_navigation_api import RobotNavigationAPI
 from bn_pallet_loader import PalletLoader
+from bn_json_command_builder import JsonCommandBuilder
 
 class RobotNavigation(Node):
     def __init__(self):
@@ -33,15 +34,19 @@ class RobotNavigation(Node):
         
         # Create RobotNavigationAPI instance
         self.robot_navigation_api = RobotNavigationAPI(self.robot_ip)
-                
+        
         # Connection status
         self.connection_attempted = False
+
+        # Command builder
+        self.json_command_builder = JsonCommandBuilder()
         
         # Service server
-        self.robot_test_service = self.create_service(Trigger, 'robot_navigation/test_go', self.test_systemp) # Test only
-        self.get_navigation_path_service = self.create_service(GetNavigationPath, 'robot_navigation/get_navigation_path', self.get_navigation_path_callback)
-        self.navigation_to_station_service = self.create_service(NavigationParameter, 'robot_navigation/navigation_to_station', self.navigation_to_station_callback)
-        self.pickup_pallet_for_init_service = self.create_service(Pickpallet, 'robot_navigation/pickup_pallet_for_init', self.pickup_pallet_for_init_callback)
+        # self.create_service(Trigger, 'robot_navigation/test_go', self.test_systemp) # Test only
+        # self.create_service(PalletID, 'robot_navigation/test_go', self.test_systemp) # Test only
+        self.create_service(GetNavigationPath, 'robot_navigation/get_navigation_path', self.get_navigation_path_callback)
+        self.create_service(NavigationParameter, 'robot_navigation/navigation_to_station', self.navigation_to_station_callback)
+        self.create_service(PalletID, 'robot_navigation/pickup_pallet_for_init', self.pickup_pallet_for_init_callback)
 
         # Service client
         self.check_robot_navigation_status_client = self.create_client(CheckRobotNavigationTaskStatus,'check_robot_navigation_status')
@@ -218,20 +223,23 @@ class RobotNavigation(Node):
     ###                    Test                       ###
     #####################################################
 
-    def test_systemp(self, request, response):
-        result = self.Test_go()
-        response.success = result
-        response.message = "Test navigation path requested"
-        return response
+    # def test_systemp(self, request, response):
+    #     result = self.Test_go()
+    #     response.success = result
+    #     response.message = "Test navigation path requested"
+    #     return response
 
-    def Test_go(self):
-        if self.ensure_connection():
-            temp = self.robot_navigation_api.get_navigation_path(id2go='LM52')
-            # print(f"Navigation path: {temp}")
+    # def test_systemp(self, request, response):
+    #     id2go = request.pallet_id
+    #     result = self.Test_go(current_station, id2go, task_id)
+    #     response.success = result
+    #     response.message = "Test navigation path requested"
+    #     return response
 
-            # self.robot_navigation_api.navigation_to_goal(id='LM53', source_id='LM52', task_id='TestTask123')
-            # self.get_logger().info("Navigation path requested successfully")
-        return True
+    # def Test_go(self, current_station, id2go, task_id):
+    #     if self.ensure_connection():
+    #         self.json_command_builder.test_command(current_station,id2go,task_id)
+    #     return True
 
 def main(args=None):
     rclpy.init(args=args)

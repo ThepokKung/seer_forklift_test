@@ -174,3 +174,23 @@ class RobotNavigationAPI:
             return data
 
         return None
+    
+    def designated_navigation(self,json_command):
+        if not self.connected:
+            print("Not connected to robot. Call connect() first.")
+            return None
+
+        req_id = 1
+        msg_type = 3066
+        self.client.send_request(req_id, msg_type, payload=json_command)
+        temp = self.client.receive_response()
+        if temp is None:
+            return None
+
+        req_id, msg_type, data = temp
+
+        # Return the full data if request was successful
+        if data.get('ret_code') == 0:
+            return data
+
+        return None

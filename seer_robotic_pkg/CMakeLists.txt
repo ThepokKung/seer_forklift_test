@@ -40,8 +40,9 @@ install(PROGRAMS
   scripts/bn_pallet_loader.py
   scripts/bn_robot_navigation_api.py
   scripts/bn_robot_status_api.py
+  scripts/bn_json_command_builder.py
   ### Test scripts ###
-  scripts/t_pallet_loader_node.py
+  # scripts/t_pallet_loader_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
