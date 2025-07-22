@@ -5,13 +5,17 @@ from rclpy.node import Node
 
 from std_srvs.srv import Trigger
 
+import json
+import time
+
 from bn_robot_navigation_api import RobotNavigationAPI
 # from bn_robot_status_api import RobotStatusAPI
 from bn_pallet_loader import PalletLoader
 from bn_json_command_builder import JsonCommandBuilder
 
-from seer_robot_interfaces.srv import PalletID,CheckRobotCurrentLocation,GetNavigationPath
+from seer_robot_interfaces.srv import PalletID,CheckRobotCurrentLocation,GetNavigationPath,CheckRobotNavigationTaskStatus
 
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 
 import os
 from dotenv import load_dotenv
@@ -67,7 +71,10 @@ class TestNode(Node):
         self.create_service(GetNavigationPath,'test_node/id2go', self.test_id2go_callback)
 
         # Service client
-        self.check_robot_current_location_client = self.create_client(CheckRobotCurrentLocation, 'check_robot_current_location')
+        self.check_robot_current_location_cbg = MutuallyExclusiveCallbackGroup()
+        self.check_robot_current_location_client = self.create_client(CheckRobotCurrentLocation, 'check_robot_current_location', callback_group=self.check_robot_current_location_cbg)
+        self.check_robot_navigation_cbg = MutuallyExclusiveCallbackGroup()
+        self.check_robot_navigation_client = self.create_client(CheckRobotNavigationTaskStatus, 'check_robot_navigation_status', callback_group=self.check_robot_navigation_cbg)
 
     def ensure_connection(self):
         """Ensure connection to robot navigation API"""
@@ -101,7 +108,8 @@ class TestNode(Node):
             return response
 
         try:
-            curren_location_temp = self.call_check_robot_current_location()
+            curren_location_temp = self.call_check_robot_current_location_sync()
+            self.get_logger().warning(f'Current location: {curren_location_temp}')
             if curren_location_temp is None:
                 response.success = False
                 response.message = "Failed to get current robot location."
@@ -109,8 +117,57 @@ class TestNode(Node):
                 self.get_logger().error(response.message)
                 return response
             
-            command = self.json_command_builder.test_command(curren_location_temp, id2go_temp, "task_123")
-            self.robot_navigation_api.designated_navigation(command)
+            # Get the list of navigation commands
+            command_list = self.json_command_builder.test_command(curren_location_temp, id2go_temp, "task_123")
+            self.get_logger().info(f"Generated {len(command_list)} navigation commands")
+            
+            # Execute each command and wait for completion
+            for step_num, command_dict in enumerate(command_list, 1):
+                # Convert command to JSON string
+                command_json = json.dumps(command_dict)
+                self.get_logger().info(f"Executing Step {step_num}: {command_json}")
+                
+                # Send the navigation command
+                test = self.robot_navigation_api.navigation_with_json(command_json)
+                self.get_logger().info(f"response from navigation: {test}")
+
+                # Wait for this step to complete
+                # First, wait for status to change from 4 (if it was already 4) to something else (like 2 = in progress)
+                robot_navigation_status = self.call_check_robot_navigation_sync()
+                self.get_logger().info(f"Step {step_num} - Initial status: {robot_navigation_status}")
+                
+                # If status is already 4, wait for it to change to indicate the new task has started
+                if robot_navigation_status == 4:
+                    self.get_logger().info(f"Step {step_num} - Status is 4, waiting for task to start...")
+                    while robot_navigation_status == 4:
+                        time.sleep(0.5)
+                        robot_navigation_status = self.call_check_robot_navigation_sync()
+                        if robot_navigation_status is not None and robot_navigation_status != 4:
+                            self.get_logger().info(f"Step {step_num} - Task started, status changed to: {robot_navigation_status}")
+                            break
+                        elif robot_navigation_status is None:
+                            self.get_logger().warn(f"Step {step_num} - Failed to get navigation status")
+                            break
+                
+                # Now wait for the task to complete (status becomes 4)
+                while robot_navigation_status != 4:
+                    robot_navigation_status = self.call_check_robot_navigation_sync()
+                    if robot_navigation_status is not None:
+                        self.get_logger().info(f"Step {step_num} - Robot navigation status: {robot_navigation_status}")
+                        if robot_navigation_status == 4:
+                            self.get_logger().info(f"Step {step_num} completed successfully")
+                            break
+                    else:
+                        self.get_logger().warn(f"Step {step_num} - Failed to get navigation status")
+                        break
+                    
+                    # Add a small delay to avoid overwhelming the service
+                    time.sleep(0.5)
+
+            response.success = True
+            response.message = f"All {len(command_list)} navigation commands executed successfully."
+            response.path = [curren_location_temp, id2go_temp]
+            return response
 
         except Exception as e:
             response.success = False
@@ -118,36 +175,47 @@ class TestNode(Node):
             response.path = [id2go_temp]
             self.get_logger().error(response.message)
             return response
-
-        return response
-    
-    def call_check_robot_current_location(self):
-        """Call the check_robot_current_location service"""
+            
+    def call_check_robot_current_location_sync(self):
+        """Call the check_robot_current_location service synchronously"""
         if not self.check_robot_current_location_client.service_is_ready():
             self.get_logger().warn('check_robot_current_location service not available')
             return None
 
         request = CheckRobotCurrentLocation.Request()
-        future = self.check_robot_current_location_client.call_async(request)
-
-        # Add callback to handle the response instead of blocking
-        future.add_done_callback(self.handle_current_location_response)
-
-    def handle_current_location_response(self, future):
-        """Handle the response from the current location service"""
         try:
+            future = self.check_robot_current_location_client.call_async(request)
+            rclpy.spin_until_future_complete(self, future)
             response = future.result()
-            if response is not None:
-                # self.get_logger().info(f'Current location: {response.current_location}, Success: {response.success}')
-                return response.current_location
+            if response is not None and response.success:
+                return response.robot_current_station
             else:
-                self.get_logger().error('Service call failed - no response')
+                self.get_logger().error('Service call failed or returned unsuccessful')
+                return None
         except Exception as e:
             self.get_logger().error(f'Service call exception: {e}')
-        return None
+            return None
         
-    
+    def call_check_robot_navigation_sync(self):
+        """Call the check_robot_navigation service synchronously"""
+        if not self.check_robot_navigation_client.service_is_ready():
+            self.get_logger().warn('check_robot_navigation service not available')
+            return None
 
+        request = CheckRobotNavigationTaskStatus.Request()
+        try:
+            future = self.check_robot_navigation_client.call_async(request)
+            rclpy.spin_until_future_complete(self, future)
+            response = future.result()
+            if response is not None and response.success:
+                return response.task_status
+            else:
+                self.get_logger().error('Service call failed or returned unsuccessful')
+                return None
+        except Exception as e:
+            self.get_logger().error(f'Service call exception: {e}')
+            return None
+        
 def main(args=None):
     rclpy.init(args=args)
     node = TestNode()

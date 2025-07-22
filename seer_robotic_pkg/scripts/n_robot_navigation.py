@@ -50,7 +50,7 @@ class RobotNavigation(Node):
 
         # Service client
         self.check_robot_navigation_status_client = self.create_client(CheckRobotNavigationTaskStatus,'check_robot_navigation_status')
-        self.check_robot_current_location_client = self.create_client(CheckRobotNavigationTaskStatus, 'check_robot_current_location')
+        self.check_robot_current_location_client = self.create_client(CheckRobotCurrentLocation, 'check_robot_current_location')
         
         # Timer 
         self.timer = self.create_timer(1.0, self.timer_update_status_callback)

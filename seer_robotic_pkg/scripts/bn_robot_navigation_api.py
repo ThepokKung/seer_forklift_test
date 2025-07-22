@@ -194,3 +194,47 @@ class RobotNavigationAPI:
             return data
 
         return None
+    
+
+    def navigation_with_json(self,command):
+        if not self.connected:
+            print("Not connected to robot. Call connect() first.")
+            return None
+            
+        print(f"Sending navigation command: {command}")
+        req_id = 1
+        msg_type = 3051
+        
+        try:
+            # Parse JSON string to dictionary if needed
+            if isinstance(command, str):
+                import json
+                payload = json.loads(command)
+            else:
+                payload = command
+                
+            print(f"Parsed payload: {payload}")
+            
+            self.client.send_request(req_id, msg_type, payload=payload)
+            print("Command sent, waiting for response...")
+            
+            temp = self.client.receive_response()
+            if temp is None:
+                print("ERROR: No response received from robot")
+                return None
+
+            req_id, msg_type, data = temp
+            print(f"Received response - req_id: {req_id}, msg_type: {msg_type}, data: {data}")
+
+            # Return the full data if request was successful
+            if data.get('ret_code') == 0:
+                print("SUCCESS: Navigation command accepted")
+                return data
+            else:
+                print(f"ERROR: Robot returned error code: {data.get('ret_code')}")
+                print(f"Full response data: {data}")
+                return None
+                
+        except Exception as e:
+            print(f"ERROR: Exception during navigation command: {e}")
+            return None

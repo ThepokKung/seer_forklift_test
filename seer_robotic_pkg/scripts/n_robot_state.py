@@ -171,15 +171,12 @@ class RobotState(Node):
         return response
     
     def check_robot_current_location_callback(self, request, response):
-        response.success = True
         if self.robot_current_station is not None:
-            response.current_position = CheckRobotCurrentLocation.Response()
             response.success = True
-            response.current_position.robot_current_station = self.robot_current_station
+            response.robot_current_station = self.robot_current_station
         else:
-            response.current_position = CheckRobotCurrentLocation.Response()
             response.success = False
-            response.current_position.robot_current_station = "Unknown"
+            response.robot_current_station = "Unknown"
         return response
 
 def main(args=None):

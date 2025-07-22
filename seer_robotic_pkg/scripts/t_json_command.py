@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
+import json
+
 def main():
     # Initialize the JsonCommandBuilder
     json_command_builder = JsonCommandBuilder()
@@ -44,35 +46,40 @@ def main():
     print("=" * 70)
     try:
         # Example usage of the pallet_pick_init_command method
-        current_station_id = "LM53"
+        current_station_id = "LM44"
         # pallet_data = {
         #     "pre_station_id": "LM43",
         #     "station_id": "AP9",
         #     "pick_height": 0.5,
         #     "default_height": 0.25
         # }
-        pallet_data = pallet_loader.get_pallet_data_id(8)
+        pallet_data = pallet_loader.get_pallet_data_id(10)
         task_id = "task_123"
 
-        command = json_command_builder.pallet_pick_init_command(current_station_id, pallet_data, task_id)
-        print(command)
+        command_list = json_command_builder.pallet_pick_init_command(current_station_id, pallet_data, task_id)
+        
+        # Now iterate through each step command
+        for step_num, step_command in enumerate(command_list, 1):
+            step_json = json.dumps(step_command)
+            print(f"Step {step_num}: {step_json}")
+            
     except Exception as e:
         print(f"An error occurred: {e}")
     finally:
         print("=" * 70)
 
-    try:
-        # Example usage of the pallet_pick_init_command method
-        current_station_id = "LM54"
-        id2g0 = "LM52"
-        task_id = "task_456"
+    # try:
+    #     # Example usage of the pallet_pick_init_command method
+    #     current_station_id = "LM47"
+    #     id2g0 = "LM44"
+    #     task_id = "task_456"
 
-        command = json_command_builder.test_command(current_station_id, id2g0, task_id)
-        print(command)
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    finally:
-        print("=" * 70)
+    #     command = json_command_builder.test_command(current_station_id, id2g0, task_id)
+    #     print(json.dumps(command))
+    # except Exception as e:
+    #     print(f"An error occurred: {e}")
+    # finally:
+    #     print("=" * 70)
 
 if __name__ == "__main__":
     main()
