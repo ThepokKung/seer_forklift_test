@@ -126,8 +126,8 @@ class JsonCommandBuilder:
                     "source_id": "AP1", #Pre Manipulator Station
                     "id": "LM22", #Pre Manipulator Station
                     "task_id": task_id,
-                    "operation": "ForkHeight",
-                    "end_height": pallet_data["running_height"] # Fork back to default height
+                    # "operation": "ForkHeight",
+                    # "end_height": pallet_data["running_height"] # Fork back to default height
                 }
         ]
         
