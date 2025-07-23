@@ -73,7 +73,8 @@ class PalletLoader:
            "pick_height": temp_level['pick_height'],
            "place_height": temp_level['place_height'],
            "default_height": temp_level['default_height'],
-           "running_height": temp_level['running_height']
+           "running_height": temp_level['running_height'],
+           "down_height": temp_level['down_height']
        }
 
     #####################################################
@@ -110,7 +111,7 @@ class PalletLoader:
         level = int(level)
         query = text("""
             SELECT
-                pick_height, place_height, default_height, running_height
+                pick_height, place_height, default_height, running_height, down_height
             FROM
                 pallet_level
             WHERE
