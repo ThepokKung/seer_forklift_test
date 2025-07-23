@@ -9,7 +9,8 @@ class JsonCommandBuilder:
             "pallet_level": None,
             "pick_height": None,
             "place_height": None,
-            "default_height": None
+            "default_height": None,
+            "running_height": None
         }
 
     def pallet_pick_init_command(self,current_station_id,pallet_data,task_id):
@@ -20,7 +21,8 @@ class JsonCommandBuilder:
                     "source_id": current_station_id,
                     "task_id": task_id,
                     "operation": "ForkHeight",
-                    "end_height": pallet_data["default_height"]
+                    # "end_height": pallet_data["default_height"]
+                    "fork_mid_height": pallet_data["default_height"]
                 },
                 ### Step 2 : Move to Pallet Station
                 {
@@ -30,13 +32,13 @@ class JsonCommandBuilder:
                     "operation": "ForkLoad",
                     "end_height": pallet_data["pick_height"]
                 },
-                ### Step 3 : Move to Pre Station
+                ### Step 3 : Move to Pre Station and down height to running height
                 {
                     "id": pallet_data["pre_station_id"],
                     "source_id": pallet_data["station_id"],
                     "task_id": task_id,
                     "operation": "ForkHeight",
-                    "end_height": 0.125
+                    "end_height": pallet_data["running_height"] # Test
                 }
         ]
         return command
@@ -44,13 +46,13 @@ class JsonCommandBuilder:
     def pallet_place_init_command(self,current_station_id,pallet_data,task_id):
         command = [
                 ### Step 1 : Move to Pre Station
-                {
-                    "id": pallet_data["pre_station_id"],
-                    "source_id": current_station_id,
-                    "task_id": task_id,
-                    "operation": "ForkHeight",
-                    "end_height": pallet_data["pick_height"]
-                },
+                # {
+                #     "id": pallet_data["pre_station_id"],
+                #     "source_id": current_station_id,
+                #     "task_id": task_id,
+                #     "operation": "ForkHeight",
+                #     "end_height": pallet_data["pick_height"]
+                # },
                 ### Step 2 : Move to Pallet Station
                 {
                     "id": pallet_data["station_id"],
@@ -65,10 +67,9 @@ class JsonCommandBuilder:
                     "source_id": pallet_data["station_id"],
                     "task_id": task_id,
                     "operation": "ForkHeight",
-                    "end_height": 0.125
+                    "end_height": 0.15
                 }
             ]
-        
         return command
     
     def pallet_pick_to_manipulator_command(self, current_station_id, pallet_data, task_id):
@@ -90,12 +91,11 @@ class JsonCommandBuilder:
                     "end_height": pallet_data["pick_height"]
                 }
         ]
-        
         return command
 
     def test_command(self, current_station_id, station_2go, task_id):
         command = [
-                ### Step 1 :Move to Pr  e Station
+                ### Step 1 :Move to Pre Station
                 {
                     "source_id": current_station_id,
                     "id": station_2go,
