@@ -180,7 +180,8 @@ class TestNode(Node):
             self.get_logger().error(response.message)
             return response
 
-    def test_pallet_pick_init_callback(self, request, response):
+    def _execute_pallet_operation(self, request, response, command_builder_func):
+        """Generic helper for pallet operations with different command builders"""
         self.get_logger().info(f'Received request to test ID2GO: {request.pallet_id}')
         pallet_id_temp = request.pallet_id
 
@@ -203,8 +204,8 @@ class TestNode(Node):
                 self.get_logger().error(response.message)
                 return response
             
-            # Get the list of navigation commands
-            command_list = self.json_command_builder.pallet_pick_init_command(curren_location_temp, pallet_data, "task_123")
+            # Get the list of navigation commands using the provided command builder function
+            command_list = command_builder_func(curren_location_temp, pallet_data, "task_123")
             self.get_logger().info(f"Generated {len(command_list)} navigation commands")
             
             # Execute each command and wait for completion
@@ -218,7 +219,6 @@ class TestNode(Node):
                 self.get_logger().info(f"response from navigation: {test}")
 
                 # Wait for this step to complete
-                # First, wait for status to change from 4 (if it was already 4) to something else (like 2 = in progress)
                 robot_navigation_status = self.call_check_robot_navigation_sync()
                 self.get_logger().info(f"Step {step_num} - Initial status: {robot_navigation_status}")
                 
@@ -259,86 +259,12 @@ class TestNode(Node):
             response.message = f"Error checking robot current location: {e}"
             self.get_logger().error(response.message)
             return response
+
+    def test_pallet_pick_init_callback(self, request, response):
+        return self._execute_pallet_operation(request, response, self.json_command_builder.pallet_pick_init_command)
         
     def test_pallet_place_init_callback(self, request, response):
-        self.get_logger().info(f'Received request to test ID2GO: {request.pallet_id}')
-        pallet_id_temp = request.pallet_id
-
-        pallet_data = self.pallet_loader.get_pallet_data_id(int(pallet_id_temp)) # type: ignore
-        self.get_logger().info(f'Pallet data for ID {pallet_id_temp}: {pallet_data}')
-
-        # Ensure connection to robot navigation API
-        if not self.ensure_connection():
-            response.success = False
-            response.message = "Failed to connect to robot navigation API."
-            self.get_logger().error(response.message)
-            return response
-
-        try:
-            curren_location_temp = self.call_check_robot_current_location_sync()
-            self.get_logger().warning(f'Current location: {curren_location_temp}')
-            if curren_location_temp is None:
-                response.success = False
-                response.message = "Failed to get current robot location."
-                self.get_logger().error(response.message)
-                return response
-            
-            # Get the list of navigation commands
-            command_list = self.json_command_builder.pallet_place_init_command(curren_location_temp, pallet_data, "task_123")
-            self.get_logger().info(f"Generated {len(command_list)} navigation commands")
-            
-            # Execute each command and wait for completion
-            for step_num, command_dict in enumerate(command_list, 1):
-                # Convert command to JSON string
-                command_json = json.dumps(command_dict)
-                self.get_logger().info(f"Executing Step {step_num}: {command_json}")
-                
-                # Send the navigation command
-                test = self.robot_navigation_api.navigation_with_json(command_json)
-                self.get_logger().info(f"response from navigation: {test}")
-
-                # Wait for this step to complete
-                # First, wait for status to change from 4 (if it was already 4) to something else (like 2 = in progress)
-                robot_navigation_status = self.call_check_robot_navigation_sync()
-                self.get_logger().info(f"Step {step_num} - Initial status: {robot_navigation_status}")
-                
-                # If status is already 4, wait for it to change to indicate the new task has started
-                if robot_navigation_status == 4:
-                    self.get_logger().info(f"Step {step_num} - Status is 4, waiting for task to start...")
-                    while robot_navigation_status == 4:
-                        time.sleep(0.5)
-                        robot_navigation_status = self.call_check_robot_navigation_sync()
-                        if robot_navigation_status is not None and robot_navigation_status != 4:
-                            self.get_logger().info(f"Step {step_num} - Task started, status changed to: {robot_navigation_status}")
-                            break
-                        elif robot_navigation_status is None:
-                            self.get_logger().warn(f"Step {step_num} - Failed to get navigation status")
-                            break
-                
-                # Now wait for the task to complete (status becomes 4)
-                while robot_navigation_status != 4:
-                    robot_navigation_status = self.call_check_robot_navigation_sync()
-                    if robot_navigation_status is not None:
-                        self.get_logger().info(f"Step {step_num} - Robot navigation status: {robot_navigation_status}")
-                        if robot_navigation_status == 4:
-                            self.get_logger().info(f"Step {step_num} completed successfully")
-                            break
-                    else:
-                        self.get_logger().warn(f"Step {step_num} - Failed to get navigation status")
-                        break
-                    
-                    # Add a small delay to avoid overwhelming the service
-                    time.sleep(0.5)
-
-            response.success = True
-            response.message = f"All {len(command_list)} navigation commands executed successfully."
-            return response
-
-        except Exception as e:
-            response.success = False
-            response.message = f"Error checking robot current location: {e}"
-            self.get_logger().error(response.message)
-            return response
+        return self._execute_pallet_operation(request, response, self.json_command_builder.pallet_place_init_command)
         
 
     #####################################################
@@ -346,164 +272,10 @@ class TestNode(Node):
     #####################################################
 
     def test_pallet_pick_to_manipulator_callback(self, request, response):
-        self.get_logger().info(f'Received request to test ID2GO: {request.pallet_id}')
-        pallet_id_temp = request.pallet_id
-
-        pallet_data = self.pallet_loader.get_pallet_data_id(int(pallet_id_temp)) # type: ignore
-        self.get_logger().info(f'Pallet data for ID {pallet_id_temp}: {pallet_data}')
-
-        # Ensure connection to robot navigation API
-        if not self.ensure_connection():
-            response.success = False
-            response.message = "Failed to connect to robot navigation API."
-            self.get_logger().error(response.message)
-            return response
-
-        try:
-            curren_location_temp = self.call_check_robot_current_location_sync()
-            self.get_logger().warning(f'Current location: {curren_location_temp}')
-            if curren_location_temp is None:
-                response.success = False
-                response.message = "Failed to get current robot location."
-                self.get_logger().error(response.message)
-                return response
-            
-            # Get the list of navigation commands
-            command_list = self.json_command_builder.pallet_pick_to_manipulator_command(curren_location_temp, pallet_data, "task_123")
-            self.get_logger().info(f"Generated {len(command_list)} navigation commands")
-            
-            # Execute each command and wait for completion
-            for step_num, command_dict in enumerate(command_list, 1):
-                # Convert command to JSON string
-                command_json = json.dumps(command_dict)
-                self.get_logger().info(f"Executing Step {step_num}: {command_json}")
-                
-                # Send the navigation command
-                test = self.robot_navigation_api.navigation_with_json(command_json)
-                self.get_logger().info(f"response from navigation: {test}")
-
-                # Wait for this step to complete
-                # First, wait for status to change from 4 (if it was already 4) to something else (like 2 = in progress)
-                robot_navigation_status = self.call_check_robot_navigation_sync()
-                self.get_logger().info(f"Step {step_num} - Initial status: {robot_navigation_status}")
-                
-                # If status is already 4, wait for it to change to indicate the new task has started
-                if robot_navigation_status == 4:
-                    self.get_logger().info(f"Step {step_num} - Status is 4, waiting for task to start...")
-                    while robot_navigation_status == 4:
-                        time.sleep(0.5)
-                        robot_navigation_status = self.call_check_robot_navigation_sync()
-                        if robot_navigation_status is not None and robot_navigation_status != 4:
-                            self.get_logger().info(f"Step {step_num} - Task started, status changed to: {robot_navigation_status}")
-                            break
-                        elif robot_navigation_status is None:
-                            self.get_logger().warn(f"Step {step_num} - Failed to get navigation status")
-                            break
-                
-                # Now wait for the task to complete (status becomes 4)
-                while robot_navigation_status != 4:
-                    robot_navigation_status = self.call_check_robot_navigation_sync()
-                    if robot_navigation_status is not None:
-                        self.get_logger().info(f"Step {step_num} - Robot navigation status: {robot_navigation_status}")
-                        if robot_navigation_status == 4:
-                            self.get_logger().info(f"Step {step_num} completed successfully")
-                            break
-                    else:
-                        self.get_logger().warn(f"Step {step_num} - Failed to get navigation status")
-                        break
-                    
-                    # Add a small delay to avoid overwhelming the service
-                    time.sleep(0.5)
-
-            response.success = True
-            response.message = f"All {len(command_list)} navigation commands executed successfully."
-            return response
-
-        except Exception as e:
-            response.success = False
-            response.message = f"Error checking robot current location: {e}"
-            self.get_logger().error(response.message)
-            return response
+        return self._execute_pallet_operation(request, response, self.json_command_builder.pallet_pick_to_manipulator_command)
         
     def test_pallet_pick_from_manipulator_callback(self, request, response):
-        self.get_logger().info(f'Received request to test ID2GO: {request.pallet_id}')
-        pallet_id_temp = request.pallet_id
-
-        pallet_data = self.pallet_loader.get_pallet_data_id(int(pallet_id_temp)) # type: ignore
-        self.get_logger().info(f'Pallet data for ID {pallet_id_temp}: {pallet_data}')
-
-        # Ensure connection to robot navigation API
-        if not self.ensure_connection():
-            response.success = False
-            response.message = "Failed to connect to robot navigation API."
-            self.get_logger().error(response.message)
-            return response
-
-        try:
-            curren_location_temp = self.call_check_robot_current_location_sync()
-            self.get_logger().warning(f'Current location: {curren_location_temp}')
-            if curren_location_temp is None:
-                response.success = False
-                response.message = "Failed to get current robot location."
-                self.get_logger().error(response.message)
-                return response
-            
-            # Get the list of navigation commands
-            command_list = self.json_command_builder.pallet_pick_from_manipulator_command(curren_location_temp, pallet_data, "task_123")
-            self.get_logger().info(f"Generated {len(command_list)} navigation commands")
-            
-            # Execute each command and wait for completion
-            for step_num, command_dict in enumerate(command_list, 1):
-                # Convert command to JSON string
-                command_json = json.dumps(command_dict)
-                self.get_logger().info(f"Executing Step {step_num}: {command_json}")
-                
-                # Send the navigation command
-                test = self.robot_navigation_api.navigation_with_json(command_json)
-                self.get_logger().info(f"response from navigation: {test}")
-
-                # Wait for this step to complete
-                # First, wait for status to change from 4 (if it was already 4) to something else (like 2 = in progress)
-                robot_navigation_status = self.call_check_robot_navigation_sync()
-                self.get_logger().info(f"Step {step_num} - Initial status: {robot_navigation_status}")
-                
-                # If status is already 4, wait for it to change to indicate the new task has started
-                if robot_navigation_status == 4:
-                    self.get_logger().info(f"Step {step_num} - Status is 4, waiting for task to start...")
-                    while robot_navigation_status == 4:
-                        time.sleep(0.5)
-                        robot_navigation_status = self.call_check_robot_navigation_sync()
-                        if robot_navigation_status is not None and robot_navigation_status != 4:
-                            self.get_logger().info(f"Step {step_num} - Task started, status changed to: {robot_navigation_status}")
-                            break
-                        elif robot_navigation_status is None:
-                            self.get_logger().warn(f"Step {step_num} - Failed to get navigation status")
-                            break
-                
-                # Now wait for the task to complete (status becomes 4)
-                while robot_navigation_status != 4:
-                    robot_navigation_status = self.call_check_robot_navigation_sync()
-                    if robot_navigation_status is not None:
-                        self.get_logger().info(f"Step {step_num} - Robot navigation status: {robot_navigation_status}")
-                        if robot_navigation_status == 4:
-                            self.get_logger().info(f"Step {step_num} completed successfully")
-                            break
-                    else:
-                        self.get_logger().warn(f"Step {step_num} - Failed to get navigation status")
-                        break
-                    
-                    # Add a small delay to avoid overwhelming the service
-                    time.sleep(0.5)
-
-            response.success = True
-            response.message = f"All {len(command_list)} navigation commands executed successfully."
-            return response
-
-        except Exception as e:
-            response.success = False
-            response.message = f"Error checking robot current location: {e}"
-            self.get_logger().error(response.message)
-            return response
+        return self._execute_pallet_operation(request, response, self.json_command_builder.pallet_pick_from_manipulator_command)
             
     def call_check_robot_current_location_sync(self):
         """Call the check_robot_current_location service synchronously"""
