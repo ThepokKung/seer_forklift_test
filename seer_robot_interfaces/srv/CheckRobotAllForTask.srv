@@ -1,0 +1,5 @@
+---
+bool success
+string robot_current_station
+string robot_task_status
+string robot_navigation_status

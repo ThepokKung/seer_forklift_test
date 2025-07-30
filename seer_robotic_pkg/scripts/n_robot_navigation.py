@@ -12,7 +12,7 @@ import json
 import time
 
 # srv import
-from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus, GetNavigationPath, NavigationParameter,PalletID, CheckRobotCurrentLocation
+from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus, GetNavigationPath, PalletID, CheckRobotCurrentLocation
 
 # backend imports
 from bn_robot_navigation_api import RobotNavigationAPI
@@ -42,10 +42,22 @@ class RobotNavigation(Node):
 
         # Command builder
         self.json_command_builder = JsonCommandBuilder()
+
+        # Pallet loader
+        self.pallet_loader = PalletLoader(
+            db_host=os.getenv('DB_HOST', 'localhost'),
+            db_port=os.getenv('DB_PORT', '5432'),
+            db_name=os.getenv('DB_NAME', 'seer_db'),
+            db_user=os.getenv('DB_USER', 'seer_user'),
+            db_pass=os.getenv('DB_PASS', 'seer_pass')
+        )
         
         # Service server
         self.create_service(GetNavigationPath, 'robot_navigation/get_navigation_path', self.get_navigation_path_callback)
-        # self.create_service(NavigationParameter, 'robot_navigation/navigation_to_station', self.navigation_to_station_callback)
+        self.create_service(PalletID,'robot_navigation/pallet_pick_init_test', self.pallet_pick_init_callback)
+        self.create_service(PalletID,'robot_navigation/pallet_place_init_test', self.pallet_place_init_callback)
+        self.create_service(PalletID,'robot_navigation/pallet_pick_to_manipulator_test', self.pallet_pick_to_manipulator_callback)
+        self.create_service(PalletID,'robot_navigation/pallet_pick_from_manipulator_test', self.pallet_pick_from_manipulator_callback)
 
         # Service client
         self.check_robot_current_location_cbg = MutuallyExclusiveCallbackGroup()
@@ -153,7 +165,6 @@ class RobotNavigation(Node):
             response.message = f'Failed to get navigation path to {id2go}'
         return response
     
-
     def execute_navigation_commands(self, command_list, context_name="Navigation"):
         self.get_logger().info(f"Generated {len(command_list)} {context_name} commands")
         
@@ -212,7 +223,7 @@ class RobotNavigation(Node):
     ###              Pick Place Manipulator           ###
     #####################################################
 
-    def test_pallet_pick_to_manipulator_callback(self, request, response):
+    def pallet_pick_to_manipulator_callback(self, request, response):
         self.get_logger().info(f'Received request to test Pallet Pick to Manipulator: {request.pallet_id}')
         pallet_id_temp = request.pallet_id
 
@@ -251,7 +262,7 @@ class RobotNavigation(Node):
             self.get_logger().error(response.message)
             return response
 
-    def test_pallet_pick_from_manipulator_callback(self, request, response):
+    def pallet_pick_from_manipulator_callback(self, request, response):
         self.get_logger().info(f'Received request to test Pallet Pick from Manipulator: {request.pallet_id}')
         pallet_id_temp = request.pallet_id
 
@@ -290,12 +301,11 @@ class RobotNavigation(Node):
             self.get_logger().error(response.message)
             return response
         
-
     #####################################################
     ###           Pick Place Init pallet              ###
     #####################################################
 
-    def test_pallet_pick_init_callback(self, request, response):
+    def pallet_pick_init_callback(self, request, response):
         self.get_logger().info(f'Received request to test Pallet Pick Init: {request.pallet_id}')
         pallet_id_temp = request.pallet_id
 
@@ -334,7 +344,7 @@ class RobotNavigation(Node):
             self.get_logger().error(response.message)
             return response
         
-    def test_pallet_place_init_callback(self, request, response):
+    def pallet_place_init_callback(self, request, response):
         self.get_logger().info(f'Received request to test Pallet Place Init: {request.pallet_id}')
         pallet_id_temp = request.pallet_id
 
@@ -372,7 +382,6 @@ class RobotNavigation(Node):
             response.message = f"Error during pallet place init: {e}"
             self.get_logger().error(response.message)
             return response
-
 
     #####################################################
     ###                    Test                       ###

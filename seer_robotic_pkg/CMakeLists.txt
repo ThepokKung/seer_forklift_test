@@ -27,13 +27,12 @@ ament_python_install_package(${PROJECT_NAME})
 
 # Install Python executables
 install(PROGRAMS
-  # scripts/dummy_script.py
   ### Dot env ###
   scripts/.env
   ### Main scripts ###
   scripts/n_robot_state.py
   scripts/n_robot_navigation.py
-  scripts/n_test_only.py
+  scripts/n_task_management.py
   ### Backend scripts ###
   scripts/bn_client_api.py
   scripts/bn_msg_packer.py
@@ -41,11 +40,8 @@ install(PROGRAMS
   scripts/bn_robot_navigation_api.py
   scripts/bn_robot_status_api.py
   scripts/bn_json_command_builder.py
-  ### Test scripts ###
-  # scripts/t_pallet_loader_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
-
 
 # Include Cpp "include" directory
 include_directories(include)

@@ -11,7 +11,7 @@ import os
 
 # srv imports
 from std_srvs.srv import Trigger
-from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus,CheckRobotCurrentLocation
+from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus,CheckRobotCurrentLocation,CheckRobotAllForTask
 
 # backend imports
 from bn_robot_status_api import RobotStatusAPI
@@ -55,11 +55,12 @@ class RobotState(Node):
         # self.robot_last_station_pub = self.create_publisher(String, 'robot_last_station', 10)
 
         # Service Server
-        self.check_robot_navigation_status_service = self.create_service(CheckRobotNavigationTaskStatus, 'check_robot_navigation_status', self.check_robot_navigation_status_callback)
-        self.check_robot_current_location_service = self.create_service(CheckRobotCurrentLocation, 'check_robot_current_location', self.check_robot_current_location_callback)
+        self.create_service(CheckRobotNavigationTaskStatus, 'robot_state/check_robot_navigation_status', self.check_robot_navigation_status_callback)
+        self.create_service(CheckRobotCurrentLocation, 'robot_state/check_robot_current_location', self.check_robot_current_location_callback)
+        self.create_service(CheckRobotAllForTask, 'robot_state/check_robot_all_for_task', self.check_robot_all_for_task_callback)
 
         # Timer
-        self.timer = self.create_timer(1.0, self.update_robot_callbacks)
+        self.timer = self.create_timer(1.0, self.update_robot_callbacks) #1.0 seconds interval
 
     #####################################################
     ###               Check Connection                ###
@@ -99,12 +100,6 @@ class RobotState(Node):
             temp = self.robot_status_api.get_battery_status()
             self.robot_battery = (temp.get('battery_level', None) * 100) # type: ignore
             self.robot_charge_status = temp.get('charging', False) # type: ignore
-
-            # Publish the battery level if we got valid data
-            # if self.robot_battery is not None:
-            #     battery_msg = Float32()
-            #     battery_msg.data = float(self.robot_battery)
-            #     self.robot_battery_pub.publish(battery_msg)
         else:
             self.robot_battery = None
 
@@ -118,26 +113,6 @@ class RobotState(Node):
             if temp_position is not None:
                 # Unpack the tuple returned from position_status()
                 x, y, angle, current_position, last_station, confidence = temp_position
-                
-                # Create PointStamped message for position
-                # position_msg = PointStamped()
-                # position_msg.header.frame_id = self.robot_name  # Use robot name as frame ID
-                # position_msg.header.stamp = self.get_clock().now().to_msg()
-                # position_msg.point.x = float(x) if x is not None else 0.0
-                # position_msg.point.y = float(y) if y is not None else 0.0
-                # position_msg.point.z = 0.0  # Assuming 2D navigation
-                # self.robot_position_pub.publish(position_msg)
-                
-                # Update and publish station information
-                # if current_position is not None:
-                    # current_station_msg = String()
-                    # current_station_msg.data = str(current_position)
-                    # self.robot_current_station_pub.publish(current_station_msg)
-                
-                # if last_station is not None:
-                    # last_station_msg = String()
-                    # last_station_msg.data = str(last_station)
-                    # self.robot_last_station_pub.publish(last_station_msg)
 
                 # Store values for internal use
                 self.robot_position = {'x': x, 'y': y, 'angle': angle}
@@ -151,11 +126,9 @@ class RobotState(Node):
         # Ensure we have a connection
         if self.ensure_connection():
             temp_navigation = self.robot_status_api.get_navigation_status()
-            # print(f"Robot ID: {self.robot_id}, Navigation Status: {temp_navigation}")
 
             # Publish the navigation status if we got valid data
             if temp_navigation is not None:
-                # print(f"Robot ID: {self.robot_id}, Navigation Status: {temp_navigation}")
                 self.robot_navigation_status = temp_navigation.get('task_status', 0)
         else:
             self.get_logger().error(f"Robot ID: {self.robot_id}, Not connected to robot")
@@ -177,6 +150,19 @@ class RobotState(Node):
         else:
             response.success = False
             response.robot_current_station = "Unknown"
+        return response
+    
+    def check_robot_all_for_task_callback(self, request, response):
+        if self.robot_current_station is not None and self.robot_navigation_status is not None:
+            response.success = True
+            response.robot_current_station = self.robot_current_station
+            response.robot_task_status = self.robot_navigation_status
+            response.robot_navigation_status = "Active" if self.robot_navigation_status > 0 else "Idle"
+        else:
+            response.success = False
+            response.robot_current_station = "Unknown"
+            response.robot_task_status = "Unknown"
+            response.robot_navigation_status = "Unknown"
         return response
 
 def main(args=None):
