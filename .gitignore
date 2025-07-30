@@ -4,3 +4,4 @@ seer_robotic
 seer_robotic_pkg/scripts/drop
 server
 .env
+drop_file_here

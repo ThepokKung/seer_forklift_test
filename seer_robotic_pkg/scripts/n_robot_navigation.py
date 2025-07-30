@@ -44,16 +44,14 @@ class RobotNavigation(Node):
         self.json_command_builder = JsonCommandBuilder()
         
         # Service server
-        # self.create_service(Trigger, 'robot_navigation/test_go', self.test_systemp) # Test only
-        # self.create_service(PalletID, 'robot_navigation/test_go', self.test_systemp) # Test only
         self.create_service(GetNavigationPath, 'robot_navigation/get_navigation_path', self.get_navigation_path_callback)
-        self.create_service(NavigationParameter, 'robot_navigation/navigation_to_station', self.navigation_to_station_callback)
+        # self.create_service(NavigationParameter, 'robot_navigation/navigation_to_station', self.navigation_to_station_callback)
 
         # Service client
         self.check_robot_current_location_cbg = MutuallyExclusiveCallbackGroup()
         self.check_robot_current_location_client = self.create_client(CheckRobotCurrentLocation, 'check_robot_current_location', callback_group=self.check_robot_current_location_cbg)
-        self.check_robot_navigation_cbg = MutuallyExclusiveCallbackGroup()
-        self.check_robot_navigation_client = self.create_client(CheckRobotNavigationTaskStatus, 'check_robot_navigation_status', callback_group=self.check_robot_navigation_cbg)
+        self.check_robot_navigation_state_cbg = MutuallyExclusiveCallbackGroup()
+        self.check_robot_navigation_state_client = self.create_client(CheckRobotNavigationTaskStatus, 'check_robot_navigation_status', callback_group=self.check_robot_navigation_state_cbg)
 
         # Start log
         self.get_logger().info(f'Robot Navigation API initialized for {self.robot_ip}')
@@ -107,13 +105,13 @@ class RobotNavigation(Node):
         
     def call_check_robot_navigation_sync(self):
         """Call the check_robot_navigation service synchronously"""
-        if not self.check_robot_navigation_client.service_is_ready():
+        if not self.check_robot_navigation_state_client.service_is_ready():
             self.get_logger().warn('check_robot_navigation service not available')
             return None
 
         request = CheckRobotNavigationTaskStatus.Request()
         try:
-            future = self.check_robot_navigation_client.call_async(request)
+            future = self.check_robot_navigation_state_client.call_async(request)
             rclpy.spin_until_future_complete(self, future)
             response = future.result()
             if response is not None and response.success:
@@ -195,6 +193,12 @@ class RobotNavigation(Node):
                     if robot_navigation_status == 4:
                         self.get_logger().info(f"{context_name} Step {step_num} completed successfully")
                         break
+                    elif robot_navigation_status == 5:
+                        self.get_logger().error(f"{context_name} Step {step_num} failed (status: FAILED)")
+                        return False, f"{context_name} step {step_num} failed"
+                    elif robot_navigation_status == 6:
+                        self.get_logger().error(f"{context_name} Step {step_num} canceled (status: CANCELED)")
+                        return False, f"{context_name} step {step_num} was canceled"
                 else:
                     self.get_logger().warn(f"{context_name} Step {step_num} - Failed to get navigation status")
                     return False, f"Failed to get navigation status for {context_name} step {step_num}"
@@ -373,50 +377,6 @@ class RobotNavigation(Node):
     #####################################################
     ###                    Test                       ###
     #####################################################
-
-    def navigation_to_station_callback(self, request, response):
-        self.get_logger().info(f'Received request to navigate to station {request.id}')
-        
-        # Ensure connection before making API call
-        if not self.ensure_connection():
-            self.get_logger().error('Failed to connect to robot navigation API')
-            response.success = False
-            response.message = 'Failed to connect to robot for navigation'
-            return response
-
-        id = request.id
-        source_id = request.source_id
-        task_id = request.task_id
-        operation = request.operation
-        end_height = request.end_height
-        recognize = request.recognize
-        recfile = request.recfile
-
-        # Call the navigation API
-        try:
-            result = self.robot_navigation_api.navigation_to_goal(id=id, source_id=source_id, task_id=task_id)
-            self.get_logger().info(f'Navigation API result: {result}')
-            
-            # Handle different possible response formats
-            if isinstance(result, dict):
-                response.success = result.get('success', True)  # Default to True if 'success' key not found
-                response.message = result.get('message', f'Navigation to {id} initiated')
-            elif result is not None:
-                # If result is not a dict but exists, assume success
-                response.success = True
-                response.message = f'Navigation to {id} initiated successfully'
-            else:
-                # If result is None, assume failure
-                response.success = False
-                response.message = f'Navigation to {id} failed - no response from API'
-                
-            self.get_logger().info(f'Navigation result: {response.message}')
-        except Exception as e:
-            self.get_logger().error(f'Error during navigation: {e}')
-            response.success = False
-            response.message = f'Error during navigation: {e}'
-        
-        return response
 
 def main(args=None):
     rclpy.init(args=args)
