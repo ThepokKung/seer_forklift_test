@@ -21,8 +21,16 @@ class ClientAPI:
             self.sock.close()
         
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((self.robot_ip, self.robot_port))
-        # print(f"Connected to {self.robot_ip}:{self.robot_port}")
+        self.sock.settimeout(5.0)  # Set 5 second timeout
+        try:
+            self.sock.connect((self.robot_ip, self.robot_port))
+            # print(f"Connected to {self.robot_ip}:{self.robot_port}")
+            return True
+        except (socket.timeout, socket.error) as e:
+            print(f"Connection failed: {e}")
+            self.sock.close()
+            self.sock = None
+            return False
 
     def disconnect(self):
         if self.sock is not None:
@@ -49,36 +57,44 @@ class ClientAPI:
         if not self.sock:
             return None
                 
-        # Receive header (16 bytes) first
-        header_data = self.sock.recv(16)
-        if len(header_data) < 16:
-            return None
-            
-        # Parse header to get message length
-        import struct
         try:
-            start_byte, version, req_id, msg_len, msg_type, reserved = struct.unpack('!BBHLH6s', header_data)
-        except struct.error:
-            return None
+            # Receive header (16 bytes) first
+            header_data = self.sock.recv(16)
+            if len(header_data) < 16:
+                return None
+                
+            # Parse header to get message length
+            import struct
+            try:
+                start_byte, version, req_id, msg_len, msg_type, reserved = struct.unpack('!BBHLH6s', header_data)
+            except struct.error:
+                return None
+                
+            # Receive remaining data if any
+            remaining_data = b''
+            if msg_len > 0:
+                remaining = msg_len
+                while remaining > 0:
+                    chunk = self.sock.recv(min(remaining, 1024))
+                    if not chunk:
+                        break
+                    remaining_data += chunk
+                    remaining -= len(chunk)
             
-        # Receive remaining data if any
-        remaining_data = b''
-        if msg_len > 0:
-            remaining = msg_len
-            while remaining > 0:
-                chunk = self.sock.recv(min(remaining, 1024))
-                if not chunk:
-                    break
-                remaining_data += chunk
-                remaining -= len(chunk)
+            # Combine header and payload for unpacking
+            full_message = header_data + remaining_data
+            
+            try:
+                # Use the MsgPacker's unpack_message method
+                req_id, msg_type, payload = self.packer.unpack_message(full_message)
+                return req_id, msg_type, payload
+            except Exception as e:
+                print(f"Error unpacking message: {e}")
+                return None
         
-        # Combine header and payload for unpacking
-        full_message = header_data + remaining_data
-        
-        try:
-            # Use the MsgPacker's unpack_message method
-            req_id, msg_type, payload = self.packer.unpack_message(full_message)
-            return req_id, msg_type, payload
-        except Exception as e:
-            print(f"Error unpacking message: {e}")
+        except socket.timeout:
+            print("Socket timeout occurred")
+            return None
+        except socket.error as e:
+            print(f"Socket error: {e}")
             return None

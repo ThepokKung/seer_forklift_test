@@ -11,7 +11,8 @@ import os
 load_dotenv()
 
 # srv imports
-from seer_robot_interfaces.srv import PalletID, AssignTask,CheckRobotAllForTask
+from std_srvs.srv import Trigger
+from seer_robot_interfaces.srv import PalletID, AssignTask, CheckRobotAllForTask, GetNavigationPath
 # backend imports
 from bn_pallet_loader import PalletLoader
 
@@ -45,15 +46,20 @@ class TaskManagement(Node):
 
         # Create service clients for each robot
         for robot_ns in self.robot_namespaces:
-            # Create client for robot state check
+            # Create client for robot availability check
+            availability_callback_group = MutuallyExclusiveCallbackGroup()
+            availability_client = self.create_client(Trigger, f'{robot_ns}/robot_state/check_available', callback_group=availability_callback_group)
+            
+            # Create client for robot state check (detailed info)
             state_callback_group = MutuallyExclusiveCallbackGroup()
             state_client = self.create_client(CheckRobotAllForTask,f'{robot_ns}/robot_state/check_robot_all_for_task',callback_group=state_callback_group)
             
             # Create client for navigation path
             nav_callback_group = MutuallyExclusiveCallbackGroup()
-            nav_client = self.create_client(CheckRobotAllForTask,f'{robot_ns}/robot_navigation/get_navigation_path',callback_group=nav_callback_group)
+            nav_client = self.create_client(GetNavigationPath,f'{robot_ns}/robot_navigation/get_navigation_path',callback_group=nav_callback_group)
             
             self.robot_clients[robot_ns] = {
+                'availability': availability_client,
                 'state': state_client,
                 'navigation': nav_client
                 }
@@ -61,7 +67,7 @@ class TaskManagement(Node):
 
         # Service server
         self.create_service(AssignTask, 'task_management/assign_task', self.assign_task_callback)
-
+        self.create_service(Trigger, 'task_management/test_robot_availability', self.test_robot_availability_callback)
 
     #####################################################
     ###             Service Callbacks                 ###
@@ -97,22 +103,31 @@ class TaskManagement(Node):
         self.get_logger().info(f'Received request to assign task with ID: {request.task_id} and type: {task_type_name} (ID: {request.task_type_id})')
 
         try:
-            # Check all robots and find available one
-            available_robot = self.find_available_robot()
-
-            self.pallet_loader.get_pallet_data_id(request.pallet_id)
-            
-            if available_robot is None:
+            # Get pallet data first
+            pallet_data = self.pallet_loader.get_pallet_data_id(request.pallet_id)
+            if not pallet_data:
                 response.success = False
-                response.message = "No available robots found for task assignment"
+                response.message = f"Pallet with ID {request.pallet_id} not found"
                 self.get_logger().error(response.message)
                 return response
             
-            self.get_logger().info(f'Selected robot {available_robot} for task assignment')
+            self.get_logger().info(f'Pallet data retrieved: {pallet_data}')
             
+            # Find an available robot
+            available_robot = self.find_available_robot()
+            if not available_robot:
+                response.success = False
+                response.message = "No available robots found to assign the task"
+                self.get_logger().error(response.message)
+                return response
+            
+            self.get_logger().info(f'Found available robot: {available_robot}')
+            
+            # TODO: Here you would typically send the task to the robot
+            # For now, we'll just log the assignment
             response.success = True
-            response.message = f"Task {request.task_id} of type {request.task_type_id} has been assigned to {available_robot} successfully."
-            self.get_logger().info(f'Task assigned successfully: {response.message}')
+            response.message = f"Task {request.task_id} ({task_type_name}) assigned to robot {available_robot} for pallet {request.pallet_id}"
+            self.get_logger().info(response.message)
             
         except Exception as e:
             response.success = False
@@ -127,18 +142,60 @@ class TaskManagement(Node):
     def find_available_robot(self):
         """Find an available robot from all connected robots"""
         for robot_ns in self.robot_namespaces:
-            robot_status = self.check_robot_status(robot_ns)
-            if robot_status and robot_status.success:
-                # Add your logic here to determine if robot is available
-                # For example, check if robot_task_status indicates it's idle
-                if robot_status.robot_task_status == "IDLE" or robot_status.robot_task_status == "READY":
-                    self.get_logger().info(f'Robot {robot_ns} is available')
-                    return robot_ns
+            # First check if robot is available using the simple availability check
+            if self.check_robot_availability(robot_ns):
+                robot_status = self.check_robot_status(robot_ns)
+                if robot_status and robot_status.success:
+                    # Check if robot_task_status indicates it's idle
+                    if robot_status.robot_task_status == "IDLE" or robot_status.robot_task_status == "READY":
+                        self.get_logger().info(f'Robot {robot_ns} is available and ready')
+                        return robot_ns
+                    else:
+                        self.get_logger().info(f'Robot {robot_ns} is connected but busy: {robot_status.robot_task_status}')
                 else:
-                    self.get_logger().info(f'Robot {robot_ns} is busy: {robot_status.robot_task_status}')
+                    self.get_logger().warn(f'Robot {robot_ns} is available but could not get detailed status')
             else:
-                self.get_logger().warn(f'Could not get status for robot {robot_ns}')
+                self.get_logger().warn(f'Robot {robot_ns} is not available')
         return None
+
+    def check_robot_availability(self, robot_namespace):
+        """Check if a robot is available using the simple availability service"""
+        if robot_namespace not in self.robot_clients:
+            self.get_logger().error(f'No client found for robot {robot_namespace}')
+            return False
+            
+        client = self.robot_clients[robot_namespace]['availability']
+        
+        # Wait for service to be ready with a timeout
+        if not client.service_is_ready():
+            self.get_logger().info(f'Waiting for service {robot_namespace}/robot_state/check_available to become available...')
+            ready = client.wait_for_service(timeout_sec=2.0)
+            if not ready:
+                self.get_logger().warn(f'Service {robot_namespace}/robot_state/check_available not available after waiting')
+                return False
+        
+        service_request = Trigger.Request()
+        try:
+            self.get_logger().debug(f'Calling robot availability service for {robot_namespace}')
+            future = client.call_async(service_request)
+            rclpy.spin_until_future_complete(self, future, timeout_sec=5.0)
+            
+            if not future.done():
+                self.get_logger().warn(f'Availability service call timeout for robot {robot_namespace}')
+                return False
+                
+            service_response = future.result()
+            
+            if service_response is not None:
+                self.get_logger().info(f'Robot {robot_namespace} availability: {service_response.success} - {service_response.message}')
+                return service_response.success
+            else:
+                self.get_logger().error(f'Availability service call failed for robot {robot_namespace}')
+                return False
+                
+        except Exception as e:
+            self.get_logger().error(f'Exception during availability service call for {robot_namespace}: {str(e)}')
+            return False
     
     def check_robot_status(self, robot_namespace):
         """Check status of a specific robot"""
@@ -146,7 +203,7 @@ class TaskManagement(Node):
             self.get_logger().error(f'No client found for robot {robot_namespace}')
             return None
             
-        client = self.robot_clients[robot_namespace]
+        client = self.robot_clients[robot_namespace]['state']
         
         if not client.service_is_ready():
             self.get_logger().warn(f'Service {robot_namespace}/check_robot_all_for_task not available')
@@ -154,8 +211,14 @@ class TaskManagement(Node):
         
         service_request = CheckRobotAllForTask.Request()
         try:
+            self.get_logger().debug(f'Calling robot status service for {robot_namespace}')
             future = client.call_async(service_request)
-            rclpy.spin_until_future_complete(self, future)
+            rclpy.spin_until_future_complete(self, future, timeout_sec=3.0)
+            
+            if not future.done():
+                self.get_logger().warn(f'Service call timeout for robot {robot_namespace}')
+                return None
+                
             service_response = future.result()
             
             if service_response is not None and service_response.success:
@@ -171,15 +234,29 @@ class TaskManagement(Node):
     
     def check_robot_all(self, request, response):
         """Legacy method - now uses find_available_robot instead"""
-        available_robot = self.find_available_robot()
-        if available_robot:
-            return self.check_robot_status(available_robot)
+        available_robot_ns = self.find_available_robot()
+        if available_robot_ns:
+            return self.check_robot_status(available_robot_ns)
         else:
             response.success = False
             response.robot_current_station = "Unknown"
             response.robot_task_status = "Unknown"
-            response.robot_navigation_status = "Unknown"
+            response.robot_navigation_status = 0
             return response
+
+    def test_robot_availability_callback(self, request, response):
+        """Test service to check robot availability"""
+        self.get_logger().info("Testing robot availability...")
+        available_robot = self.find_available_robot()
+        if available_robot:
+            response.success = True
+            response.message = f"Found available robot: {available_robot}"
+            self.get_logger().info(response.message)
+        else:
+            response.success = False
+            response.message = "No available robots found"
+            self.get_logger().warn(response.message)
+        return response
     
 def main(args=None):
     rclpy.init(args=args)

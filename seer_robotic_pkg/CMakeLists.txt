@@ -62,6 +62,7 @@ install(DIRECTORY
   configs
   launch
   # data
+  config
   DESTINATION share/${PROJECT_NAME})
 
 ament_package()

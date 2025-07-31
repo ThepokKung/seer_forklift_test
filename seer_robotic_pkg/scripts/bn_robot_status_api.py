@@ -16,9 +16,12 @@ class RobotStatusAPI:
     def connect(self):
         """Connect to the robot"""
         try:
-            self.client.connect()
-            self.connected = True
-            return True
+            if self.client.connect():
+                self.connected = True
+                return True
+            else:
+                self.connected = False
+                return False
         except Exception as e:
             print(f"Failed to connect to robot: {e}")
             self.connected = False
