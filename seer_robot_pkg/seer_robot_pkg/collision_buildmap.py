@@ -3,6 +3,8 @@ from seer_robot_pkg.collision_geom import sample_bezier_uniform, sample_straight
 def _build_geometry_from_map(self, step=0.1):
     self.points = {}   # node -> (x,y,yaw)
     self.edges  = {}   # "A-B" -> [(x,y), ...]
+    self.edge_bbox = {}  # "A-B" -> (minx,miny,maxx,maxy)
+
     for p in self.map_data.get("advancedPointList", []):
         name = p.get("instanceName", "")
         x = float(p["pos"]["x"]); y = float(p["pos"]["y"]); yaw = float(p.get("dir", 0.0))
@@ -20,4 +22,8 @@ def _build_geometry_from_map(self, step=0.1):
             pts = sample_bezier_uniform(p0, p1, p2, p3, step)
         else:
             pts = sample_straight(p0, p3, step)
+
         self.edges[name] = pts
+        # เก็บ AABB ของ polyline
+        xs = [px for px,_ in pts]; ys = [py for _,py in pts]
+        self.edge_bbox[name] = (min(xs), min(ys), max(xs), max(ys))
