@@ -14,7 +14,7 @@ from std_srvs.srv import Trigger
 from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus,CheckRobotCurrentLocation,CheckRobotAllForTask
 
 # backend imports
-from seer_robot_pkg.bn_robot_status_api import RobotStatusAPI
+from seer_robot_pkg.seer_robot_pkg.robot_status_api import RobotStatusAPI
 
 class RobotStatus(Node):
     def __init__(self):

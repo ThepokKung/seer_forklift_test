@@ -15,9 +15,9 @@ import time
 from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus, GetNavigationPath, PalletID, CheckRobotCurrentLocation
 
 # backend imports
-from seer_robot_pkg.bn_robot_navigation_api import RobotNavigationAPI
-from seer_robot_pkg.bn_pallet_loader import PalletLoader
-from seer_robot_pkg.bn_json_command_builder import JsonCommandBuilder
+from seer_robot_pkg.seer_robot_pkg.robot_navigation_api import RobotNavigationAPI
+from seer_robot_pkg.seer_robot_pkg.pallet_loader import PalletLoader
+from seer_robot_pkg.seer_robot_pkg.json_command_builder import JsonCommandBuilder
 
 class RobotController(Node):
     def __init__(self):

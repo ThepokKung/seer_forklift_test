@@ -30,9 +30,9 @@ install(PROGRAMS
   ### Dot env ###
   scripts/.env
   ### Main scripts ###
-  scripts/n_robot_status.py
-  scripts/n_robot_controller.py
-  scripts/n_task_management.py
+  scripts/robot_status.py
+  scripts/robot_controller.py
+  scripts/task_management.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
