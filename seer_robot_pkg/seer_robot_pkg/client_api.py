@@ -2,7 +2,7 @@
 
 import socket
 import json
-from seer_robot_pkg.seer_robot_pkg.msg_packer import MsgPacker
+from seer_robot_pkg.msg_packer import MsgPacker
 
 class ClientAPI:
     # def __init__(self, ip=None ):

@@ -3,7 +3,7 @@
 import sys
 import os
 
-from seer_robot_pkg.seer_robot_pkg.client_api import ClientAPI
+from seer_robot_pkg.client_api import ClientAPI
 
 class RobotStatusAPI:
     def __init__(self, robot_ip):
