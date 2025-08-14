@@ -4,7 +4,12 @@ from rclpy.node import Node
 import threading
 import fastapi
 import uvicorn
-from fastapi import FastAPI
+import json
+import asyncio
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.responses import HTMLResponse
+from std_msgs.msg import String, Float32
+from geometry_msgs.msg import PointStamped
 
 class FastAPIClient(Node):
     def __init__(self):
@@ -33,18 +38,6 @@ class FastAPIClient(Node):
         async def health_check():
             return {"status": "healthy", "node": node_instance.get_name()}
             
-        @self.app.get("/task_types")
-        async def get_task_types():
-            return {
-                "task_types": {
-                    "1": "PickInit",
-                    "2": "PlaceInit", 
-                    "3": "PickToManipulator",
-                    "4": "PickFromManipulator"
-                },
-                "usage": "Use POST or GET /assigntask/{task_type_id}/{pallet_id}/{task_id} where task_type_id is 1-4"
-            }
-            
         @self.app.post("/assigntask/{task_type_id}/{pallet_id}/{task_id}")
         async def call_assign_task_post(task_type_id: int, pallet_id: int, task_id: str):
             if task_type_id not in [1, 2, 3, 4]:
@@ -56,16 +49,6 @@ class FastAPIClient(Node):
             else:
                 return {"success": False, "error": "Service call failed"}
                 
-        @self.app.get("/assigntask/{task_type_id}/{pallet_id}/{task_id}")
-        async def call_assign_task_get(task_type_id: int, pallet_id: int, task_id: str):
-            if task_type_id not in [1, 2, 3, 4]:
-                return {"error": "task_type_id must be 1, 2, 3, or 4 (PickInit, PlaceInit, PickToManipulator, PickFromManipulator)"}
-            
-            result = node_instance.call_assign_task_service(task_type_id, pallet_id, task_id)
-            if result:
-                return {"success": True, "result": result.success, "message": result.message}
-            else:
-                return {"success": False, "error": "Service call failed"}
     
     def start_server(self):
         uvicorn.run(self.app, host="127.0.0.1", port=8000, log_level="info")
