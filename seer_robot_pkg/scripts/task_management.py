@@ -14,7 +14,7 @@ load_dotenv()
 from std_srvs.srv import Trigger
 from seer_robot_interfaces.srv import PalletID, AssignTask, CheckRobotAllForTask, GetNavigationPath
 # backend imports
-from seer_robot_pkg.seer_robot_pkg.pallet_loader import PalletLoader
+from seer_robot_pkg.pallet_loader import PalletLoader
 
 class TaskManagement(Node):
     def __init__(self):
@@ -123,8 +123,6 @@ class TaskManagement(Node):
             
             self.get_logger().info(f'Found available robot: {available_robot}')
             
-            # TODO: Here you would typically send the task to the robot
-            # For now, we'll just log the assignment
             response.success = True
             response.message = f"Task {request.task_id} ({task_type_name}) assigned to robot {available_robot} for pallet {request.pallet_id}"
             self.get_logger().info(response.message)
