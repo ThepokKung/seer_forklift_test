@@ -6,7 +6,7 @@ import sys
 import os
 
 # msg imports
-# from std_msgs.msg import Float32,String
+from std_msgs.msg import String
 # from geometry_msgs.msg import PointStamped
 
 # srv imports
@@ -14,12 +14,12 @@ from std_srvs.srv import Trigger
 from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus,CheckRobotCurrentLocation,CheckRobotAllForTask
 
 # backend imports
-from bn_robot_status_api import RobotStatusAPI
+from seer_robot_pkg.bn_robot_status_api import RobotStatusAPI
 
-class RobotState(Node):
+class RobotStatus(Node):
     def __init__(self):
-        super().__init__('robot_state_node')
-        self.get_logger().info("Robot State Node has been started.")
+        super().__init__('robot_status')
+        self.get_logger().info("Robot Status Node has been started.")
 
         # Declare parameters
         self.declare_parameter('robot_id', 'robot_01')
@@ -52,7 +52,7 @@ class RobotState(Node):
         # self.robot_battery_pub = self.create_publisher(Float32, 'robot_battery_percentage', 10)
         # # Robot position publisher
         # self.robot_position_pub = self.create_publisher(PointStamped, 'robot_position', 10)
-        # self.robot_current_station_pub = self.create_publisher(String, 'robot_current_station', 10)
+        self.robot_current_station_pub = self.create_publisher(String, 'robot_state/robot_current_station', 10)
         # self.robot_last_station_pub = self.create_publisher(String, 'robot_last_station', 10)
 
         # Service Server
@@ -126,6 +126,8 @@ class RobotState(Node):
                 if temp_position is not None:
                     # Unpack the tuple returned from position_status()
                     x, y, angle, current_position, last_station, confidence = temp_position
+
+                    self.robot_current_station_pub.publish(String(data=current_position))
 
                     # Store values for internal use
                     self.robot_position = {'x': x, 'y': y, 'angle': angle}
@@ -216,7 +218,7 @@ class RobotState(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = RobotState()
+    node = RobotStatus()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()

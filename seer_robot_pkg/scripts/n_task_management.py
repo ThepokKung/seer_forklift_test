@@ -14,7 +14,7 @@ load_dotenv()
 from std_srvs.srv import Trigger
 from seer_robot_interfaces.srv import PalletID, AssignTask, CheckRobotAllForTask, GetNavigationPath
 # backend imports
-from bn_pallet_loader import PalletLoader
+from seer_robot_pkg.bn_pallet_loader import PalletLoader
 
 class TaskManagement(Node):
     def __init__(self):

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(seer_robotic_pkg)
+project(seer_robot_pkg)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -30,16 +30,9 @@ install(PROGRAMS
   ### Dot env ###
   scripts/.env
   ### Main scripts ###
-  scripts/n_robot_state.py
-  scripts/n_robot_navigation.py
+  scripts/n_robot_status.py
+  scripts/n_robot_controller.py
   scripts/n_task_management.py
-  ### Backend scripts ###
-  scripts/bn_client_api.py
-  scripts/bn_msg_packer.py
-  scripts/bn_pallet_loader.py
-  scripts/bn_robot_navigation_api.py
-  scripts/bn_robot_status_api.py
-  scripts/bn_json_command_builder.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

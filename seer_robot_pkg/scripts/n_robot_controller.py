@@ -15,15 +15,15 @@ import time
 from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus, GetNavigationPath, PalletID, CheckRobotCurrentLocation
 
 # backend imports
-from bn_robot_navigation_api import RobotNavigationAPI
-from bn_pallet_loader import PalletLoader
-from bn_json_command_builder import JsonCommandBuilder
+from seer_robot_pkg.bn_robot_navigation_api import RobotNavigationAPI
+from seer_robot_pkg.bn_pallet_loader import PalletLoader
+from seer_robot_pkg.bn_json_command_builder import JsonCommandBuilder
 
-class RobotNavigation(Node):
+class RobotController(Node):
     def __init__(self):
-        super().__init__('robot_navigation')
-        self.get_logger().info('Robot Navigation node has been started')
-        
+        super().__init__('robot_controller')
+        self.get_logger().info('Robot Controller node has been started')
+
         # Declare parameters
         self.declare_parameter('robot_id', 'robot_01')
         self.declare_parameter('robot_name', 'SEER_Robot_01')
@@ -389,8 +389,8 @@ class RobotNavigation(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = RobotNavigation()
-    
+    node = RobotController()
+
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
