@@ -18,7 +18,7 @@ class TrafficManagement(Node):
 
         # YAML file path
         path_file = os.path.join(
-            get_package_share_directory('seer_robotic_pkg'),
+            get_package_share_directory('seer_robot_pkg'),
             'config',
             self.map_file
         )
@@ -30,7 +30,8 @@ class TrafficManagement(Node):
                 self.get_logger().info(f"Map data loaded successfully from {self.map_file}")
         except FileNotFoundError:
             self.get_logger().error(f"Map file {self.map_file} not found.")
-            self.map_data = None
+            self.get_logger().error(f"Failed to load map data. Node Shutdown!")
+            rclpy.shutdown()
 
         print(f"Map data: {self.map_data}")
 
