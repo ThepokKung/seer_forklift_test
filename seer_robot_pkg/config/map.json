@@ -1,0 +1,7552 @@
+{
+  "advancedPointList": [
+    {
+      "className": "LocationMark",
+      "instanceName": "LM25",
+      "pos": {
+        "x": 8.691,
+        "y": 0.273
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "Q29vbGRvd24gcG9zZQ==",
+          "stringValue": "Cooldown pose"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ChargePoint",
+      "instanceName": "CP21",
+      "pos": {
+        "x": 7.03,
+        "y": 4.004
+      },
+      "dir": -3.141592653589793,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0yNA==",
+          "stringValue": "LM24"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "Zm9yazEuY2hhcmdlcnNwb3Q=",
+          "stringValue": "fork1.chargerspot"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "Q2hhcmdlciAy",
+          "stringValue": "Charger 2"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM24",
+      "pos": {
+        "x": 8.601,
+        "y": 4.004
+      },
+      "dir": -3.141592653589793,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIGNoYXJnZXIgMg==",
+          "stringValue": "Pre charger 2"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP3",
+      "pos": {
+        "x": 5.372,
+        "y": -2.373
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0yNw==",
+          "stringValue": "LM27"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDI=",
+          "stringValue": "Pallet 2"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP2",
+      "pos": {
+        "x": 6.44,
+        "y": -2.373
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0yNg==",
+          "stringValue": "LM26"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDE=",
+          "stringValue": "Pallet 1"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP1",
+      "pos": {
+        "x": 9.231,
+        "y": 7.1
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "TWFuaXB1bGF0b3IgU3RhdGlvbg==",
+          "stringValue": "Manipulator Station"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM26",
+      "pos": {
+        "x": 6.44,
+        "y": -1.088
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCAx",
+          "stringValue": "Pre pallet 1"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP4",
+      "pos": {
+        "x": 4.044,
+        "y": -2.363
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0yOA==",
+          "stringValue": "LM28"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDM=",
+          "stringValue": "Pallet 3"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP5",
+      "pos": {
+        "x": 2.969,
+        "y": -2.373
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0yOQ==",
+          "stringValue": "LM29"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDQ=",
+          "stringValue": "Pallet 4"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP7",
+      "pos": {
+        "x": 0.577,
+        "y": -2.363
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0zMQ==",
+          "stringValue": "LM31"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDY=",
+          "stringValue": "Pallet 6"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP6",
+      "pos": {
+        "x": 1.635,
+        "y": -2.363
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0zMA==",
+          "stringValue": "LM30"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDU=",
+          "stringValue": "Pallet 5"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ChargePoint",
+      "instanceName": "CP20",
+      "pos": {
+        "x": 8.681,
+        "y": -2.333
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0yMw==",
+          "stringValue": "LM23"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "Zm9yay5jaGFyZ2Vyc3BvdA==",
+          "stringValue": "fork.chargerspot"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "Q2hhcmdlciAx",
+          "stringValue": "Charger 1"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM23",
+      "pos": {
+        "x": 8.691,
+        "y": -1.559
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIGNoYXJnZXIgMQ==",
+          "stringValue": "Pre charger 1"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM22",
+      "pos": {
+        "x": 9.231,
+        "y": 3.051
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIE1hbmlwdWxhdG9yIFN0YXRpb24=",
+          "stringValue": "Pre Manipulator Station"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP9",
+      "pos": {
+        "x": -1.814,
+        "y": -2.373
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0zMw==",
+          "stringValue": "LM33"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDg=",
+          "stringValue": "Pallet 8"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP8",
+      "pos": {
+        "x": -0.756,
+        "y": -2.371
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0zMg==",
+          "stringValue": "LM32"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDc=",
+          "stringValue": "Pallet 7"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP10",
+      "pos": {
+        "x": -3.168,
+        "y": -2.373
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0zNA==",
+          "stringValue": "LM34"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDk=",
+          "stringValue": "Pallet 9"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP11",
+      "pos": {
+        "x": -4.209,
+        "y": -2.373
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0zNQ==",
+          "stringValue": "LM35"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDEw",
+          "stringValue": "Pallet 10"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP12",
+      "pos": {
+        "x": -5.564,
+        "y": -2.373
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0zNg==",
+          "stringValue": "LM36"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGVyIDEx",
+          "stringValue": "Paller 11"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP13",
+      "pos": {
+        "x": -6.619,
+        "y": -2.373
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0zNw==",
+          "stringValue": "LM37"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGVyIDEy",
+          "stringValue": "Paller 12"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP14",
+      "pos": {
+        "x": -0.76,
+        "y": 1.43
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0zOA==",
+          "stringValue": "LM38"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDEz",
+          "stringValue": "Pallet 13"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP15",
+      "pos": {
+        "x": -1.814,
+        "y": 1.43
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE0zOQ==",
+          "stringValue": "LM39"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDE0",
+          "stringValue": "Pallet 14"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP16",
+      "pos": {
+        "x": -3.168,
+        "y": 1.43
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDE1",
+          "stringValue": "Pallet 15"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP17",
+      "pos": {
+        "x": -4.209,
+        "y": 1.43
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE00MQ==",
+          "stringValue": "LM41"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDE2",
+          "stringValue": "Pallet 16"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP18",
+      "pos": {
+        "x": -5.564,
+        "y": 1.43
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE00Mg==",
+          "stringValue": "LM42"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDE3",
+          "stringValue": "Pallet 17"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP19",
+      "pos": {
+        "x": -6.619,
+        "y": 1.43
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "prepoint",
+          "type": "string",
+          "value": "TE00Mw==",
+          "stringValue": "LM43"
+        },
+        {
+          "key": "executor",
+          "type": "string",
+          "value": "Zm9yaw==",
+          "stringValue": "fork"
+        },
+        {
+          "key": "recfile",
+          "type": "string",
+          "value": "cDAwMDEucGFsbGV0",
+          "stringValue": "p0001.pallet"
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFsbGV0IDE4",
+          "stringValue": "Pallet 18"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM27",
+      "pos": {
+        "x": 5.372,
+        "y": -1.088
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCAy",
+          "stringValue": "Pre pallet 2"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM28",
+      "pos": {
+        "x": 4.044,
+        "y": -1.088
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCAz",
+          "stringValue": "Pre pallet 3"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM29",
+      "pos": {
+        "x": 2.969,
+        "y": -1.088
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCA0",
+          "stringValue": "Pre pallet 4"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM30",
+      "pos": {
+        "x": 1.635,
+        "y": -1.088
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCA1",
+          "stringValue": "Pre pallet 5"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM31",
+      "pos": {
+        "x": 0.577,
+        "y": -1.088
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCA2",
+          "stringValue": "Pre pallet 6"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM32",
+      "pos": {
+        "x": -0.76,
+        "y": -1.088
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCA3",
+          "stringValue": "Pre pallet 7"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM33",
+      "pos": {
+        "x": -1.814,
+        "y": -1.088
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCA4",
+          "stringValue": "Pre pallet 8"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM34",
+      "pos": {
+        "x": -3.168,
+        "y": -1.088
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCA5",
+          "stringValue": "Pre pallet 9"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM35",
+      "pos": {
+        "x": -4.209,
+        "y": -1.088
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCAxMA==",
+          "stringValue": "Pre pallet 10"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM36",
+      "pos": {
+        "x": -5.564,
+        "y": -1.088
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCAxMQ==",
+          "stringValue": "Pre pallet 11"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM37",
+      "pos": {
+        "x": -6.619,
+        "y": -1.088
+      },
+      "dir": 1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCAxMg==",
+          "stringValue": "Pre pallet 12"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM38",
+      "pos": {
+        "x": -0.76,
+        "y": 0.171
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCAxMw==",
+          "stringValue": "Pre pallet 13"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM39",
+      "pos": {
+        "x": -1.814,
+        "y": 0.171
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCAxNA==",
+          "stringValue": "Pre pallet 14"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM40",
+      "pos": {
+        "x": -3.168,
+        "y": 0.171
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCAxNQ==",
+          "stringValue": "Pre pallet 15"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM41",
+      "pos": {
+        "x": -4.209,
+        "y": 0.171
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCAxNg==",
+          "stringValue": "Pre pallet 16"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM42",
+      "pos": {
+        "x": -5.564,
+        "y": 0.171
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCAxNw==",
+          "stringValue": "Pre pallet 17"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM43",
+      "pos": {
+        "x": -6.619,
+        "y": 0.171
+      },
+      "dir": -1.5707963267948966,
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UHJlIHBhbGxldCAxOA==",
+          "stringValue": "Pre pallet 18"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM44",
+      "pos": {
+        "x": 7.852,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "VHVybiBwYWxsZXQgMS0y",
+          "stringValue": "Turn pallet 1-2"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM45",
+      "pos": {
+        "x": 5.456,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "VHVybiBQYWxsZXQgMy00",
+          "stringValue": "Turn Pallet 3-4"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM50",
+      "pos": {
+        "x": 7.862,
+        "y": -1.239
+      },
+      "property": [
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM46",
+      "pos": {
+        "x": 3.057,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "VHVybiBQYWxsZXQgNS02",
+          "stringValue": "Turn Pallet 5-6"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM47",
+      "pos": {
+        "x": 0.654,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "VHVybiBQYWxsZXQgNy04",
+          "stringValue": "Turn Pallet 7-8"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM48",
+      "pos": {
+        "x": -1.758,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "VHVybiBQYWxsZXQgOS0xMA==",
+          "stringValue": "Turn Pallet 9-10"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM49",
+      "pos": {
+        "x": -4.149,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "VHVybiBQYWxsZXQgMTEtMTI=",
+          "stringValue": "Turn Pallet 11-12"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM51",
+      "pos": {
+        "x": 5.456,
+        "y": -1.239
+      },
+      "property": [
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM52",
+      "pos": {
+        "x": 3.057,
+        "y": -1.239
+      },
+      "property": [
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM53",
+      "pos": {
+        "x": 0.654,
+        "y": -1.239
+      },
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "VHVybiBQYWxsZXQgMTMtMTQ=",
+          "stringValue": "Turn Pallet 13-14"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM54",
+      "pos": {
+        "x": -1.758,
+        "y": -1.239
+      },
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "VHVybiBQYWxsZXQgMTUtMTY=",
+          "stringValue": "Turn Pallet 15-16"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM55",
+      "pos": {
+        "x": -4.149,
+        "y": -1.239
+      },
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "VHVybiBQYWxsZXQgMTctMTg=",
+          "stringValue": "Turn Pallet 17-18"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    }
+  ],
+  "advancedCurveList": [
+    {
+      "className": "StraightPath",
+      "instanceName": "LM28-AP4",
+      "startPos": {
+        "instanceName": "LM28",
+        "pos": {
+          "x": 4.044,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "AP4",
+        "pos": {
+          "x": 4.044,
+          "y": -2.363
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "obsExpansion",
+          "type": "double",
+          "value": "MC4wMw==",
+          "doubleValue": 0.03
+        },
+        {
+          "key": "loadObsExpansion",
+          "type": "double",
+          "value": "MC4wMw==",
+          "doubleValue": 0.03
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP4-LM28",
+      "startPos": {
+        "instanceName": "AP4",
+        "pos": {
+          "x": 4.044,
+          "y": -2.363
+        }
+      },
+      "endPos": {
+        "instanceName": "LM28",
+        "pos": {
+          "x": 4.044,
+          "y": -1.088
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "obsExpansion",
+          "type": "double",
+          "value": "MC4wMw==",
+          "doubleValue": 0.03
+        },
+        {
+          "key": "loadObsExpansion",
+          "type": "double",
+          "value": "MC4wMw==",
+          "doubleValue": 0.03
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM35-AP11",
+      "startPos": {
+        "instanceName": "LM35",
+        "pos": {
+          "x": -4.209,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "AP11",
+        "pos": {
+          "x": -4.209,
+          "y": -2.373
+        }
+      },
+      "controlPos1": {
+        "x": -4.216,
+        "y": -1.531
+      },
+      "controlPos2": {
+        "x": -4.216,
+        "y": -1.951
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "AP11-LM35",
+      "startPos": {
+        "instanceName": "AP11",
+        "pos": {
+          "x": -4.209,
+          "y": -2.373
+        }
+      },
+      "endPos": {
+        "instanceName": "LM35",
+        "pos": {
+          "x": -4.209,
+          "y": -1.088
+        }
+      },
+      "controlPos1": {
+        "x": -4.216,
+        "y": -1.951
+      },
+      "controlPos2": {
+        "x": -4.216,
+        "y": -1.531
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM36-AP12",
+      "startPos": {
+        "instanceName": "LM36",
+        "pos": {
+          "x": -5.564,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "AP12",
+        "pos": {
+          "x": -5.564,
+          "y": -2.373
+        }
+      },
+      "controlPos1": {
+        "x": -5.555,
+        "y": -1.533
+      },
+      "controlPos2": {
+        "x": -5.555,
+        "y": -1.953
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "AP12-LM36",
+      "startPos": {
+        "instanceName": "AP12",
+        "pos": {
+          "x": -5.564,
+          "y": -2.373
+        }
+      },
+      "endPos": {
+        "instanceName": "LM36",
+        "pos": {
+          "x": -5.564,
+          "y": -1.088
+        }
+      },
+      "controlPos1": {
+        "x": -5.555,
+        "y": -1.953
+      },
+      "controlPos2": {
+        "x": -5.555,
+        "y": -1.533
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM26-AP2",
+      "startPos": {
+        "instanceName": "LM26",
+        "pos": {
+          "x": 6.44,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "AP2",
+        "pos": {
+          "x": 6.44,
+          "y": -2.373
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP2-LM26",
+      "startPos": {
+        "instanceName": "AP2",
+        "pos": {
+          "x": 6.44,
+          "y": -2.373
+        }
+      },
+      "endPos": {
+        "instanceName": "LM26",
+        "pos": {
+          "x": 6.44,
+          "y": -1.088
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM27-AP3",
+      "startPos": {
+        "instanceName": "LM27",
+        "pos": {
+          "x": 5.372,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "AP3",
+        "pos": {
+          "x": 5.372,
+          "y": -2.373
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP3-LM27",
+      "startPos": {
+        "instanceName": "AP3",
+        "pos": {
+          "x": 5.372,
+          "y": -2.373
+        }
+      },
+      "endPos": {
+        "instanceName": "LM27",
+        "pos": {
+          "x": 5.372,
+          "y": -1.088
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM28-AP4",
+      "startPos": {
+        "instanceName": "LM28",
+        "pos": {
+          "x": 4.044,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "AP4",
+        "pos": {
+          "x": 4.044,
+          "y": -2.363
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP4-LM28",
+      "startPos": {
+        "instanceName": "AP4",
+        "pos": {
+          "x": 4.044,
+          "y": -2.363
+        }
+      },
+      "endPos": {
+        "instanceName": "LM28",
+        "pos": {
+          "x": 4.044,
+          "y": -1.088
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM29-AP5",
+      "startPos": {
+        "instanceName": "LM29",
+        "pos": {
+          "x": 2.969,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "AP5",
+        "pos": {
+          "x": 2.969,
+          "y": -2.373
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP5-LM29",
+      "startPos": {
+        "instanceName": "AP5",
+        "pos": {
+          "x": 2.969,
+          "y": -2.373
+        }
+      },
+      "endPos": {
+        "instanceName": "LM29",
+        "pos": {
+          "x": 2.969,
+          "y": -1.088
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM30-AP6",
+      "startPos": {
+        "instanceName": "LM30",
+        "pos": {
+          "x": 1.635,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "AP6",
+        "pos": {
+          "x": 1.635,
+          "y": -2.363
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP6-LM30",
+      "startPos": {
+        "instanceName": "AP6",
+        "pos": {
+          "x": 1.635,
+          "y": -2.363
+        }
+      },
+      "endPos": {
+        "instanceName": "LM30",
+        "pos": {
+          "x": 1.635,
+          "y": -1.088
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM31-AP7",
+      "startPos": {
+        "instanceName": "LM31",
+        "pos": {
+          "x": 0.577,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "AP7",
+        "pos": {
+          "x": 0.577,
+          "y": -2.363
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP7-LM31",
+      "startPos": {
+        "instanceName": "AP7",
+        "pos": {
+          "x": 0.577,
+          "y": -2.363
+        }
+      },
+      "endPos": {
+        "instanceName": "LM31",
+        "pos": {
+          "x": 0.577,
+          "y": -1.088
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM32-AP8",
+      "startPos": {
+        "instanceName": "LM32",
+        "pos": {
+          "x": -0.76,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "AP8",
+        "pos": {
+          "x": -0.756,
+          "y": -2.371
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP8-LM32",
+      "startPos": {
+        "instanceName": "AP8",
+        "pos": {
+          "x": -0.756,
+          "y": -2.371
+        }
+      },
+      "endPos": {
+        "instanceName": "LM32",
+        "pos": {
+          "x": -0.76,
+          "y": -1.088
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM33-AP9",
+      "startPos": {
+        "instanceName": "LM33",
+        "pos": {
+          "x": -1.814,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "AP9",
+        "pos": {
+          "x": -1.814,
+          "y": -2.373
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP9-LM33",
+      "startPos": {
+        "instanceName": "AP9",
+        "pos": {
+          "x": -1.814,
+          "y": -2.373
+        }
+      },
+      "endPos": {
+        "instanceName": "LM33",
+        "pos": {
+          "x": -1.814,
+          "y": -1.088
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM34-AP10",
+      "startPos": {
+        "instanceName": "LM34",
+        "pos": {
+          "x": -3.168,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "AP10",
+        "pos": {
+          "x": -3.168,
+          "y": -2.373
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP10-LM34",
+      "startPos": {
+        "instanceName": "AP10",
+        "pos": {
+          "x": -3.168,
+          "y": -2.373
+        }
+      },
+      "endPos": {
+        "instanceName": "LM34",
+        "pos": {
+          "x": -3.168,
+          "y": -1.088
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM35-AP11",
+      "startPos": {
+        "instanceName": "LM35",
+        "pos": {
+          "x": -4.209,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "AP11",
+        "pos": {
+          "x": -4.209,
+          "y": -2.373
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP11-LM35",
+      "startPos": {
+        "instanceName": "AP11",
+        "pos": {
+          "x": -4.209,
+          "y": -2.373
+        }
+      },
+      "endPos": {
+        "instanceName": "LM35",
+        "pos": {
+          "x": -4.209,
+          "y": -1.088
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM36-AP12",
+      "startPos": {
+        "instanceName": "LM36",
+        "pos": {
+          "x": -5.564,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "AP12",
+        "pos": {
+          "x": -5.564,
+          "y": -2.373
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP12-LM36",
+      "startPos": {
+        "instanceName": "AP12",
+        "pos": {
+          "x": -5.564,
+          "y": -2.373
+        }
+      },
+      "endPos": {
+        "instanceName": "LM36",
+        "pos": {
+          "x": -5.564,
+          "y": -1.088
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP13-LM37",
+      "startPos": {
+        "instanceName": "AP13",
+        "pos": {
+          "x": -6.619,
+          "y": -2.373
+        }
+      },
+      "endPos": {
+        "instanceName": "LM37",
+        "pos": {
+          "x": -6.619,
+          "y": -1.088
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM37-AP13",
+      "startPos": {
+        "instanceName": "LM37",
+        "pos": {
+          "x": -6.619,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "AP13",
+        "pos": {
+          "x": -6.619,
+          "y": -2.373
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM43-AP19",
+      "startPos": {
+        "instanceName": "LM43",
+        "pos": {
+          "x": -6.619,
+          "y": 0.171
+        }
+      },
+      "endPos": {
+        "instanceName": "AP19",
+        "pos": {
+          "x": -6.619,
+          "y": 1.43
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP19-LM43",
+      "startPos": {
+        "instanceName": "AP19",
+        "pos": {
+          "x": -6.619,
+          "y": 1.43
+        }
+      },
+      "endPos": {
+        "instanceName": "LM43",
+        "pos": {
+          "x": -6.619,
+          "y": 0.171
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM42-AP18",
+      "startPos": {
+        "instanceName": "LM42",
+        "pos": {
+          "x": -5.564,
+          "y": 0.171
+        }
+      },
+      "endPos": {
+        "instanceName": "AP18",
+        "pos": {
+          "x": -5.564,
+          "y": 1.43
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP18-LM42",
+      "startPos": {
+        "instanceName": "AP18",
+        "pos": {
+          "x": -5.564,
+          "y": 1.43
+        }
+      },
+      "endPos": {
+        "instanceName": "LM42",
+        "pos": {
+          "x": -5.564,
+          "y": 0.171
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM41-AP17",
+      "startPos": {
+        "instanceName": "LM41",
+        "pos": {
+          "x": -4.209,
+          "y": 0.171
+        }
+      },
+      "endPos": {
+        "instanceName": "AP17",
+        "pos": {
+          "x": -4.209,
+          "y": 1.43
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP17-LM41",
+      "startPos": {
+        "instanceName": "AP17",
+        "pos": {
+          "x": -4.209,
+          "y": 1.43
+        }
+      },
+      "endPos": {
+        "instanceName": "LM41",
+        "pos": {
+          "x": -4.209,
+          "y": 0.171
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM40-AP16",
+      "startPos": {
+        "instanceName": "LM40",
+        "pos": {
+          "x": -3.168,
+          "y": 0.171
+        }
+      },
+      "endPos": {
+        "instanceName": "AP16",
+        "pos": {
+          "x": -3.168,
+          "y": 1.43
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP16-LM40",
+      "startPos": {
+        "instanceName": "AP16",
+        "pos": {
+          "x": -3.168,
+          "y": 1.43
+        }
+      },
+      "endPos": {
+        "instanceName": "LM40",
+        "pos": {
+          "x": -3.168,
+          "y": 0.171
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM39-AP15",
+      "startPos": {
+        "instanceName": "LM39",
+        "pos": {
+          "x": -1.814,
+          "y": 0.171
+        }
+      },
+      "endPos": {
+        "instanceName": "AP15",
+        "pos": {
+          "x": -1.814,
+          "y": 1.43
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP15-LM39",
+      "startPos": {
+        "instanceName": "AP15",
+        "pos": {
+          "x": -1.814,
+          "y": 1.43
+        }
+      },
+      "endPos": {
+        "instanceName": "LM39",
+        "pos": {
+          "x": -1.814,
+          "y": 0.171
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM38-AP14",
+      "startPos": {
+        "instanceName": "LM38",
+        "pos": {
+          "x": -0.76,
+          "y": 0.171
+        }
+      },
+      "endPos": {
+        "instanceName": "AP14",
+        "pos": {
+          "x": -0.76,
+          "y": 1.43
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP14-LM38",
+      "startPos": {
+        "instanceName": "AP14",
+        "pos": {
+          "x": -0.76,
+          "y": 1.43
+        }
+      },
+      "endPos": {
+        "instanceName": "LM38",
+        "pos": {
+          "x": -0.76,
+          "y": 0.171
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "CP20-LM23",
+      "startPos": {
+        "instanceName": "CP20",
+        "pos": {
+          "x": 8.681,
+          "y": -2.333
+        }
+      },
+      "endPos": {
+        "instanceName": "LM23",
+        "pos": {
+          "x": 8.691,
+          "y": -1.559
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM23-CP20",
+      "startPos": {
+        "instanceName": "LM23",
+        "pos": {
+          "x": 8.691,
+          "y": -1.559
+        }
+      },
+      "endPos": {
+        "instanceName": "CP20",
+        "pos": {
+          "x": 8.681,
+          "y": -2.333
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "CP21-LM24",
+      "startPos": {
+        "instanceName": "CP21",
+        "pos": {
+          "x": 7.03,
+          "y": 4.004
+        }
+      },
+      "endPos": {
+        "instanceName": "LM24",
+        "pos": {
+          "x": 8.601,
+          "y": 4.004
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM24-CP21",
+      "startPos": {
+        "instanceName": "LM24",
+        "pos": {
+          "x": 8.601,
+          "y": 4.004
+        }
+      },
+      "endPos": {
+        "instanceName": "CP21",
+        "pos": {
+          "x": 7.03,
+          "y": 4.004
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM22-AP1",
+      "startPos": {
+        "instanceName": "LM22",
+        "pos": {
+          "x": 9.231,
+          "y": 3.051
+        }
+      },
+      "endPos": {
+        "instanceName": "AP1",
+        "pos": {
+          "x": 9.231,
+          "y": 7.1
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "obsExpansion",
+          "type": "double",
+          "value": "MC4wMw==",
+          "doubleValue": 0.03
+        },
+        {
+          "key": "loadObsExpansion",
+          "type": "double",
+          "value": "MC4wMw==",
+          "doubleValue": 0.03
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP1-LM22",
+      "startPos": {
+        "instanceName": "AP1",
+        "pos": {
+          "x": 9.231,
+          "y": 7.1
+        }
+      },
+      "endPos": {
+        "instanceName": "LM22",
+        "pos": {
+          "x": 9.231,
+          "y": 3.051
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "obsExpansion",
+          "type": "double",
+          "value": "MC4wMw==",
+          "doubleValue": 0.03
+        },
+        {
+          "key": "loadDecObsExpansion",
+          "type": "double",
+          "value": "MC4wMw==",
+          "doubleValue": 0.03
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM44-LM26",
+      "startPos": {
+        "instanceName": "LM44",
+        "pos": {
+          "x": 7.852,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM26",
+        "pos": {
+          "x": 6.44,
+          "y": -1.088
+        }
+      },
+      "controlPos1": {
+        "x": 6.711,
+        "y": 0.277
+      },
+      "controlPos2": {
+        "x": 6.44,
+        "y": -0.547
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM26-LM44",
+      "startPos": {
+        "instanceName": "LM26",
+        "pos": {
+          "x": 6.44,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "LM44",
+        "pos": {
+          "x": 7.852,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": 6.44,
+        "y": -0.547
+      },
+      "controlPos2": {
+        "x": 6.711,
+        "y": 0.277
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM27-LM44",
+      "startPos": {
+        "instanceName": "LM27",
+        "pos": {
+          "x": 5.372,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "LM44",
+        "pos": {
+          "x": 7.852,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": 5.372,
+        "y": -0.561
+      },
+      "controlPos2": {
+        "x": 6.171,
+        "y": 0.269
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM44-LM27",
+      "startPos": {
+        "instanceName": "LM44",
+        "pos": {
+          "x": 7.852,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM27",
+        "pos": {
+          "x": 5.372,
+          "y": -1.088
+        }
+      },
+      "controlPos1": {
+        "x": 6.171,
+        "y": 0.269
+      },
+      "controlPos2": {
+        "x": 5.372,
+        "y": -0.561
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM45-LM28",
+      "startPos": {
+        "instanceName": "LM45",
+        "pos": {
+          "x": 5.456,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM28",
+        "pos": {
+          "x": 4.044,
+          "y": -1.088
+        }
+      },
+      "controlPos1": {
+        "x": 4.342,
+        "y": 0.264
+      },
+      "controlPos2": {
+        "x": 4.044,
+        "y": -0.576
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM28-LM45",
+      "startPos": {
+        "instanceName": "LM28",
+        "pos": {
+          "x": 4.044,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "LM45",
+        "pos": {
+          "x": 5.456,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": 4.044,
+        "y": -0.576
+      },
+      "controlPos2": {
+        "x": 4.342,
+        "y": 0.264
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM45-LM29",
+      "startPos": {
+        "instanceName": "LM45",
+        "pos": {
+          "x": 5.456,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM29",
+        "pos": {
+          "x": 2.969,
+          "y": -1.088
+        }
+      },
+      "controlPos1": {
+        "x": 3.772,
+        "y": 0.272
+      },
+      "controlPos2": {
+        "x": 2.969,
+        "y": -0.571
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM29-LM45",
+      "startPos": {
+        "instanceName": "LM29",
+        "pos": {
+          "x": 2.969,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "LM45",
+        "pos": {
+          "x": 5.456,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": 2.969,
+        "y": -0.571
+      },
+      "controlPos2": {
+        "x": 3.772,
+        "y": 0.272
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM46-LM30",
+      "startPos": {
+        "instanceName": "LM46",
+        "pos": {
+          "x": 3.057,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM30",
+        "pos": {
+          "x": 1.635,
+          "y": -1.088
+        }
+      },
+      "controlPos1": {
+        "x": 1.927,
+        "y": 0.268
+      },
+      "controlPos2": {
+        "x": 1.635,
+        "y": -0.563
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM30-LM46",
+      "startPos": {
+        "instanceName": "LM30",
+        "pos": {
+          "x": 1.635,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "LM46",
+        "pos": {
+          "x": 3.057,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": 1.635,
+        "y": -0.563
+      },
+      "controlPos2": {
+        "x": 1.927,
+        "y": 0.268
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM46-LM31",
+      "startPos": {
+        "instanceName": "LM46",
+        "pos": {
+          "x": 3.057,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM31",
+        "pos": {
+          "x": 0.577,
+          "y": -1.088
+        }
+      },
+      "controlPos1": {
+        "x": 1.37,
+        "y": 0.269
+      },
+      "controlPos2": {
+        "x": 0.577,
+        "y": -0.542
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM31-LM46",
+      "startPos": {
+        "instanceName": "LM31",
+        "pos": {
+          "x": 0.577,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "LM46",
+        "pos": {
+          "x": 3.057,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": 0.577,
+        "y": -0.542
+      },
+      "controlPos2": {
+        "x": 1.37,
+        "y": 0.269
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM47-LM32",
+      "startPos": {
+        "instanceName": "LM47",
+        "pos": {
+          "x": 0.654,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM32",
+        "pos": {
+          "x": -0.76,
+          "y": -1.088
+        }
+      },
+      "controlPos1": {
+        "x": -0.464,
+        "y": 0.272
+      },
+      "controlPos2": {
+        "x": -0.762,
+        "y": -0.547
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM32-LM47",
+      "startPos": {
+        "instanceName": "LM32",
+        "pos": {
+          "x": -0.76,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "LM47",
+        "pos": {
+          "x": 0.654,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": -0.762,
+        "y": -0.547
+      },
+      "controlPos2": {
+        "x": -0.464,
+        "y": 0.272
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM47-LM33",
+      "startPos": {
+        "instanceName": "LM47",
+        "pos": {
+          "x": 0.654,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM33",
+        "pos": {
+          "x": -1.814,
+          "y": -1.088
+        }
+      },
+      "controlPos1": {
+        "x": -1.035,
+        "y": 0.268
+      },
+      "controlPos2": {
+        "x": -1.814,
+        "y": -0.542
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM33-LM47",
+      "startPos": {
+        "instanceName": "LM33",
+        "pos": {
+          "x": -1.814,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "LM47",
+        "pos": {
+          "x": 0.654,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": -1.814,
+        "y": -0.542
+      },
+      "controlPos2": {
+        "x": -1.035,
+        "y": 0.268
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM48-LM34",
+      "startPos": {
+        "instanceName": "LM48",
+        "pos": {
+          "x": -1.758,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM34",
+        "pos": {
+          "x": -3.168,
+          "y": -1.088
+        }
+      },
+      "controlPos1": {
+        "x": -2.877,
+        "y": 0.268
+      },
+      "controlPos2": {
+        "x": -3.168,
+        "y": -0.554
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM34-LM48",
+      "startPos": {
+        "instanceName": "LM34",
+        "pos": {
+          "x": -3.168,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "LM48",
+        "pos": {
+          "x": -1.758,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": -3.168,
+        "y": -0.554
+      },
+      "controlPos2": {
+        "x": -2.877,
+        "y": 0.268
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM48-LM35",
+      "startPos": {
+        "instanceName": "LM48",
+        "pos": {
+          "x": -1.758,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM35",
+        "pos": {
+          "x": -4.209,
+          "y": -1.088
+        }
+      },
+      "controlPos1": {
+        "x": -3.442,
+        "y": 0.272
+      },
+      "controlPos2": {
+        "x": -4.2,
+        "y": -0.545
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM35-LM48",
+      "startPos": {
+        "instanceName": "LM35",
+        "pos": {
+          "x": -4.209,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "LM48",
+        "pos": {
+          "x": -1.758,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": -4.2,
+        "y": -0.545
+      },
+      "controlPos2": {
+        "x": -3.442,
+        "y": 0.272
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "obsExpansion",
+          "type": "double",
+          "value": "MC4wMw==",
+          "doubleValue": 0.03
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM49-LM36",
+      "startPos": {
+        "instanceName": "LM49",
+        "pos": {
+          "x": -4.149,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM36",
+        "pos": {
+          "x": -5.564,
+          "y": -1.088
+        }
+      },
+      "controlPos1": {
+        "x": -5.272,
+        "y": 0.273
+      },
+      "controlPos2": {
+        "x": -5.564,
+        "y": -0.707
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM36-LM49",
+      "startPos": {
+        "instanceName": "LM36",
+        "pos": {
+          "x": -5.564,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "LM49",
+        "pos": {
+          "x": -4.149,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": -5.564,
+        "y": -0.707
+      },
+      "controlPos2": {
+        "x": -5.272,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM49-LM37",
+      "startPos": {
+        "instanceName": "LM49",
+        "pos": {
+          "x": -4.149,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM37",
+        "pos": {
+          "x": -6.619,
+          "y": -1.088
+        }
+      },
+      "controlPos1": {
+        "x": -5.943,
+        "y": 0.273
+      },
+      "controlPos2": {
+        "x": -6.619,
+        "y": -0.701
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM37-LM49",
+      "startPos": {
+        "instanceName": "LM37",
+        "pos": {
+          "x": -6.619,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "LM49",
+        "pos": {
+          "x": -4.149,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": -6.619,
+        "y": -0.701
+      },
+      "controlPos2": {
+        "x": -5.943,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM55-LM42",
+      "startPos": {
+        "instanceName": "LM55",
+        "pos": {
+          "x": -4.149,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM42",
+        "pos": {
+          "x": -5.564,
+          "y": 0.171
+        }
+      },
+      "controlPos1": {
+        "x": -5.273,
+        "y": -1.242
+      },
+      "controlPos2": {
+        "x": -5.564,
+        "y": -0.412
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM42-LM55",
+      "startPos": {
+        "instanceName": "LM42",
+        "pos": {
+          "x": -5.564,
+          "y": 0.171
+        }
+      },
+      "endPos": {
+        "instanceName": "LM55",
+        "pos": {
+          "x": -4.149,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": -5.564,
+        "y": -0.412
+      },
+      "controlPos2": {
+        "x": -5.273,
+        "y": -1.242
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM55-LM43",
+      "startPos": {
+        "instanceName": "LM55",
+        "pos": {
+          "x": -4.149,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM43",
+        "pos": {
+          "x": -6.619,
+          "y": 0.171
+        }
+      },
+      "controlPos1": {
+        "x": -5.648,
+        "y": -1.245
+      },
+      "controlPos2": {
+        "x": -6.619,
+        "y": -0.416
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM43-LM55",
+      "startPos": {
+        "instanceName": "LM43",
+        "pos": {
+          "x": -6.619,
+          "y": 0.171
+        }
+      },
+      "endPos": {
+        "instanceName": "LM55",
+        "pos": {
+          "x": -4.149,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": -6.619,
+        "y": -0.416
+      },
+      "controlPos2": {
+        "x": -5.648,
+        "y": -1.245
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM54-LM40",
+      "startPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM40",
+        "pos": {
+          "x": -3.168,
+          "y": 0.171
+        }
+      },
+      "controlPos1": {
+        "x": -2.879,
+        "y": -1.235
+      },
+      "controlPos2": {
+        "x": -3.168,
+        "y": -0.422
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM40-LM54",
+      "startPos": {
+        "instanceName": "LM40",
+        "pos": {
+          "x": -3.168,
+          "y": 0.171
+        }
+      },
+      "endPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": -3.168,
+        "y": -0.422
+      },
+      "controlPos2": {
+        "x": -2.879,
+        "y": -1.235
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM41-LM54",
+      "startPos": {
+        "instanceName": "LM41",
+        "pos": {
+          "x": -4.209,
+          "y": 0.171
+        }
+      },
+      "endPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": -4.209,
+        "y": -0.42
+      },
+      "controlPos2": {
+        "x": -3.433,
+        "y": -1.235
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM54-LM41",
+      "startPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM41",
+        "pos": {
+          "x": -4.209,
+          "y": 0.171
+        }
+      },
+      "controlPos1": {
+        "x": -3.433,
+        "y": -1.235
+      },
+      "controlPos2": {
+        "x": -4.209,
+        "y": -0.42
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM38-LM53",
+      "startPos": {
+        "instanceName": "LM38",
+        "pos": {
+          "x": -0.76,
+          "y": 0.171
+        }
+      },
+      "endPos": {
+        "instanceName": "LM53",
+        "pos": {
+          "x": 0.654,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": -0.76,
+        "y": -0.418
+      },
+      "controlPos2": {
+        "x": -0.458,
+        "y": -1.242
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM53-LM38",
+      "startPos": {
+        "instanceName": "LM53",
+        "pos": {
+          "x": 0.654,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM38",
+        "pos": {
+          "x": -0.76,
+          "y": 0.171
+        }
+      },
+      "controlPos1": {
+        "x": -0.458,
+        "y": -1.242
+      },
+      "controlPos2": {
+        "x": -0.76,
+        "y": -0.418
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM39-LM53",
+      "startPos": {
+        "instanceName": "LM39",
+        "pos": {
+          "x": -1.814,
+          "y": 0.171
+        }
+      },
+      "endPos": {
+        "instanceName": "LM53",
+        "pos": {
+          "x": 0.654,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": -1.814,
+        "y": -0.416
+      },
+      "controlPos2": {
+        "x": -1.036,
+        "y": -1.242
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM53-LM39",
+      "startPos": {
+        "instanceName": "LM53",
+        "pos": {
+          "x": 0.654,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM39",
+        "pos": {
+          "x": -1.814,
+          "y": 0.171
+        }
+      },
+      "controlPos1": {
+        "x": -1.036,
+        "y": -1.242
+      },
+      "controlPos2": {
+        "x": -1.814,
+        "y": -0.416
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM49-LM48",
+      "startPos": {
+        "instanceName": "LM49",
+        "pos": {
+          "x": -4.149,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM48",
+        "pos": {
+          "x": -1.758,
+          "y": 0.273
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM48-LM49",
+      "startPos": {
+        "instanceName": "LM48",
+        "pos": {
+          "x": -1.758,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM49",
+        "pos": {
+          "x": -4.149,
+          "y": 0.273
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM48-LM47",
+      "startPos": {
+        "instanceName": "LM48",
+        "pos": {
+          "x": -1.758,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM47",
+        "pos": {
+          "x": 0.654,
+          "y": 0.273
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM47-LM48",
+      "startPos": {
+        "instanceName": "LM47",
+        "pos": {
+          "x": 0.654,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM48",
+        "pos": {
+          "x": -1.758,
+          "y": 0.273
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "virtualLaser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM47-LM46",
+      "startPos": {
+        "instanceName": "LM47",
+        "pos": {
+          "x": 0.654,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM46",
+        "pos": {
+          "x": 3.057,
+          "y": 0.273
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM46-LM47",
+      "startPos": {
+        "instanceName": "LM46",
+        "pos": {
+          "x": 3.057,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM47",
+        "pos": {
+          "x": 0.654,
+          "y": 0.273
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM46-LM45",
+      "startPos": {
+        "instanceName": "LM46",
+        "pos": {
+          "x": 3.057,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM45",
+        "pos": {
+          "x": 5.456,
+          "y": 0.273
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM45-LM46",
+      "startPos": {
+        "instanceName": "LM45",
+        "pos": {
+          "x": 5.456,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM46",
+        "pos": {
+          "x": 3.057,
+          "y": 0.273
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM55-LM54",
+      "startPos": {
+        "instanceName": "LM55",
+        "pos": {
+          "x": -4.149,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM54-LM55",
+      "startPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM55",
+        "pos": {
+          "x": -4.149,
+          "y": -1.239
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM54-LM53",
+      "startPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM53",
+        "pos": {
+          "x": 0.654,
+          "y": -1.239
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM53-LM54",
+      "startPos": {
+        "instanceName": "LM53",
+        "pos": {
+          "x": 0.654,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM53-LM52",
+      "startPos": {
+        "instanceName": "LM53",
+        "pos": {
+          "x": 0.654,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM52",
+        "pos": {
+          "x": 3.057,
+          "y": -1.239
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM52-LM53",
+      "startPos": {
+        "instanceName": "LM52",
+        "pos": {
+          "x": 3.057,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM53",
+        "pos": {
+          "x": 0.654,
+          "y": -1.239
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM52-LM51",
+      "startPos": {
+        "instanceName": "LM52",
+        "pos": {
+          "x": 3.057,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM51",
+        "pos": {
+          "x": 5.456,
+          "y": -1.239
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM51-LM52",
+      "startPos": {
+        "instanceName": "LM51",
+        "pos": {
+          "x": 5.456,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM52",
+        "pos": {
+          "x": 3.057,
+          "y": -1.239
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM51-LM50",
+      "startPos": {
+        "instanceName": "LM51",
+        "pos": {
+          "x": 5.456,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM50",
+        "pos": {
+          "x": 7.862,
+          "y": -1.239
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM50-LM51",
+      "startPos": {
+        "instanceName": "LM50",
+        "pos": {
+          "x": 7.862,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM51",
+        "pos": {
+          "x": 5.456,
+          "y": -1.239
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM45-LM44",
+      "startPos": {
+        "instanceName": "LM45",
+        "pos": {
+          "x": 5.456,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM44",
+        "pos": {
+          "x": 7.852,
+          "y": 0.273
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM44-LM45",
+      "startPos": {
+        "instanceName": "LM44",
+        "pos": {
+          "x": 7.852,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM45",
+        "pos": {
+          "x": 5.456,
+          "y": 0.273
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM25-LM22",
+      "startPos": {
+        "instanceName": "LM25",
+        "pos": {
+          "x": 8.691,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM22",
+        "pos": {
+          "x": 9.231,
+          "y": 3.051
+        }
+      },
+      "controlPos1": {
+        "x": 8.687,
+        "y": 1.903
+      },
+      "controlPos2": {
+        "x": 9.231,
+        "y": 1.915
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM22-LM25",
+      "startPos": {
+        "instanceName": "LM22",
+        "pos": {
+          "x": 9.231,
+          "y": 3.051
+        }
+      },
+      "endPos": {
+        "instanceName": "LM25",
+        "pos": {
+          "x": 8.691,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": 9.231,
+        "y": 1.915
+      },
+      "controlPos2": {
+        "x": 8.687,
+        "y": 1.903
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM25-LM24",
+      "startPos": {
+        "instanceName": "LM25",
+        "pos": {
+          "x": 8.691,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM24",
+        "pos": {
+          "x": 8.601,
+          "y": 4.004
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM24-LM25",
+      "startPos": {
+        "instanceName": "LM24",
+        "pos": {
+          "x": 8.601,
+          "y": 4.004
+        }
+      },
+      "endPos": {
+        "instanceName": "LM25",
+        "pos": {
+          "x": 8.691,
+          "y": 0.273
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM23-LM25",
+      "startPos": {
+        "instanceName": "LM23",
+        "pos": {
+          "x": 8.691,
+          "y": -1.559
+        }
+      },
+      "endPos": {
+        "instanceName": "LM25",
+        "pos": {
+          "x": 8.691,
+          "y": 0.273
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM25-LM23",
+      "startPos": {
+        "instanceName": "LM25",
+        "pos": {
+          "x": 8.691,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM23",
+        "pos": {
+          "x": 8.691,
+          "y": -1.559
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM49-LM54",
+      "startPos": {
+        "instanceName": "LM49",
+        "pos": {
+          "x": -4.149,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": -2.5,
+        "y": 0.273
+      },
+      "controlPos2": {
+        "x": -3.329,
+        "y": -1.239
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM54-LM49",
+      "startPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM49",
+        "pos": {
+          "x": -4.149,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": -3.329,
+        "y": -1.239
+      },
+      "controlPos2": {
+        "x": -2.5,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM55-LM48",
+      "startPos": {
+        "instanceName": "LM55",
+        "pos": {
+          "x": -4.149,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM48",
+        "pos": {
+          "x": -1.758,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": -2.555,
+        "y": -1.235
+      },
+      "controlPos2": {
+        "x": -3.329,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM48-LM55",
+      "startPos": {
+        "instanceName": "LM48",
+        "pos": {
+          "x": -1.758,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM55",
+        "pos": {
+          "x": -4.149,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": -3.329,
+        "y": 0.273
+      },
+      "controlPos2": {
+        "x": -2.555,
+        "y": -1.235
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM48-LM53",
+      "startPos": {
+        "instanceName": "LM48",
+        "pos": {
+          "x": -1.758,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM53",
+        "pos": {
+          "x": 0.654,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": 0.101,
+        "y": 0.273
+      },
+      "controlPos2": {
+        "x": -1.075,
+        "y": -1.239
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM53-LM48",
+      "startPos": {
+        "instanceName": "LM53",
+        "pos": {
+          "x": 0.654,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM48",
+        "pos": {
+          "x": -1.758,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": -1.075,
+        "y": -1.239
+      },
+      "controlPos2": {
+        "x": 0.101,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM54-LM47",
+      "startPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM47",
+        "pos": {
+          "x": 0.654,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": 0.03,
+        "y": -1.223
+      },
+      "controlPos2": {
+        "x": -1.005,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM47-LM54",
+      "startPos": {
+        "instanceName": "LM47",
+        "pos": {
+          "x": 0.654,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": -1.005,
+        "y": 0.273
+      },
+      "controlPos2": {
+        "x": 0.03,
+        "y": -1.223
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM53-LM46",
+      "startPos": {
+        "instanceName": "LM53",
+        "pos": {
+          "x": 0.654,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM46",
+        "pos": {
+          "x": 3.057,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": 2.422,
+        "y": -1.234
+      },
+      "controlPos2": {
+        "x": 1.536,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM46-LM53",
+      "startPos": {
+        "instanceName": "LM46",
+        "pos": {
+          "x": 3.057,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM53",
+        "pos": {
+          "x": 0.654,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": 1.536,
+        "y": 0.273
+      },
+      "controlPos2": {
+        "x": 2.422,
+        "y": -1.234
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM47-LM52",
+      "startPos": {
+        "instanceName": "LM47",
+        "pos": {
+          "x": 0.654,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM52",
+        "pos": {
+          "x": 3.057,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": 2.145,
+        "y": 0.273
+      },
+      "controlPos2": {
+        "x": 1.795,
+        "y": -1.239
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM52-LM47",
+      "startPos": {
+        "instanceName": "LM52",
+        "pos": {
+          "x": 3.057,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM47",
+        "pos": {
+          "x": 0.654,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": 1.795,
+        "y": -1.239
+      },
+      "controlPos2": {
+        "x": 2.145,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM46-LM51",
+      "startPos": {
+        "instanceName": "LM46",
+        "pos": {
+          "x": 3.057,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM51",
+        "pos": {
+          "x": 5.456,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": 4.879,
+        "y": 0.281
+      },
+      "controlPos2": {
+        "x": 3.758,
+        "y": -1.239
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM51-LM46",
+      "startPos": {
+        "instanceName": "LM51",
+        "pos": {
+          "x": 5.456,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM46",
+        "pos": {
+          "x": 3.057,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": 3.758,
+        "y": -1.239
+      },
+      "controlPos2": {
+        "x": 4.879,
+        "y": 0.281
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM52-LM45",
+      "startPos": {
+        "instanceName": "LM52",
+        "pos": {
+          "x": 3.057,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM45",
+        "pos": {
+          "x": 5.456,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": 4.808,
+        "y": -1.239
+      },
+      "controlPos2": {
+        "x": 3.851,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM45-LM52",
+      "startPos": {
+        "instanceName": "LM45",
+        "pos": {
+          "x": 5.456,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM52",
+        "pos": {
+          "x": 3.057,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": 3.851,
+        "y": 0.273
+      },
+      "controlPos2": {
+        "x": 4.808,
+        "y": -1.239
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM45-LM50",
+      "startPos": {
+        "instanceName": "LM45",
+        "pos": {
+          "x": 5.456,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM50",
+        "pos": {
+          "x": 7.862,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": 7.083,
+        "y": 0.273
+      },
+      "controlPos2": {
+        "x": 6.279,
+        "y": -1.27
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM50-LM45",
+      "startPos": {
+        "instanceName": "LM50",
+        "pos": {
+          "x": 7.862,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM45",
+        "pos": {
+          "x": 5.456,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": 6.279,
+        "y": -1.27
+      },
+      "controlPos2": {
+        "x": 7.083,
+        "y": 0.273
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM51-LM44",
+      "startPos": {
+        "instanceName": "LM51",
+        "pos": {
+          "x": 5.456,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM44",
+        "pos": {
+          "x": 7.852,
+          "y": 0.273
+        }
+      },
+      "controlPos1": {
+        "x": 7.124,
+        "y": -1.239
+      },
+      "controlPos2": {
+        "x": 6.266,
+        "y": 0.277
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "BezierPath",
+      "instanceName": "LM44-LM51",
+      "startPos": {
+        "instanceName": "LM44",
+        "pos": {
+          "x": 7.852,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM51",
+        "pos": {
+          "x": 5.456,
+          "y": -1.239
+        }
+      },
+      "controlPos1": {
+        "x": 6.266,
+        "y": 0.277
+      },
+      "controlPos2": {
+        "x": 7.124,
+        "y": -1.239
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM44-LM25",
+      "startPos": {
+        "instanceName": "LM44",
+        "pos": {
+          "x": 7.852,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM25",
+        "pos": {
+          "x": 8.691,
+          "y": 0.273
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM25-LM44",
+      "startPos": {
+        "instanceName": "LM25",
+        "pos": {
+          "x": 8.691,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "LM44",
+        "pos": {
+          "x": 7.852,
+          "y": 0.273
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    }
+  ],
+  "zone": {
+    "AP1": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP2": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP3": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP4": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP5": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP6": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP7": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP8": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP9": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP10": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP11": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP12": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP13": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP14": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP15": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP16": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP17": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP18": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "AP19": {
+      "zone": [
+        "paller_zone"
+      ]
+    },
+    "CP20": {
+      "zone": [
+        "Charger_zone"
+      ]
+    },
+    "CP21": {
+      "zone": [
+        "Charger_zone"
+      ]
+    },
+    "LM22": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM23": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM24": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM25": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM26": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM27": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM28": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM29": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM30": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM31": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM32": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM33": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM34": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM35": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM36": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM37": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM38": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM39": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM40": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM41": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM42": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM43": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM44": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM45": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM46": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM47": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM48": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM49": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM50": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM51": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM52": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM53": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM54": {
+      "zone": [
+        "none"
+      ]
+    },
+    "LM55": {
+      "zone": [
+        "none"
+      ]
+    }
+  }
+}
