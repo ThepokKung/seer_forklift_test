@@ -55,8 +55,6 @@ install(DIRECTORY
   # add directories here
   configs
   launch
-  # data
-  config
   DESTINATION share/${PROJECT_NAME})
 
 ament_package()
