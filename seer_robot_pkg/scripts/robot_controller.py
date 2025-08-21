@@ -12,12 +12,12 @@ import json
 import time
 
 # srv import
-from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus, GetNavigationPath, PalletID, CheckRobotCurrentLocation
+from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus, GetNavigationPath, PalletID, CheckRobotCurrentLocation,AssignTask
 
 # backend imports
-from seer_robot_pkg.seer_robot_pkg.robot_navigation_api import RobotNavigationAPI
-from seer_robot_pkg.seer_robot_pkg.pallet_loader import PalletLoader
-from seer_robot_pkg.seer_robot_pkg.json_command_builder import JsonCommandBuilder
+from seer_robot_pkg.robot_navigation_api import RobotNavigationAPI
+from seer_robot_pkg.pallet_loader import PalletLoader
+from seer_robot_pkg.json_command_builder import JsonCommandBuilder
 
 class RobotController(Node):
     def __init__(self):
@@ -53,14 +53,16 @@ class RobotController(Node):
         )
         
         # Service server
-        self.create_service(GetNavigationPath, 'robot_navigation/get_navigation_path', self.get_navigation_path_callback)
-        self.create_service(PalletID,'robot_navigation/pallet_pick_init_test', self.pallet_pick_init_callback)
-        self.create_service(PalletID,'robot_navigation/pallet_place_init_test', self.pallet_place_init_callback)
-        self.create_service(PalletID,'robot_navigation/pallet_pick_to_manipulator_test', self.pallet_pick_to_manipulator_callback)
-        self.create_service(PalletID,'robot_navigation/pallet_pick_from_manipulator_test', self.pallet_pick_from_manipulator_callback)
+        self.create_service(GetNavigationPath, 'robot_controller/get_navigation_path', self.get_navigation_path_callback)
+        self.create_service(PalletID,'robot_controller/pallet_pick_init_test', self.pallet_pick_init_callback)
+        self.create_service(PalletID,'robot_controller/pallet_place_init_test', self.pallet_place_init_callback)
+        self.create_service(PalletID,'robot_controller/pallet_pick_to_manipulator_test', self.pallet_pick_to_manipulator_callback)
+        self.create_service(PalletID,'robot_controller/pallet_pick_from_manipulator_test', self.pallet_pick_from_manipulator_callback)
+        self.create_service(AssignTask, 'robot_controller/assign_task', self.assign_task_callback)
+
 
         # Service client
-        self.check_robot_current_location_cbg = MutuallyExclusiveCallbackGroup()
+        self.check_robot_current_location_cbg =MutuallyExclusiveCallbackGroup()
         self.check_robot_current_location_client = self.create_client(CheckRobotCurrentLocation, 'check_robot_current_location', callback_group=self.check_robot_current_location_cbg)
         self.check_robot_navigation_state_cbg = MutuallyExclusiveCallbackGroup()
         self.check_robot_navigation_state_client = self.create_client(CheckRobotNavigationTaskStatus, 'check_robot_navigation_status', callback_group=self.check_robot_navigation_state_cbg)
@@ -164,7 +166,14 @@ class RobotController(Node):
             response.success = False
             response.message = f'Failed to get navigation path to {id2go}'
         return response
-    
+
+    def assign_task_callback(self, request, response):
+        self.get_logger().info(f'Received request to assign task: {request.task_id}')
+        # Implement task assignment logic here
+        response.success = True
+        response.message = f'Task {request.task_id} assigned successfully'
+        return response
+
     def execute_navigation_commands(self, command_list, context_name="Navigation"):
         self.get_logger().info(f"Generated {len(command_list)} {context_name} commands")
         

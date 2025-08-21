@@ -22,11 +22,11 @@ def generate_launch_description():
     
     # Create nodes for each robot
     for robot in robots:
-        # Robot state node
+        # Robot status node
         nodes.append(Node(
-            package='seer_robotic_pkg',
-            executable='n_robot_state.py',
-            name='robot_state_node',
+            package='seer_robot_pkg',
+            executable='robot_status.py',
+            name='robot_status_node',
             namespace=robot['namespace'],
             output='screen',
             parameters=[{
@@ -36,11 +36,11 @@ def generate_launch_description():
             }]
         ))
         
-        # Robot navigation node
+        # Robot controller node
         nodes.append(Node(
-            package='seer_robotic_pkg',
-            executable='n_robot_navigation.py',
-            name='robot_navigation_node',
+            package='seer_robot_pkg',
+            executable='robot_controller.py',
+            name='robot_controller_node',
             namespace=robot['namespace'],
             output='screen',
             parameters=[{
@@ -52,9 +52,9 @@ def generate_launch_description():
     
     # Add task management node
     nodes.append(Node(
-        package='seer_robotic_pkg',
-        executable='n_task_management.py',
-        name='n_task_management',
+        package='seer_robot_pkg',
+        executable='task_management.py',
+        name='task_management_node',
         output='screen'
     ))
     

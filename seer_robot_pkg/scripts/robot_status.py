@@ -14,7 +14,7 @@ from std_srvs.srv import Trigger
 from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus,CheckRobotCurrentLocation,CheckRobotAllForTask
 
 # backend imports
-from seer_robot_pkg.seer_robot_pkg.robot_status_api import RobotStatusAPI
+from seer_robot_pkg.robot_status_api import RobotStatusAPI
 
 class RobotStatus(Node):
     def __init__(self):
@@ -52,14 +52,14 @@ class RobotStatus(Node):
         # self.robot_battery_pub = self.create_publisher(Float32, 'robot_battery_percentage', 10)
         # # Robot position publisher
         # self.robot_position_pub = self.create_publisher(PointStamped, 'robot_position', 10)
-        self.robot_current_station_pub = self.create_publisher(String, 'robot_state/robot_current_station', 10)
+        self.robot_current_station_pub = self.create_publisher(String, 'robot_status/robot_current_station', 10)
         # self.robot_last_station_pub = self.create_publisher(String, 'robot_last_station', 10)
 
         # Service Server
-        self.create_service(CheckRobotNavigationTaskStatus, 'robot_state/check_robot_navigation_status', self.check_robot_navigation_status_callback)
-        self.create_service(CheckRobotCurrentLocation, 'robot_state/check_robot_current_location', self.check_robot_current_location_callback)
-        self.create_service(CheckRobotAllForTask, 'robot_state/check_robot_all_for_task', self.check_robot_all_for_task_callback)
-        self.create_service(Trigger, 'robot_state/check_available', self.check_robot_available_callback)
+        self.create_service(CheckRobotNavigationTaskStatus, 'robot_status/check_robot_navigation_status', self.check_robot_navigation_status_callback)
+        self.create_service(CheckRobotCurrentLocation, 'robot_status/check_robot_current_location', self.check_robot_current_location_callback)
+        self.create_service(CheckRobotAllForTask, 'robot_status/check_robot_all_for_task', self.check_robot_all_for_task_callback)
+        self.create_service(Trigger, 'robot_status/check_available', self.check_robot_available_callback)
 
         # Timer
         self.timer = self.create_timer(1.0, self.update_robot_callbacks) #1.0 seconds interval

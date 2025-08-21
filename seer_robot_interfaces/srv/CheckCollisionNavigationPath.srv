@@ -1,0 +1,5 @@
+string[] path
+---
+# Response
+bool has_collision
+string message

@@ -6,10 +6,15 @@ import rclpy
 from rclpy.node import Node
 from rclpy.exceptions import ParameterAlreadyDeclaredException
 from ament_index_python.packages import get_package_share_directory
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup # Mutiple callback groups for service clients
+
+
+from std_srvs.srv import Trigger
 
 from seer_robot_pkg.collision_buildmap import _build_geometry_from_map
 from seer_robot_pkg.collision_geom import pose_along_polyline, collide_OBB
 
+from seer_robot_interfaces.srv import CheckCollisionNavigationPath
 
 class TrafficManagement(Node):
     def __init__(self):
@@ -56,6 +61,13 @@ class TrafficManagement(Node):
             self.destroy_node()
             rclpy.shutdown()
             return
+        
+        # Service server
+        self.create_service(CheckCollisionNavigationPath, 'traffic_management/check_collision_navigation', self.check_collision_navigation_callback)
+
+        # Service client
+        self.check_robot_available_cbg = MutuallyExclusiveCallbackGroup()
+        self.check_robot_available_client = self.create_client(Trigger, 'robot_status/check_available', callback_group=self.check_robot_available_cbg)
 
         # ถ้ามี SimDt/SimTime ในไฟล์ ให้ override dt/t_max (optional)
         # if self.fk.get('sim_dt') is not None:
@@ -276,6 +288,13 @@ class TrafficManagement(Node):
                 self.get_logger().info(f"[DEMO] SAFE  v={res['v_used']:.2f}  buf={res['buffer_used']:.2f}")
         except Exception as e:
             self.get_logger().error(f"[DEMO] {e}")
+
+    # ------------------ Check Collsion Callback
+
+    def check_collision_navigation_callback(self, request, response):
+        response.has_collision = False
+        response.message = f"Path need check is {request.path}"
+        return response
 
 def main(args=None):
     rclpy.init(args=args)
