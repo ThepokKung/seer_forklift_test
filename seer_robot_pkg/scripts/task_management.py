@@ -58,11 +58,16 @@ class TaskManagement(Node):
             nav_callback_group = MutuallyExclusiveCallbackGroup()
             nav_client = self.create_client(GetNavigationPath,f'{robot_ns}/robot_controller/get_navigation_path',callback_group=nav_callback_group)
             
+            # Create client for task assignment
+            task_callback_group = MutuallyExclusiveCallbackGroup()
+            task_client = self.create_client(AssignTask,f'{robot_ns}/robot_controller/assign_task',callback_group=task_callback_group)
+            
             self.robot_clients[robot_ns] = {
-                'availability': availability_client,
-                'state': state_client,
-                'navigation': nav_client
-                }
+            'availability': availability_client,
+            'state': state_client,
+            'navigation': nav_client,
+            'assign_task': task_client
+            }
             self.get_logger().info(f'Created service clients for {robot_ns}')
 
         # Service server
@@ -111,8 +116,9 @@ class TaskManagement(Node):
             
             self.get_logger().info(f'Found available robot: {available_robot}')
             
+            ### task allocation here
+
             response.success = True
-            # response.message = f"Task {request.task_id} ({task_type_name}) assigned to robot {available_robot} for pallet {request.pallet_id}"
             response.message = f"Task {request.task_id} ({task_type_name}) for pallet {request.pallet_id} with data: {pallet_data}"
             self.get_logger().info(response.message)
             
@@ -203,7 +209,7 @@ class TaskManagement(Node):
             rclpy.spin_until_future_complete(self, future, timeout_sec=3.0)
             
             if not future.done():
-                self.get_logger().warn(f'Service call timeout for robot {robot_namespace}')
+                self.get_logger().warning(f'Service call timeout for robot {robot_namespace}')
                 return None
                 
             service_response = future.result()
