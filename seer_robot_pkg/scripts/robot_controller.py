@@ -54,12 +54,11 @@ class RobotController(Node):
         
         # Service server
         self.create_service(GetNavigationPath, 'robot_controller/get_navigation_path', self.get_navigation_path_callback)
-        self.create_service(PalletID,'robot_controller/pallet_pick_init_test', self.pallet_pick_init_callback)
-        self.create_service(PalletID,'robot_controller/pallet_place_init_test', self.pallet_place_init_callback)
-        self.create_service(PalletID,'robot_controller/pallet_pick_to_manipulator_test', self.pallet_pick_to_manipulator_callback)
-        self.create_service(PalletID,'robot_controller/pallet_pick_from_manipulator_test', self.pallet_pick_from_manipulator_callback)
         self.create_service(AssignTask, 'robot_controller/assign_task', self.assign_task_callback)
-
+        # self.create_service(PalletID,'robot_controller/pallet_pick_init_test', self.pallet_pick_init_callback)
+        # self.create_service(PalletID,'robot_controller/pallet_place_init_test', self.pallet_place_init_callback)
+        # self.create_service(PalletID,'robot_controller/pallet_pick_to_manipulator_test', self.pallet_pick_to_manipulator_callback)
+        # self.create_service(PalletID,'robot_controller/pallet_pick_from_manipulator_test', self.pallet_pick_from_manipulator_callback)
 
         # Service client
         self.check_robot_current_location_cbg =MutuallyExclusiveCallbackGroup()
@@ -169,9 +168,51 @@ class RobotController(Node):
 
     def assign_task_callback(self, request, response):
         self.get_logger().info(f'Received request to assign task: {request.task_id}')
-        # Implement task assignment logic here
-        response.success = True
-        response.message = f'Task {request.task_id} assigned successfully'
+        self.get_logger().info(f'Task Type ID: {request.task_type_id}, Pallet ID: {request.pallet_id}')
+        
+        # Create a PalletID request for the specific task
+        pallet_request = PalletID.Request()
+        pallet_request.pallet_id = request.pallet_id
+        
+        # Create a PalletID response
+        pallet_response = PalletID.Response()
+        
+        try:
+            # Route to appropriate task based on task_type_id
+            if request.task_type_id == 1:  # PickInit
+                self.get_logger().info(f'Executing PickInit for pallet {request.pallet_id}')
+                pallet_response = self.pallet_pick_init_callback(pallet_request, pallet_response)
+                
+            elif request.task_type_id == 2:  # PlaceInit
+                self.get_logger().info(f'Executing PlaceInit for pallet {request.pallet_id}')
+                pallet_response = self.pallet_place_init_callback(pallet_request, pallet_response)
+                
+            elif request.task_type_id == 3:  # PickToManipulator
+                self.get_logger().info(f'Executing PickToManipulator for pallet {request.pallet_id}')
+                pallet_response = self.pallet_pick_to_manipulator_callback(pallet_request, pallet_response)
+                
+            elif request.task_type_id == 4:  # PickFromManipulator
+                self.get_logger().info(f'Executing PickFromManipulator for pallet {request.pallet_id}')
+                pallet_response = self.pallet_pick_from_manipulator_callback(pallet_request, pallet_response)
+                
+            else:
+                self.get_logger().error(f'Invalid task_type_id: {request.task_type_id}. Valid values are 1-4.')
+                response.success = False
+                response.message = f'Invalid task_type_id: {request.task_type_id}. Valid values are: 1=PickInit, 2=PlaceInit, 3=PickToManipulator, 4=PickFromManipulator'
+                return response
+            
+            # Set response based on pallet task result
+            response.success = pallet_response.success
+            if pallet_response.success:
+                response.message = f'Task {request.task_id} (Type: {request.task_type_id}, Pallet: {request.pallet_id}) completed successfully. {pallet_response.message}'
+            else:
+                response.message = f'Task {request.task_id} (Type: {request.task_type_id}, Pallet: {request.pallet_id}) failed. {pallet_response.message}'
+                
+        except Exception as e:
+            self.get_logger().error(f'Exception during task assignment: {e}')
+            response.success = False
+            response.message = f'Task {request.task_id} failed with exception: {str(e)}'
+            
         return response
 
     def execute_navigation_commands(self, command_list, context_name="Navigation"):

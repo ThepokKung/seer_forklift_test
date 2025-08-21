@@ -14,7 +14,7 @@ from std_srvs.srv import Trigger
 from seer_robot_pkg.collision_buildmap import _build_geometry_from_map
 from seer_robot_pkg.collision_geom import pose_along_polyline, collide_OBB
 
-from seer_robot_interfaces.srv import CheckCollisionNavigationPath
+from seer_robot_interfaces.srv import CheckCollisionNavigationPath,CheckRobotCurrentLocation
 
 class TrafficManagement(Node):
     def __init__(self):
@@ -68,6 +68,8 @@ class TrafficManagement(Node):
         # Service client
         self.check_robot_available_cbg = MutuallyExclusiveCallbackGroup()
         self.check_robot_available_client = self.create_client(Trigger, 'robot_status/check_available', callback_group=self.check_robot_available_cbg)
+        self.check_robot_current_location_cbg = MutuallyExclusiveCallbackGroup()
+        self.check_robot_current_location_client = self.create_client(CheckRobotCurrentLocation, 'robot_status/check_robot_current_location', callback_group=self.check_robot_current_location_cbg)
 
         # ถ้ามี SimDt/SimTime ในไฟล์ ให้ override dt/t_max (optional)
         # if self.fk.get('sim_dt') is not None:

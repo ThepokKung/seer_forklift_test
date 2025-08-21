@@ -48,15 +48,15 @@ class TaskManagement(Node):
         for robot_ns in self.robot_namespaces:
             # Create client for robot availability check
             availability_callback_group = MutuallyExclusiveCallbackGroup()
-            availability_client = self.create_client(Trigger, f'{robot_ns}/robot_state/check_available', callback_group=availability_callback_group)
-            
+            availability_client = self.create_client(Trigger, f'{robot_ns}/robot_status/check_available', callback_group=availability_callback_group)
+
             # Create client for robot state check (detailed info)
             state_callback_group = MutuallyExclusiveCallbackGroup()
-            state_client = self.create_client(CheckRobotAllForTask,f'{robot_ns}/robot_state/check_robot_all_for_task',callback_group=state_callback_group)
+            state_client = self.create_client(CheckRobotAllForTask,f'{robot_ns}/robot_status/check_robot_all_for_task',callback_group=state_callback_group)
             
             # Create client for navigation path
             nav_callback_group = MutuallyExclusiveCallbackGroup()
-            nav_client = self.create_client(GetNavigationPath,f'{robot_ns}/robot_navigation/get_navigation_path',callback_group=nav_callback_group)
+            nav_client = self.create_client(GetNavigationPath,f'{robot_ns}/robot_controller/get_navigation_path',callback_group=nav_callback_group)
             
             self.robot_clients[robot_ns] = {
                 'availability': availability_client,
@@ -73,18 +73,6 @@ class TaskManagement(Node):
     ###             Service Callbacks                 ###
     #####################################################
 
-    def pick_pallet_for_init_callback(self, request, response):
-        self.get_logger().info(f'Received request to pick pallet with ID: {request.pallet_id}')
-        try:
-            pallet_data = self.pallet_loader.get_pallet_data_id(request.pallet_id)
-            response.success = True
-            response.message = f"Pallet with ID {request.pallet_id} has been picked successfully. Details: {pallet_data}"
-            self.get_logger().info(f'Pallet picked successfully: {response.message}')
-        except Exception as e:
-            response.success = False
-            response.message = str(e)
-            self.get_logger().error(f'Error picking pallet: {response.message}')
-        return response
     
     #####################################################
     ###             Assign Task Callbacks             ###
@@ -124,7 +112,8 @@ class TaskManagement(Node):
             self.get_logger().info(f'Found available robot: {available_robot}')
             
             response.success = True
-            response.message = f"Task {request.task_id} ({task_type_name}) assigned to robot {available_robot} for pallet {request.pallet_id}"
+            # response.message = f"Task {request.task_id} ({task_type_name}) assigned to robot {available_robot} for pallet {request.pallet_id}"
+            response.message = f"Task {request.task_id} ({task_type_name}) for pallet {request.pallet_id} with data: {pallet_data}"
             self.get_logger().info(response.message)
             
         except Exception as e:
@@ -166,10 +155,10 @@ class TaskManagement(Node):
         
         # Wait for service to be ready with a timeout
         if not client.service_is_ready():
-            self.get_logger().info(f'Waiting for service {robot_namespace}/robot_state/check_available to become available...')
+            self.get_logger().info(f'Waiting for service {robot_namespace}/robot_status/check_available to become available...')
             ready = client.wait_for_service(timeout_sec=2.0)
             if not ready:
-                self.get_logger().warn(f'Service {robot_namespace}/robot_state/check_available not available after waiting')
+                self.get_logger().warn(f'Service {robot_namespace}/robot_status/check_available not available after waiting')
                 return False
         
         service_request = Trigger.Request()
