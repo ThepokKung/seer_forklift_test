@@ -215,6 +215,7 @@ class RobotController(Node):
             
         return response
 
+    # Execute command
     def execute_navigation_commands(self, command_list, context_name="Navigation"):
         self.get_logger().info(f"Generated {len(command_list)} {context_name} commands")
         
@@ -273,6 +274,7 @@ class RobotController(Node):
     ###              Pick Place Manipulator           ###
     #####################################################
 
+    # Pick to Manipulator
     def pallet_pick_to_manipulator_callback(self, request, response):
         self.get_logger().info(f'Received request to test Pallet Pick to Manipulator: {request.pallet_id}')
         pallet_id_temp = request.pallet_id
@@ -312,6 +314,7 @@ class RobotController(Node):
             self.get_logger().error(response.message)
             return response
 
+    # Place from manipulator
     def pallet_pick_from_manipulator_callback(self, request, response):
         self.get_logger().info(f'Received request to test Pallet Pick from Manipulator: {request.pallet_id}')
         pallet_id_temp = request.pallet_id
@@ -355,6 +358,7 @@ class RobotController(Node):
     ###           Pick Place Init pallet              ###
     #####################################################
 
+    # Pick Init
     def pallet_pick_init_callback(self, request, response):
         self.get_logger().info(f'Received request to test Pallet Pick Init: {request.pallet_id}')
         pallet_id_temp = request.pallet_id
@@ -394,6 +398,7 @@ class RobotController(Node):
             self.get_logger().error(response.message)
             return response
         
+    # Place Init
     def pallet_place_init_callback(self, request, response):
         self.get_logger().info(f'Received request to test Pallet Place Init: {request.pallet_id}')
         pallet_id_temp = request.pallet_id
