@@ -48,20 +48,20 @@ class TaskManagement(Node):
         for robot_ns in self.robot_namespaces:
             # Create client for robot availability check
             availability_callback_group = MutuallyExclusiveCallbackGroup()
-            availability_client = self.create_client(Trigger, f'{robot_ns}/robot_status/check_available', callback_group=availability_callback_group)
+            availability_client = self.create_client(Trigger, f'/{robot_ns}/robot_status/check_available', callback_group=availability_callback_group)
 
             # Create client for robot state check (detailed info)
             state_callback_group = MutuallyExclusiveCallbackGroup()
-            state_client = self.create_client(CheckRobotAllForTask,f'{robot_ns}/robot_status/check_robot_all_for_task',callback_group=state_callback_group)
+            state_client = self.create_client(CheckRobotAllForTask,f'/{robot_ns}/robot_status/check_robot_all_for_task',callback_group=state_callback_group)
             
             # Create client for navigation path
             nav_callback_group = MutuallyExclusiveCallbackGroup()
-            nav_client = self.create_client(GetNavigationPath,f'{robot_ns}/robot_controller/get_navigation_path',callback_group=nav_callback_group)
-            
+            nav_client = self.create_client(GetNavigationPath,f'/{robot_ns}/robot_controller/get_navigation_path',callback_group=nav_callback_group)
+
             # Create client for task assignment
             task_callback_group = MutuallyExclusiveCallbackGroup()
-            task_client = self.create_client(AssignTask,f'{robot_ns}/robot_controller/assign_task',callback_group=task_callback_group)
-            
+            task_client = self.create_client(AssignTask,f'/{robot_ns}/robot_controller/assign_task',callback_group=task_callback_group)
+
             self.robot_clients[robot_ns] = {
             'availability': availability_client,
             'state': state_client,
@@ -146,9 +146,11 @@ class TaskManagement(Node):
                     else:
                         self.get_logger().info(f'Robot {robot_ns} is connected but busy: {robot_status.robot_task_status}')
                 else:
-                    self.get_logger().warn(f'Robot {robot_ns} is available but could not get detailed status')
+                    # If detailed status unavailable, accept the robot based on availability alone
+                    self.get_logger().warning(f'Robot {robot_ns} is available but detailed status unavailable — selecting based on availability')
+                    return robot_ns
             else:
-                self.get_logger().warn(f'Robot {robot_ns} is not available')
+                self.get_logger().warning(f'Robot {robot_ns} is not available')
         return None
 
     def check_robot_availability(self, robot_namespace):
@@ -198,9 +200,13 @@ class TaskManagement(Node):
             
         client = self.robot_clients[robot_namespace]['state']
         
+        # Wait for service to be ready with a timeout (like availability check)
         if not client.service_is_ready():
-            self.get_logger().warn(f'Service {robot_namespace}/check_robot_all_for_task not available')
-            return None
+            self.get_logger().info(f'Waiting for service {robot_namespace}/robot_status/check_robot_all_for_task to become available...')
+            ready = client.wait_for_service(timeout_sec=2.0)
+            if not ready:
+                self.get_logger().warning(f'Service {robot_namespace}/robot_status/check_robot_all_for_task not available after waiting')
+                return None
         
         service_request = CheckRobotAllForTask.Request()
         try:

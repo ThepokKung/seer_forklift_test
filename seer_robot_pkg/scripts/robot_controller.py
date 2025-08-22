@@ -62,9 +62,9 @@ class RobotController(Node):
 
         # Service client
         self.check_robot_current_location_cbg =MutuallyExclusiveCallbackGroup()
-        self.check_robot_current_location_client = self.create_client(CheckRobotCurrentLocation, 'check_robot_current_location', callback_group=self.check_robot_current_location_cbg)
+        self.check_robot_current_location_client = self.create_client(CheckRobotCurrentLocation, 'robot_status/check_robot_current_location', callback_group=self.check_robot_current_location_cbg)
         self.check_robot_navigation_state_cbg = MutuallyExclusiveCallbackGroup()
-        self.check_robot_navigation_state_client = self.create_client(CheckRobotNavigationTaskStatus, 'check_robot_navigation_status', callback_group=self.check_robot_navigation_state_cbg)
+        self.check_robot_navigation_state_client = self.create_client(CheckRobotNavigationTaskStatus, 'robot_controller/check_robot_navigation_status', callback_group=self.check_robot_navigation_state_cbg)
 
         # Start log
         self.get_logger().info(f'Robot Navigation API initialized for {self.robot_ip}')
