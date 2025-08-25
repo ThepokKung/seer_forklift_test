@@ -15,6 +15,7 @@ from std_srvs.srv import Trigger
 from seer_robot_interfaces.srv import PalletID, AssignTask, CheckRobotAllForTask, GetNavigationPath
 # backend imports
 from seer_robot_pkg.pallet_loader import PalletLoader
+from seer_robot_pkg.json_command_builder import JsonCommandBuilder
 
 class TaskManagement(Node):
     def __init__(self):
@@ -115,6 +116,8 @@ class TaskManagement(Node):
                 return response
             
             self.get_logger().info(f'Found available robot: {available_robot}')
+
+            ### Load path
             
             ### task allocation here
 

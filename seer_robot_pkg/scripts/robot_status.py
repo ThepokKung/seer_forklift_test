@@ -35,7 +35,7 @@ class RobotStatus(Node):
         self.robot_current_station = None
         self.robot_last_station = None
         self.robot_task_id = None
-        self.robot_state = None
+        self.robot_state = "IDLE"
         self.robot_have_good = None
         # self.robot_task_status = 0
         self.robot_navigation_status = 0
@@ -90,11 +90,11 @@ class RobotStatus(Node):
         return self.ensure_connection()
 
     #####################################################
-    ###                 Update State                  ###
+    ###                 Update Status                  ###
     #####################################################
 
     def update_robot_callbacks(self):
-        """Update robot state by calling battery and position updates."""
+        """Update robot status by calling battery and position updates."""
         self.update_robot_battery()
         self.update_robot_position()
         self.update_robot_navigation_status()
@@ -151,6 +151,23 @@ class RobotStatus(Node):
                 # Publish the navigation status if we got valid data
                 if temp_navigation is not None:
                     self.robot_navigation_status = temp_navigation.get('task_status', 0)
+                    # Robot State
+                    if temp_navigation.get('task_status') == 0:
+                        self.robot_state = "NONE"
+                    elif temp_navigation.get('task_status') == 1 :
+                        self.robot_state = "WAITING"
+                    elif temp_navigation.get('task_status') == 2:
+                        self.robot_state = "RUNNING"
+                    elif temp_navigation.get('task_status') == 3:
+                        self.robot_state = "SUSPENDED"
+                    elif temp_navigation.get('task_status') == 4:
+                        self.robot_state = "READY"
+                    elif temp_navigation.get('task_status') == 5:
+                        self.robot_state = "FAILED"
+                    elif temp_navigation.get('task_status') == 6:
+                        self.robot_state = "CANCELED"
+                    else:
+                        self.robot_state = "NONE"
                 else:
                     self.robot_navigation_status = None
             else:
@@ -184,16 +201,8 @@ class RobotStatus(Node):
             response.robot_current_station = str(self.robot_current_station) if self.robot_current_station is not None else "Unknown"
             
             # Convert navigation status integer to meaningful string
-            if self.robot_navigation_status == 0:
-                response.robot_task_status = "IDLE"
-            elif self.robot_navigation_status == 1:
-                response.robot_task_status = "READY"
-            elif self.robot_navigation_status == 2:
-                response.robot_task_status = "BUSY"
-            else:
-                response.robot_task_status = f"STATUS_{self.robot_navigation_status}"
-
             response.robot_navigation_status = int(self.robot_navigation_status)
+            response.robot_task_status = str(self.robot_state)
         else:
             response.success = False
             response.robot_current_station = "Unknown"

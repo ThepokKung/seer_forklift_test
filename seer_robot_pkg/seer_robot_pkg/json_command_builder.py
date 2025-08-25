@@ -20,7 +20,7 @@ class JsonCommandBuilder:
         command = [
                 ### Step 1 : Move robot from current station to Pre pallet Station
                 {
-                    "source_id": current_station_id,
+                    "source_id": "SELF_POSITION",
                     "id": pallet_data["pre_station_id"],
                     "task_id": task_id,
                     "operation": "ForkHeight",
@@ -82,7 +82,7 @@ class JsonCommandBuilder:
         command = [
                 ### Step 1 :Move to Pre Station
                 {
-                    "source_id": current_station_id,
+                    "source_id": "SELF_POSITION",
                     "id": pallet_data["pre_station_id"],
                     "task_id": task_id,
                     "operation": "ForkHeight",
