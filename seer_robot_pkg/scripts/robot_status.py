@@ -6,8 +6,8 @@ import sys
 import os
 
 # msg imports
-from std_msgs.msg import String
-# from geometry_msgs.msg import PointStamped
+from std_msgs.msg import String,Float32,Int8
+from geometry_msgs.msg import PointStamped
 
 # srv imports
 from std_srvs.srv import Trigger
@@ -35,7 +35,6 @@ class RobotStatus(Node):
         self.robot_current_station = None
         self.robot_last_station = None
         self.robot_task_id = None
-        self.robot_state = "IDLE"
         self.robot_have_good = None
         # self.robot_task_status = 0
         self.robot_navigation_status = 0
@@ -49,17 +48,18 @@ class RobotStatus(Node):
         self.connection_attempted = False
 
         # # Publisher topics
-        # self.robot_battery_pub = self.create_publisher(Float32, 'robot_battery_percentage', 10)
+        self.robot_battery_pub = self.create_publisher(Float32, 'robot_status/robot_battery_percentage', 10)
         # # Robot position publisher
-        # self.robot_position_pub = self.create_publisher(PointStamped, 'robot_position', 10)
+        self.robot_position_pub = self.create_publisher(PointStamped, 'robot_status/robot_position', 10)
         self.robot_current_station_pub = self.create_publisher(String, 'robot_status/robot_current_station', 10)
-        # self.robot_last_station_pub = self.create_publisher(String, 'robot_last_station', 10)
+        self.robot_last_station_pub = self.create_publisher(String, 'robot_last_station', 10)
+        self.robot_navigation_status_pub = self.create_publisher(Int8, 'robot_status/robot_navigation_status', 10)
 
         # Service Server
-        self.create_service(CheckRobotNavigationTaskStatus, 'robot_status/check_robot_navigation_status', self.check_robot_navigation_status_callback)
-        self.create_service(CheckRobotCurrentLocation, 'robot_status/check_robot_current_location', self.check_robot_current_location_callback)
-        self.create_service(CheckRobotAllForTask, 'robot_status/check_robot_all_for_task', self.check_robot_all_for_task_callback)
-        self.create_service(Trigger, 'robot_status/check_available', self.check_robot_available_callback)
+        # self.create_service(CheckRobotNavigationTaskStatus, 'robot_status/check_robot_navigation_status', self.check_robot_navigation_status_callback)
+        # self.create_service(CheckRobotCurrentLocation, 'robot_status/check_robot_current_location', self.check_robot_current_location_callback)
+        # self.create_service(CheckRobotAllForTask, 'robot_status/check_robot_all_for_task', self.check_robot_all_for_task_callback)
+        # self.create_service(Trigger, 'robot_status/check_available', self.check_robot_available_callback)
 
         # Timer
         self.timer = self.create_timer(1.0, self.update_robot_callbacks) #1.0 seconds interval
@@ -107,6 +107,8 @@ class RobotStatus(Node):
                 if temp is not None:
                     self.robot_battery = (temp.get('battery_level', None) * 100) # type: ignore
                     self.robot_charge_status = temp.get('charging', False) # type: ignore
+
+                    self.robot_battery_pub.publish(Float32(data=self.robot_battery))
                 else:
                     self.robot_battery = None
             else:
@@ -151,23 +153,7 @@ class RobotStatus(Node):
                 # Publish the navigation status if we got valid data
                 if temp_navigation is not None:
                     self.robot_navigation_status = temp_navigation.get('task_status', 0)
-                    # Robot State
-                    if temp_navigation.get('task_status') == 0:
-                        self.robot_state = "NONE"
-                    elif temp_navigation.get('task_status') == 1 :
-                        self.robot_state = "WAITING"
-                    elif temp_navigation.get('task_status') == 2:
-                        self.robot_state = "RUNNING"
-                    elif temp_navigation.get('task_status') == 3:
-                        self.robot_state = "SUSPENDED"
-                    elif temp_navigation.get('task_status') == 4:
-                        self.robot_state = "READY"
-                    elif temp_navigation.get('task_status') == 5:
-                        self.robot_state = "FAILED"
-                    elif temp_navigation.get('task_status') == 6:
-                        self.robot_state = "CANCELED"
-                    else:
-                        self.robot_state = "NONE"
+                    self.robot_navigation_status_pub.publish(Int8(data=self.robot_navigation_status))
                 else:
                     self.robot_navigation_status = None
             else:
@@ -202,7 +188,7 @@ class RobotStatus(Node):
             
             # Convert navigation status integer to meaningful string
             response.robot_navigation_status = int(self.robot_navigation_status)
-            response.robot_task_status = str(self.robot_state)
+            # response.robot_task_status = str(self.robot_state) 
         else:
             response.success = False
             response.robot_current_station = "Unknown"

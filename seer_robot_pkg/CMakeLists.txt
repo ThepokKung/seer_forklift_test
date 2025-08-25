@@ -31,6 +31,7 @@ install(PROGRAMS
   scripts/.env
   ### Main scripts ###
   scripts/robot_status.py
+  scripts/robot_state.py
   scripts/robot_controller.py
   scripts/task_management.py
   scripts/traffic_management.py
