@@ -6,7 +6,7 @@ import sys
 import os
 
 # msg imports
-from std_msgs.msg import String,Float32,Int8
+from std_msgs.msg import String,Float32,Int8,Bool,Int32
 from geometry_msgs.msg import PointStamped
 
 # srv imports
@@ -30,16 +30,24 @@ class RobotStatus(Node):
         self.robot_id = self.get_parameter('robot_id').get_parameter_value().string_value
         self.robot_name = self.get_parameter('robot_name').get_parameter_value().string_value
         self.robot_ip = self.get_parameter('robot_ip').get_parameter_value().string_value
+
+        # Robot Status
         self.robot_battery = None
         self.robot_position = None
         self.robot_current_station = None
-        self.robot_last_station = None
         self.robot_task_id = None
         self.robot_have_good = None
-        # self.robot_task_status = 0
+        self.robot_confidence = 0.0
         self.robot_navigation_status = 0
         self.robot_charge_status = False
         self.robot_available = False
+        self.robot_controller_mode_status = False
+
+        # Emergency statuses
+        self.robot_driver_emergency_status = False
+        self.robot_emergency_status = False
+        self.robot_solf_emergency_status = False
+        self.robot_electric_status = False
 
         # Create RobotStatusAPI instance but don't auto-connect
         self.robot_status_api = RobotStatusAPI(self.robot_ip)
@@ -49,11 +57,9 @@ class RobotStatus(Node):
 
         # # Publisher topics
         self.robot_battery_pub = self.create_publisher(Float32, 'robot_status/robot_battery_percentage', 10)
-        # # Robot position publisher
-        self.robot_position_pub = self.create_publisher(PointStamped, 'robot_status/robot_position', 10)
         self.robot_current_station_pub = self.create_publisher(String, 'robot_status/robot_current_station', 10)
-        self.robot_last_station_pub = self.create_publisher(String, 'robot_last_station', 10)
-        self.robot_navigation_status_pub = self.create_publisher(Int8, 'robot_status/robot_navigation_status', 10)
+        self.robot_navigation_status_pub = self.create_publisher(Int32, 'robot_status/robot_navigation_status', 10)
+        self.robot_controller_mode_status_pub = self.create_publisher(Bool, 'robot_status/robot_controller_mode_status', 10)
 
         # Service Server
         # self.create_service(CheckRobotNavigationTaskStatus, 'robot_status/check_robot_navigation_status', self.check_robot_navigation_status_callback)
@@ -94,74 +100,38 @@ class RobotStatus(Node):
     #####################################################
 
     def update_robot_callbacks(self):
-        """Update robot status by calling battery and position updates."""
-        self.update_robot_battery()
-        self.update_robot_position()
-        self.update_robot_navigation_status()
+        self.update_robot_batch_data1_status()
 
-    def update_robot_battery(self):
-        # Ensure we have a connection
+    def update_robot_batch_data1_status(self):
         try:
             if self.ensure_connection():
-                temp = self.robot_status_api.get_battery_status()
-                if temp is not None:
-                    self.robot_battery = (temp.get('battery_level', None) * 100) # type: ignore
-                    self.robot_charge_status = temp.get('charging', False) # type: ignore
+                temp_batch_data_1 = self.robot_status_api.get_batch_data_1()
+                if temp_batch_data_1 is not None:
+                    # Data on batch only using
+                    self.robot_battery = (temp_batch_data_1.get('battery_level', 0) * 100)
+                    self.robot_controller_mode_status = temp_batch_data_1.get('fork_auto_flag', False)
+                    self.robot_navigation_status = temp_batch_data_1.get('task_status', 0)
+                    self.robot_current_station = temp_batch_data_1.get('current_station', None)
+                    self.robot_confidence = temp_batch_data_1.get('confidence', 0.0)
+                    self.robot_charge_status = temp_batch_data_1.get('charging', False)
+                    #  Emergency Status
+                    self.robot_driver_emergency_status = temp_batch_data_1.get('driver_emc', False)
+                    self.robot_electric_status = temp_batch_data_1.get('electric', False)
+                    self.robot_emergency_status = temp_batch_data_1.get('emergency', False)
+                    self.robot_solf_emergency_status = temp_batch_data_1.get('solf_emc', False)
+                    # Publish relevant data
+                    self.robot_battery_pub.publish(Float32(data=self.robot_battery if self.robot_battery is not None else 0.0))
+                    self.robot_current_station_pub.publish(String(data=self.robot_current_station if self.robot_current_station is not None else "Unknown"))
+                    self.robot_navigation_status_pub.publish(Int32(data=self.robot_navigation_status if self.robot_navigation_status is not None else 0))
+                    self.robot_controller_mode_status_pub.publish(Bool(data=self.robot_controller_mode_status if self.robot_controller_mode_status is not None else False))
 
-                    self.robot_battery_pub.publish(Float32(data=self.robot_battery))
                 else:
-                    self.robot_battery = None
-            else:
-                self.robot_battery = None
-        except Exception as e:
-            self.get_logger().error(f"Error updating battery status: {e}")
-            self.robot_battery = None
-
-    def update_robot_position(self):
-        # Ensure we have a connection
-        try:
-            if self.ensure_connection():
-                temp_position = self.robot_status_api.get_position_status()
-                # print(f"Robot ID: {self.robot_id}, Position: {temp_position}")
-
-                # Publish the position if we got valid data
-                if temp_position is not None:
-                    # Unpack the tuple returned from position_status()
-                    x, y, angle, current_position, last_station, confidence = temp_position
-
-                    self.robot_current_station_pub.publish(String(data=current_position))
-
-                    # Store values for internal use
-                    self.robot_position = {'x': x, 'y': y, 'angle': angle}
-                    self.robot_current_station = current_position
-                    self.robot_last_station = last_station
-                else:
-                    self.robot_position = None
+                    self.get_logger().debug(f"Robot ID: {self.robot_id}, No batch data received")
             else:
                 self.get_logger().debug(f"Robot ID: {self.robot_id}, Not connected to robot")
-                self.robot_position = None
         except Exception as e:
-            self.get_logger().error(f"Error updating position: {e}")
-            self.robot_position = None
-
-    def update_robot_navigation_status(self):
-        # Ensure we have a connection
-        try:
-            if self.ensure_connection():
-                temp_navigation = self.robot_status_api.get_navigation_status()
-
-                # Publish the navigation status if we got valid data
-                if temp_navigation is not None:
-                    self.robot_navigation_status = temp_navigation.get('task_status', 0)
-                    self.robot_navigation_status_pub.publish(Int8(data=self.robot_navigation_status))
-                else:
-                    self.robot_navigation_status = None
-            else:
-                self.get_logger().debug(f"Robot ID: {self.robot_id}, Not connected to robot")
-                self.robot_navigation_status = None
-        except Exception as e:
-            self.get_logger().error(f"Error updating navigation status: {e}")
-            self.robot_navigation_status = None
+            self.get_logger().error(f"Error updating batch data 1 status: {e}")
+                    
 
     #####################################################
     ###             Service Callbacks                 ###

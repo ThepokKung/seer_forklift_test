@@ -4,7 +4,7 @@ from rclpy.node import Node
 
 
 # msg imports
-from std_msgs.msg import String,Float32,Int8
+from std_msgs.msg import String,Float32,Int8,Bool
 from geometry_msgs.msg import PointStamped
 
 class RobotStateNode(Node):
@@ -32,10 +32,12 @@ class RobotStateNode(Node):
         self.robot_navigation_status = 0
         self.robot_has_task = False
         self.robot_on_manipulator_station = False
+        self.robot_controller_mode = False
 
         # Create subscriptions
         self.create_subscription(Int8,'robot_status/robot_navigation_status',self._sub_robot_navigation_status_callback,10)
         self.create_subscription(Float32,'robot_status/robot_battery_percentage',self._sub_robot_battery_callback,10)
+        self.create_subscription(Bool,'robot_status/robot_controller_mode_status',self._sub_robot_controller_mode_callback,10)
 
         # create service server
         # self.create_service()
@@ -57,11 +59,13 @@ class RobotStateNode(Node):
     # 6: CANCELED
 
     def _update_robot_state_callbacks(self):
-        if self.robot_navigation_status == 2:
+        if not self.robot_controller_mode and self.robot_battery is not None:
+            self.robot_state = 'EXTERNAL_CONTROL'
+        elif self.robot_navigation_status == 2:
             self.robot_state = 'NAV_MOVING'
         elif self.robot_navigation_status == 3:
             self.robot_state = 'NAV_SUSPENDED'
-        elif self.robot_navigation_status == 4:
+        elif self.robot_navigation_status == 4 or (self.robot_navigation_status == 0 and self.robot_battery is not None):
             self.robot_state = 'READY'
         elif self.robot_navigation_status == 5:
             self.robot_state = 'NAV_FAILED'
@@ -70,7 +74,7 @@ class RobotStateNode(Node):
         elif self.robot_navigation_status == 0:
             self.robot_state = 'IDLE'
 
-        self.get_logger().info(f'Robot ID : {self.robot_id}, Robot State: {self.robot_state}, Nav Status: {self.robot_navigation_status}, Battery: {self.robot_battery} %')
+        self.get_logger().info(f'Robot ID : {self.robot_id}, Robot State: {self.robot_state}, Nav Status: {self.robot_navigation_status}, Battery: {self.robot_battery} % , Current Station: {self.robot_current_station}' )
 
     #####################################################
     ###              Update robot status              ###
@@ -81,6 +85,12 @@ class RobotStateNode(Node):
 
     def _sub_robot_battery_callback(self,msg):
         self.robot_battery = int(msg.data)
+
+    def _sub_robot_controller_mode_callback(self,msg):
+        self.robot_controller_mode = bool(msg.data)
+
+    def _sub_robot_current_station_callback(self,msg):
+        self.robot_current_station = str(msg.data)        
 
 def main(args=None):
     rclpy.init(args=args)

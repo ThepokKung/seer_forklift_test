@@ -139,3 +139,64 @@ class RobotStatusAPI:
             }
         else:
             return None
+
+    def get_fork_status(self):
+        """
+        Request the navigation status from the robot.
+
+        Returns:
+            dict: Navigation status data or None if error.
+        """
+        if not self.connected:
+            print("Not connected to robot. Call connect() first.")
+            return None
+            
+        req_id = 1
+        msg_type = 1028
+        self.client.send_request(req_id, msg_type, payload={})
+        temp = self.client.receive_response()
+        if temp is None:
+            return None
+
+        req_id, msg_type, data = temp
+
+        # Return navigation data if request was successful
+        if data.get('ret_code') == 0:
+            return {
+            'fork_auto_flag': data.get('fork_auto_flag'),
+            'fork_height': data.get('fork_height'),
+            'fork_height_in_place': data.get('fork_height_in_place'),
+            'fork_pressure_actual': data.get('fork_pressure_actual'),
+            'forward_in_place': data.get('forward_in_place'),
+            'forward_val': data.get('forward_val')
+            }
+        else:
+            return None
+        
+    def get_batch_data_1(self):
+        """
+        Request batch data 1 from the robot.
+
+        All1 is to get most of the previously mentioned status data in one request, including 1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1019, 1020, 1021, 1022, 1025, 1027, 1028, 1029, 1030, 1050 etc.
+
+        More information : https://seer-group.yuque.com/ui8dn8/rxhh4o/epd1nq
+        """
+
+        if not self.connected:
+            print("Not connected to robot. Call connect() first.")
+            return None
+
+        req_id = 1
+        msg_type = 1100
+        self.client.send_request(req_id, msg_type, payload={})
+        temp = self.client.receive_response()
+        if temp is None:
+            return None
+
+        req_id, msg_type, data = temp
+
+        # Return batch data if request was successful
+        if data.get('ret_code') == 0:
+            return data
+        else:
+            return None
