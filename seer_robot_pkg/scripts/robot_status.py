@@ -6,8 +6,7 @@ import sys
 import os
 
 # msg imports
-from std_msgs.msg import String,Float32,Int8,Bool,Int32
-from geometry_msgs.msg import PointStamped
+from std_msgs.msg import String,Float32,Bool,Int32
 
 # srv imports
 from std_srvs.srv import Trigger

@@ -16,7 +16,7 @@ class JsonCommandBuilder:
     ###                Pick Place Init                ###
     #####################################################
 
-    def pallet_pick_init_command(self,current_station_id,pallet_data,task_id):
+    def pallet_pick_init_command(self,pallet_data,task_id):
         command = [
                 ### Step 1 : Move robot from current station to Pre pallet Station
                 {
@@ -45,7 +45,7 @@ class JsonCommandBuilder:
         ]
         return command
     
-    def pallet_place_init_command(self,current_station_id,pallet_data,task_id):
+    def pallet_place_init_command(self,pallet_data,task_id):
         command = [
                 ### Step 1 : Rise Fork to pick height from current station
                 {
@@ -78,7 +78,7 @@ class JsonCommandBuilder:
     ###              Pick Place Manipulator           ###
     #####################################################
     
-    def pallet_pick_to_manipulator_command(self, current_station_id, pallet_data, task_id):
+    def pallet_pick_to_manipulator_command(self, pallet_data, task_id):
         command = [
                 ### Step 1 :Move to Pre Station
                 {
@@ -133,7 +133,7 @@ class JsonCommandBuilder:
         
         return command
     
-    def pallet_pick_from_manipulator_command(self, current_station_id, pallet_data, task_id):
+    def pallet_pick_from_manipulator_command(self, pallet_data, task_id):
         command = [
                 ### Step 1 :Move robot from Pre manipulation station to mainipulator station
                 {
@@ -175,35 +175,6 @@ class JsonCommandBuilder:
                     "task_id": task_id,
                     "operation": "ForkHeight",
                     "end_height": pallet_data["running_height"] # Down pallet to ground
-                }
-        ]
-        return command
-
-    def test_command(self, current_station_id, station_2go, task_id):
-        command = [
-                ### Step 1 :Move to Pre Station
-                {
-                    "source_id": current_station_id,
-                    "id": station_2go,
-                    "task_id": task_id,
-                },
-                ### Step 2 : Move to Pallet Station
-                {
-                    "source_id": station_2go,
-                    "id": current_station_id,
-                    "task_id": task_id,
-                },
-                ### Step 3 : Move to Pre Station
-                {
-                    "source_id": current_station_id,
-                    "id": station_2go,
-                    "task_id": task_id,
-                },
-                ### Step 4 : Move to Pallet Station
-                {
-                    "source_id": station_2go,
-                    "id": current_station_id,
-                    "task_id": task_id,
                 }
         ]
         return command
