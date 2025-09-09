@@ -23,11 +23,11 @@ class TaskManagement(Node):
         self.get_logger().info('Task Management node has been started')
 
         # Initialize PalletLoader with environment variables
-        db_host = os.getenv('DB_HOST', 'localhost')
-        db_port = os.getenv('DB_PORT', '5432')
-        db_name = os.getenv('DB_NAME', 'seer_db')
-        db_user = os.getenv('DB_USER', 'seer_user')
-        db_pass = os.getenv('DB_PASS', 'seer_pass')
+        db_host = os.getenv('DB_HOST')
+        db_port = os.getenv('DB_PORT')
+        db_name = os.getenv('DB_NAME')
+        db_user = os.getenv('DB_USER')
+        db_pass = os.getenv('DB_PASS')
 
         self.pallet_loader = PalletLoader(
             db_host=db_host,

@@ -12,6 +12,7 @@ import time
 
 #msg import
 from std_msgs.msg import Int32
+from std_srvs.srv import Trigger
 
 # srv import
 from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus, GetNavigationPath, PalletID, AssignTask
@@ -64,6 +65,9 @@ class RobotController(Node):
         # Service server
         self.create_service(GetNavigationPath, 'robot_controller/get_navigation_path', self.get_navigation_path_callback)
         self.create_service(AssignTask, 'robot_controller/assign_task', self.assign_task_callback)
+        self.create_service(Trigger,'robot_controller/cancel_navigation',self.cancel_navigation_callback)
+        self.create_service(Trigger,'robot_controller/pause_navigation',self.pause_navigation_callback)
+        self.create_service(Trigger,'robot_controller/resume_navigation',self.resume_navigation_callback)
 
         # Service client
         self.check_robot_navigation_state_cbg = MutuallyExclusiveCallbackGroup()
@@ -123,6 +127,69 @@ class RobotController(Node):
             response.path = []
             response.success = False
             response.message = f'Failed to get navigation path to {id2go}'
+        return response
+    
+    def cancel_navigation_callback(self, request, response):
+        self.get_logger().info('Received request to cancel navigation')
+        
+        # Ensure connection before making API call
+        if not self.ensure_connection():
+            self.get_logger().error('Failed to connect to robot navigation API')
+            response.success = False
+            response.message = 'Failed to connect to robot for canceling navigation'
+            return response
+        
+        temp_response = self.robot_navigation_api.cancel_navigation()
+        if temp_response is not None and temp_response.get('success', False):
+            response.success = True
+            response.message = 'Navigation canceled successfully'
+            self.get_logger().info('Navigation canceled successfully')
+        else:
+            self.get_logger().error('Failed to cancel navigation')
+            response.success = False
+            response.message = 'Failed to cancel navigation'
+        return response
+
+    def pause_navigation_callback(self, request, response):
+        self.get_logger().info('Received request to pause navigation')
+        
+        # Ensure connection before making API call
+        if not self.ensure_connection():
+            self.get_logger().error('Failed to connect to robot navigation API')
+            response.success = False
+            response.message = 'Failed to connect to robot for pausing navigation'
+            return response
+        
+        temp_response = self.robot_navigation_api.pause_navigation()
+        if temp_response is not None and temp_response.get('success', False):
+            response.success = True
+            response.message = 'Navigation paused successfully'
+            self.get_logger().info('Navigation paused successfully')
+        else:
+            self.get_logger().error('Failed to pause navigation')
+            response.success = False
+            response.message = 'Failed to pause navigation'
+        return response
+    
+    def resume_navigation_callback(self, request, response):
+        self.get_logger().info('Received request to resume navigation')
+        
+        # Ensure connection before making API call
+        if not self.ensure_connection():
+            self.get_logger().error('Failed to connect to robot navigation API')
+            response.success = False
+            response.message = 'Failed to connect to robot for resuming navigation'
+            return response
+        
+        temp_response = self.robot_navigation_api.resume_navigation()
+        if temp_response is not None and temp_response.get('success', False):
+            response.success = True
+            response.message = 'Navigation resumed successfully'
+            self.get_logger().info('Navigation resumed successfully')
+        else:
+            self.get_logger().error('Failed to resume navigation')
+            response.success = False
+            response.message = 'Failed to resume navigation'
         return response
 
     def assign_task_callback(self, request, response):
