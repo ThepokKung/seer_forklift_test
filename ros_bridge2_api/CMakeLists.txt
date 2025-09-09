@@ -27,7 +27,7 @@ ament_python_install_package(${PROJECT_NAME})
 
 # Install Python executables
 install(PROGRAMS
-  scripts/fastAPI_client.py
+  scripts/fastapi_ros_bridge.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
