@@ -12,7 +12,7 @@ load_dotenv()
 
 # srv imports
 from std_srvs.srv import Trigger
-from seer_robot_interfaces.srv import PalletID, AssignTask, CheckRobotAllForTask, GetNavigationPath
+from seer_robot_interfaces.srv import AssignTask, CheckRobotAllForTask, GetNavigationPath
 # backend imports
 from seer_robot_pkg.pallet_loader import PalletLoader
 from seer_robot_pkg.json_command_builder import JsonCommandBuilder
@@ -57,7 +57,7 @@ class TaskManagement(Node):
             
             # Create client for navigation path
             nav_callback_group = MutuallyExclusiveCallbackGroup()
-            nav_client = self.create_client(GetNavigationPath,f'/{robot_ns}/robot_controller/get_navigation_path',callback_group=nav_callback_group)
+            get_nav_path = self.create_client(GetNavigationPath,f'/{robot_ns}/robot_controller/get_navigation_path',callback_group=nav_callback_group)
 
             # Create client for task assignment
             task_callback_group = MutuallyExclusiveCallbackGroup()
@@ -66,7 +66,7 @@ class TaskManagement(Node):
             self.robot_clients[robot_ns] = {
             'availability': availability_client,
             'state': state_client,
-            'navigation': nav_client,
+            'get_navigation_path': get_nav_path,
             'assign_task': task_client
             }
             self.get_logger().info(f'Created service clients for {robot_ns}')
@@ -108,17 +108,48 @@ class TaskManagement(Node):
             self.get_logger().info(f'Pallet data retrieved: {pallet_data}')
             
             # Find an available robot
-            available_robot = self.find_available_robot()
-            if not available_robot:
-                response.success = False
-                response.message = "No available robots found to assign the task"
-                self.get_logger().error(response.message)
-                return response
+            # available_robot = self.find_available_robot()
+            # if not available_robot:
+            #     response.success = False
+            #     response.message = "No available robots found to assign the task"
+            #     self.get_logger().error(response.message)
+            #     return response
             
-            self.get_logger().info(f'Found available robot: {available_robot}')
+            # self.get_logger().info(f'Found available robot: {available_robot}')
 
-            ### Load path
-            
+            ### Load path for each robot
+            robot_paths = {}
+
+            # Use station_id from pallet_data as id2go
+            station_id = str(pallet_data.get('station_id', ''))
+            for robot_ns in self.robot_namespaces:
+                nav_client = self.robot_clients[robot_ns]['get_navigation_path']
+                if not nav_client.service_is_ready():
+                    nav_client.wait_for_service(timeout_sec=2.0)
+
+                nav_request = GetNavigationPath.Request()
+                nav_request.id2go = station_id
+
+                future = nav_client.call_async(nav_request)
+                rclpy.spin_until_future_complete(self, future, timeout_sec=5.0)
+
+                if future.done():
+                    nav_response = future.result()
+                    if nav_response and nav_response.success:
+                        robot_paths[robot_ns] = nav_response.path
+                        self.get_logger().info(f"[{robot_ns}] Navigation path: {nav_response.path}")
+                    else:
+                        robot_paths[robot_ns] = None
+                        self.get_logger().error(f"[{robot_ns}] Failed to get navigation path: {nav_response.message if nav_response else 'No response'}")
+                else:
+                    robot_paths[robot_ns] = None
+                    self.get_logger().error(f"[{robot_ns}] Navigation path service call timed out")
+
+            self.get_logger().info(f'robot_paths: {robot_paths}')
+
+            self.get_logger().info(f'robot_paths of robot_01: {robot_paths["robot_01"]}')
+            self.get_logger().info(f'robot_paths of robot_02: {robot_paths["robot_02"]}')
+
             ### task allocation here
 
             response.success = True
