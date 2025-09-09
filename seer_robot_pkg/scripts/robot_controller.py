@@ -369,7 +369,7 @@ class RobotController(Node):
     #####################################################
 
     def _sub_check_robot_navigation_status_callback(self, msg):
-        self.robot_navigation_status = msg.data
+        self.robot_navigation_status = msg.data # Int32
 
     #####################################################
     ###                    Test                       ###

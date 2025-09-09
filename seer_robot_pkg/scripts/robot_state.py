@@ -26,7 +26,6 @@ class RobotStateNode(Node):
         self.robot_state = 'IDLE'
         self.robot_battery = None
         self.robot_available = None
-        self.robot_current_station = None
         self.robot_is_charger = False
         self.robot_has_load = False
         self.robot_navigation_status = 0
@@ -74,7 +73,7 @@ class RobotStateNode(Node):
         elif self.robot_navigation_status == 0:
             self.robot_state = 'IDLE'
 
-        self.get_logger().info(f'Robot ID : {self.robot_id}, Robot State: {self.robot_state}, Nav Status: {self.robot_navigation_status}, Battery: {self.robot_battery} % , Current Station: {self.robot_current_station}' )
+        self.get_logger().info(f'Robot ID : {self.robot_id}, Robot State: {self.robot_state}, Nav Status: {self.robot_navigation_status}, Battery: {self.robot_battery} %')
 
     #####################################################
     ###              Update robot status              ###
@@ -88,10 +87,7 @@ class RobotStateNode(Node):
 
     def _sub_robot_controller_mode_callback(self,msg):
         self.robot_controller_mode = bool(msg.data)
-
-    def _sub_robot_current_station_callback(self,msg):
-        self.robot_current_station = str(msg.data)        
-
+    
 def main(args=None):
     rclpy.init(args=args)
     node = RobotStateNode()
