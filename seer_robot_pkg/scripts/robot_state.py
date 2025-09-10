@@ -2,10 +2,11 @@
 import rclpy
 from rclpy.node import Node
 
-
 # msg imports
-from std_msgs.msg import String,Float32,Int8,Bool
-from geometry_msgs.msg import PointStamped
+from std_msgs.msg import Float32,Int8,Bool
+
+# srv imports
+from seer_robot_interfaces.srv import CheckRobotStateNow
 
 class RobotStateNode(Node):
     def __init__(self):
@@ -39,7 +40,7 @@ class RobotStateNode(Node):
         self.create_subscription(Bool,'robot_status/robot_controller_mode_status',self._sub_robot_controller_mode_callback,10)
 
         # create service server
-        # self.create_service()
+        self.create_service(CheckRobotStateNow, 'robot_state/check_robot_state_now', self.check_robot_state_now_callback)
         
         # timer
         self.timer = self.create_timer(1.0, self._update_robot_state_callbacks) #1.0 seconds interval
@@ -73,7 +74,7 @@ class RobotStateNode(Node):
         elif self.robot_navigation_status == 0:
             self.robot_state = 'IDLE'
 
-        self.get_logger().info(f'Robot ID : {self.robot_id}, Robot State: {self.robot_state}, Nav Status: {self.robot_navigation_status}, Battery: {self.robot_battery} %')
+        # self.get_logger().info(f'Robot ID : {self.robot_id}, Robot State: {self.robot_state}, Nav Status: {self.robot_navigation_status}, Battery: {self.robot_battery} %')
 
     #####################################################
     ###              Update robot status              ###
@@ -87,6 +88,15 @@ class RobotStateNode(Node):
 
     def _sub_robot_controller_mode_callback(self,msg):
         self.robot_controller_mode = bool(msg.data)
+
+    #####################################################
+    ###             Service Callbacks                 ###
+    #####################################################
+
+    def check_robot_state_now_callback(self,request,response):
+        response.success = True
+        response.robot_state = self.robot_state
+        return response
     
 def main(args=None):
     rclpy.init(args=args)

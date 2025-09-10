@@ -64,7 +64,7 @@ class RobotStatus(Node):
         # self.create_service(CheckRobotNavigationTaskStatus, 'robot_status/check_robot_navigation_status', self.check_robot_navigation_status_callback)
         # self.create_service(CheckRobotCurrentLocation, 'robot_status/check_robot_current_location', self.check_robot_current_location_callback)
         # self.create_service(CheckRobotAllForTask, 'robot_status/check_robot_all_for_task', self.check_robot_all_for_task_callback)
-        # self.create_service(Trigger, 'robot_status/check_available', self.check_robot_available_callback)
+        self.create_service(Trigger, 'robot_status/check_available', self.check_robot_available_callback)
 
         # Timer
         self.timer = self.create_timer(1.0, self.update_robot_callbacks) #1.0 seconds interval
