@@ -106,21 +106,21 @@ class TaskManagement(Node):
             self.get_logger().info(f'Pallet data retrieved: {pallet_data}')
             
             # Find an available robot
-            available_robot = self.find_available_robot()
-            if not available_robot:
+            available_robots = self.find_all_available_robots()
+            if not available_robots:
                 response.success = False
                 response.message = "No available robots found to assign the task"
                 self.get_logger().error(response.message)
                 return response
-            
-            self.get_logger().info(f'Found available robot: {available_robot}')
+
+            self.get_logger().info(f'Found available robots: {available_robots}')
 
             ### Load path for each robot
             robot_paths = {}
 
             # Use station_id from pallet_data as id2go
             station_id = str(pallet_data.get('station_id', ''))
-            for robot_ns in self.robot_namespaces:
+            for robot_ns in available_robots:
                 nav_client = self.robot_clients[robot_ns]['get_navigation_path']
                 if not nav_client.service_is_ready():
                     nav_client.wait_for_service(timeout_sec=2.0)
@@ -145,10 +145,36 @@ class TaskManagement(Node):
 
             self.get_logger().info(f'robot_paths: {robot_paths}')
 
-            self.get_logger().info(f'robot_paths of robot_01: {robot_paths["robot_01"]}')
-            self.get_logger().info(f'robot_paths of robot_02: {robot_paths["robot_02"]}')
-
             ### task allocation here
+            ## Wait alogorithm can be improved in future
+
+            # Simple allocation: choose the robot with the shortest valid path
+            min_path_length = float('inf')
+            selected_robot = None
+            for robot_ns, path in robot_paths.items():
+                if path is not None and len(path) > 0:
+                    self.get_logger().info(f"[{robot_ns}] Path length: {len(path)}")
+                    if len(path) < min_path_length:
+                        min_path_length = len(path)
+                        selected_robot = robot_ns
+
+            if selected_robot:
+                self.get_logger().info(f"Selected robot for assignment: {selected_robot} (path length: {min_path_length})")
+            else:
+                self.get_logger().error("No valid navigation path found for any available robot")
+                response.success = False
+                response.message = "No valid navigation path found for any available robot"
+                return response
+
+            # Here you can proceed to assign the task to selected_robot
+            # (Task assignment logic can be added here)
+
+            ### Test call robot 
+
+            task_assign_temp = AssignTask.Request()
+            use_robot = self.robot_clients[selected_robot]['assign_task']            
+
+            ### Need to add check collision here in future
 
             response.success = True
             response.message = f"Task {request.task_id} ({task_type_name}) for pallet {request.pallet_id} with data: {pallet_data}"
@@ -184,6 +210,25 @@ class TaskManagement(Node):
             else:
                 self.get_logger().warning(f'Robot {robot_ns} is not available')
         return None
+    
+    def find_all_available_robots(self):
+        """Return a list of all available and ready robots."""
+        available_robots = []
+        for robot_ns in self.robot_namespaces:
+            if self.check_robot_availability(robot_ns):
+                robot_state_resp = self.check_robot_state(robot_ns)
+                if robot_state_resp and robot_state_resp.success:
+                    state_value = getattr(robot_state_resp, "robot_state", None)
+                    if state_value == "IDLE" or state_value == "READY":
+                        self.get_logger().info(f'Robot {robot_ns} is available and ready')
+                        available_robots.append(robot_ns)
+                    else:
+                        self.get_logger().info(f'Robot {robot_ns} is connected but busy: {state_value}')
+                else:
+                    self.get_logger().warning(f'Robot {robot_ns} is available but detailed status unavailable — skipping robot')
+            else:
+                self.get_logger().warning(f'Robot {robot_ns} is not available')
+        return available_robots
 
     def check_robot_availability(self, robot_namespace):
         """Check if a robot is available using the simple availability service"""
@@ -253,7 +298,7 @@ class TaskManagement(Node):
             service_response = future.result()
             
             if service_response is not None and service_response.success:
-                self.get_logger().info(f'Robot {robot_namespace} state: {service_response.robot_task_status}')
+                self.get_logger().info(f'Robot {robot_namespace} state: {service_response.robot_state}')
                 return service_response
             else:
                 self.get_logger().error(f'Service call failed for robot {robot_namespace}')

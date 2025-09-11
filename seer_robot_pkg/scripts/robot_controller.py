@@ -9,6 +9,8 @@ from rclpy.callback_groups import MutuallyExclusiveCallbackGroup # Mutiple callb
 import os
 import json
 import time
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
 
 #msg import
 from std_msgs.msg import Int32
@@ -37,7 +39,6 @@ class RobotController(Node):
         self.robot_name = self.get_parameter('robot_name').get_parameter_value().string_value
         self.robot_ip = self.get_parameter('robot_ip').get_parameter_value().string_value
 
-
         # robot parameter
         self.robot_navigation_status = 0
 
@@ -52,11 +53,11 @@ class RobotController(Node):
 
         # Pallet loader
         self.pallet_loader = PalletLoader(
-            db_host=os.getenv('DB_HOST', 'localhost'),
-            db_port=os.getenv('DB_PORT', '5432'),
-            db_name=os.getenv('DB_NAME', 'seer_db'),
-            db_user=os.getenv('DB_USER', 'seer_user'),
-            db_pass=os.getenv('DB_PASS', 'seer_pass')
+            db_host=os.getenv('DB_HOST'),
+            db_port=os.getenv('DB_PORT'),
+            db_name=os.getenv('DB_NAME'),
+            db_user=os.getenv('DB_USER'),
+            db_pass=os.getenv('DB_PASS')
         )
 
         # Subscriptions
@@ -65,9 +66,9 @@ class RobotController(Node):
         # Service server
         self.create_service(GetNavigationPath, 'robot_controller/get_navigation_path', self.get_navigation_path_callback)
         self.create_service(AssignTask, 'robot_controller/assign_task', self.assign_task_callback)
-        self.create_service(Trigger,'robot_controller/cancel_navigation',self.cancel_navigation_callback)
-        self.create_service(Trigger,'robot_controller/pause_navigation',self.pause_navigation_callback)
-        self.create_service(Trigger,'robot_controller/resume_navigation',self.resume_navigation_callback)
+        # self.create_service(Trigger,'robot_controller/cancel_navigation',self.cancel_navigation_callback)
+        # self.create_service(Trigger,'robot_controller/pause_navigation',self.pause_navigation_callback)
+        # self.create_service(Trigger,'robot_controller/resume_navigation',self.resume_navigation_callback)
 
         # Service client
         self.check_robot_navigation_state_cbg = MutuallyExclusiveCallbackGroup()
@@ -107,7 +108,6 @@ class RobotController(Node):
         id2go = request.id2go
         self.get_logger().info(f'Received request for navigation path to {id2go}')
         
-        # Ensure connection before making API call
         if not self.ensure_connection():
             self.get_logger().error('Failed to connect to robot navigation API')
             response.path = []
@@ -116,7 +116,6 @@ class RobotController(Node):
             return response
         
         temp_response = self.robot_navigation_api.get_navigation_path(id2go=id2go)
-        # print(f"Navigation path response: {temp_response}")
         if temp_response is not None:
             response.path = temp_response.get('path', [])
             response.success = True
@@ -129,97 +128,37 @@ class RobotController(Node):
             response.message = f'Failed to get navigation path to {id2go}'
         return response
     
-    def cancel_navigation_callback(self, request, response):
-        self.get_logger().info('Received request to cancel navigation')
-        
-        # Ensure connection before making API call
-        if not self.ensure_connection():
-            self.get_logger().error('Failed to connect to robot navigation API')
-            response.success = False
-            response.message = 'Failed to connect to robot for canceling navigation'
-            return response
-        
-        temp_response = self.robot_navigation_api.cancel_navigation()
-        if temp_response is not None and temp_response.get('success', False):
-            response.success = True
-            response.message = 'Navigation canceled successfully'
-            self.get_logger().info('Navigation canceled successfully')
-        else:
-            self.get_logger().error('Failed to cancel navigation')
-            response.success = False
-            response.message = 'Failed to cancel navigation'
-        return response
-
-    def pause_navigation_callback(self, request, response):
-        self.get_logger().info('Received request to pause navigation')
-        
-        # Ensure connection before making API call
-        if not self.ensure_connection():
-            self.get_logger().error('Failed to connect to robot navigation API')
-            response.success = False
-            response.message = 'Failed to connect to robot for pausing navigation'
-            return response
-        
-        temp_response = self.robot_navigation_api.pause_navigation()
-        if temp_response is not None and temp_response.get('success', False):
-            response.success = True
-            response.message = 'Navigation paused successfully'
-            self.get_logger().info('Navigation paused successfully')
-        else:
-            self.get_logger().error('Failed to pause navigation')
-            response.success = False
-            response.message = 'Failed to pause navigation'
-        return response
-    
-    def resume_navigation_callback(self, request, response):
-        self.get_logger().info('Received request to resume navigation')
-        
-        # Ensure connection before making API call
-        if not self.ensure_connection():
-            self.get_logger().error('Failed to connect to robot navigation API')
-            response.success = False
-            response.message = 'Failed to connect to robot for resuming navigation'
-            return response
-        
-        temp_response = self.robot_navigation_api.resume_navigation()
-        if temp_response is not None and temp_response.get('success', False):
-            response.success = True
-            response.message = 'Navigation resumed successfully'
-            self.get_logger().info('Navigation resumed successfully')
-        else:
-            self.get_logger().error('Failed to resume navigation')
-            response.success = False
-            response.message = 'Failed to resume navigation'
-        return response
-
     def assign_task_callback(self, request, response):
         self.get_logger().info(f'Received request to assign task: {request.task_id}')
         self.get_logger().info(f'Task Type ID: {request.task_type_id}, Pallet ID: {request.pallet_id}')
-        
-        # Create a PalletID request for the specific task
-        pallet_request = PalletID.Request()
-        pallet_request.pallet_id = request.pallet_id
-        
-        # Create a PalletID response
-        pallet_response = PalletID.Response()
-        
+
+        pallet_data = self.pallet_loader.get_pallet_data_id(request.pallet_id)
+
+        self.get_logger().info(f'Pallet data for ID {request.pallet_id}: {pallet_data}')
+
+        if pallet_data is None:
+            response.success = False
+            response.message = f"Pallet data not found for ID {request.pallet_id}"
+            self.get_logger().error(response.message)
+            return response
+
         try:
             # Route to appropriate task based on task_type_id
             if request.task_type_id == 1:  # PickInit
                 self.get_logger().info(f'Executing PickInit for pallet {request.pallet_id}')
-                pallet_response = self.pallet_pick_init_callback(pallet_request, pallet_response)
+                pallet_response = self.pallet_pick_init_callback(pallet_data)
                 
             elif request.task_type_id == 2:  # PlaceInit
                 self.get_logger().info(f'Executing PlaceInit for pallet {request.pallet_id}')
-                pallet_response = self.pallet_place_init_callback(pallet_request, pallet_response)
+                # pallet_response = self.pallet_place_init_callback(pallet_request, pallet_response)
                 
             elif request.task_type_id == 3:  # PickToManipulator
                 self.get_logger().info(f'Executing PickToManipulator for pallet {request.pallet_id}')
-                pallet_response = self.pallet_pick_to_manipulator_callback(pallet_request, pallet_response)
+                # pallet_response = self.pallet_pick_to_manipulator_callback(pallet_request, pallet_response)
                 
             elif request.task_type_id == 4:  # PickFromManipulator
                 self.get_logger().info(f'Executing PickFromManipulator for pallet {request.pallet_id}')
-                pallet_response = self.pallet_pick_from_manipulator_callback(pallet_request, pallet_response)
+                # pallet_response = self.pallet_pick_from_manipulator_callback(pallet_request, pallet_response)
                 
             else:
                 self.get_logger().error(f'Invalid task_type_id: {request.task_type_id}. Valid values are 1-4.')
@@ -228,12 +167,16 @@ class RobotController(Node):
                 return response
             
             # Set response based on pallet task result
-            response.success = pallet_response.success
-            if pallet_response.success:
-                response.message = f'Task {request.task_id} (Type: {request.task_type_id}, Pallet: {request.pallet_id}) completed successfully. {pallet_response.message}'
-            else:
-                response.message = f'Task {request.task_id} (Type: {request.task_type_id}, Pallet: {request.pallet_id}) failed. {pallet_response.message}'
-                
+            # response.success = pallet_response.success
+            # if pallet_response.success:
+            #     response.message = f'Task {request.task_id} (Type: {request.task_type_id}, Pallet: {request.pallet_id}) completed successfully. {pallet_response.message}'
+            # else:
+            #     response.message = f'Task {request.task_id} (Type: {request.task_type_id}, Pallet: {request.pallet_id}) failed. {pallet_response.message}'
+
+            #### Check only
+            response.success = True
+            response.message = f'Task {request.task_id} (Type: {request.task_type_id}, Pallet: {request.pallet_id}) executed (simulation).'
+
         except Exception as e:
             self.get_logger().error(f'Exception during task assignment: {e}')
             response.success = False
@@ -368,19 +311,28 @@ class RobotController(Node):
     #####################################################
 
     # Pick Init
-    def pallet_pick_init_callback(self, request, response):
-        self.get_logger().info(f'Received request to test Pallet Pick Init: {request.pallet_id}')
-        pallet_id_temp = request.pallet_id
+    def pallet_pick_init_callback(self,pallet_data):
+        self.get_logger().info(f'Received request to test Pallet Pick Init: {pallet_data['pallet_id']}')
+        # pallet_id_temp = pallet_data.pallet_id
 
-        pallet_data = self.pallet_loader.get_pallet_data_id(int(pallet_id_temp)) # type: ignore
-        self.get_logger().info(f'Pallet data for ID {pallet_id_temp}: {pallet_data}')
+        # pallet_data = self.pallet_loader.get_pallet_data_id(int(pallet_id_temp)) # type: ignore
+        # self.get_logger().info(f'Pallet data for ID {pallet_id_temp}: {pallet_data}')
+
+        if pallet_data is None:
+            # response.success = False
+            # response.message = f"Pallet data not found for ID {pallet_id_temp}"
+            # self.get_logger().error(response.message)
+            # return response
+            self.get_logger().error(f"Pallet data not found for ID {pallet_data['pallet_id']}")
+            return False
 
         # Ensure connection to robot navigation API
         if not self.ensure_connection():
-            response.success = False
-            response.message = "Failed to connect to robot navigation API."
-            self.get_logger().error(response.message)
-            return response
+            # response.success = False
+            # response.message = "Failed to connect to robot navigation API."
+            # self.get_logger().error(response.message)
+            self.get_logger().error("Failed to connect to robot navigation API.")
+            return False
 
         try:
             # Get the list of navigation commands
@@ -389,15 +341,21 @@ class RobotController(Node):
             # Execute commands using helper method
             success, message = self.execute_navigation_commands(command_list, "Pallet Pick Init")
             
-            response.success = success
-            response.message = message
-            return response
+            # response.success = success
+            # response.message = message
+            # return response
+
+            self.get_logger().info(success)
+            self.get_logger().info(message)
+            return True
 
         except Exception as e:
-            response.success = False
-            response.message = f"Error during pallet pick init: {e}"
-            self.get_logger().error(response.message)
-            return response
+            # response.success = False
+            # response.message = f"Error during pallet pick init: {e}"
+            # self.get_logger().error(response.message)
+            # return response
+            self.get_logger().error(f"Error during pallet pick init: {e}")
+            return False
         
     # Place Init
     def pallet_place_init_callback(self, request, response):

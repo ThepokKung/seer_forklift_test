@@ -33,6 +33,7 @@ install(PROGRAMS
   scripts/robot_status.py
   scripts/robot_state.py
   scripts/robot_controller.py
+  scripts/robot_controller_pcr.py
   scripts/task_management.py
   scripts/traffic_management.py
   DESTINATION lib/${PROJECT_NAME}
