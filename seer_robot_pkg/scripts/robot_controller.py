@@ -66,9 +66,6 @@ class RobotController(Node):
         # Service server
         self.create_service(GetNavigationPath, 'robot_controller/get_navigation_path', self.get_navigation_path_callback)
         self.create_service(AssignTask, 'robot_controller/assign_task', self.assign_task_callback)
-        # self.create_service(Trigger,'robot_controller/cancel_navigation',self.cancel_navigation_callback)
-        # self.create_service(Trigger,'robot_controller/pause_navigation',self.pause_navigation_callback)
-        # self.create_service(Trigger,'robot_controller/resume_navigation',self.resume_navigation_callback)
 
         # Service client
         self.check_robot_navigation_state_cbg = MutuallyExclusiveCallbackGroup()

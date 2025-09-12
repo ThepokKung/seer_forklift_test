@@ -5,3 +5,5 @@ seer_robotic_pkg/scripts/claude.md
 server
 .env
 drop_file_here
+seer_robot_pkg/scripts/.env
+seer_robot_pkg/tests/.env

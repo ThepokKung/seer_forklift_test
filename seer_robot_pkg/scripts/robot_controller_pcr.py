@@ -11,9 +11,9 @@ from std_srvs.srv import Trigger
 # backend imports
 from seer_robot_pkg.robot_navigation_api import RobotNavigationAPI
 
-class RobotController(Node):
+class RobotControllerPCR(Node):
     def __init__(self):
-        super().__init__('robot_controller')
+        super().__init__('robot_controller_pcr')
         self.get_logger().info('Robot Controller node has been started')
 
         # Declare parameters
@@ -25,7 +25,6 @@ class RobotController(Node):
         self.robot_id = self.get_parameter('robot_id').get_parameter_value().string_value
         self.robot_name = self.get_parameter('robot_name').get_parameter_value().string_value
         self.robot_ip = self.get_parameter('robot_ip').get_parameter_value().string_value
-
 
         # robot parameter
         self.robot_navigation_status = 0
@@ -141,7 +140,7 @@ class RobotController(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = RobotController()
+    node = RobotControllerPCR()
 
     try:
         rclpy.spin(node)

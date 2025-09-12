@@ -3,7 +3,7 @@ import rclpy
 from rclpy.node import Node
 
 # msg imports
-from std_msgs.msg import Float32,Int8,Bool
+from std_msgs.msg import Float32,Int32,Bool
 
 # srv imports
 from seer_robot_interfaces.srv import CheckRobotStateNow
@@ -35,7 +35,7 @@ class RobotStateNode(Node):
         self.robot_controller_mode = False
 
         # Create subscriptions
-        self.create_subscription(Int8,'robot_status/robot_navigation_status',self._sub_robot_navigation_status_callback,10)
+        self.create_subscription(Int32,'robot_status/robot_navigation_status',self._sub_robot_navigation_status_callback,10)
         self.create_subscription(Float32,'robot_status/robot_battery_percentage',self._sub_robot_battery_callback,10)
         self.create_subscription(Bool,'robot_status/robot_controller_mode_status',self._sub_robot_controller_mode_callback,10)
 

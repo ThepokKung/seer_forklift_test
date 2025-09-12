@@ -12,6 +12,13 @@
   
   <depend>rclcpp</depend>
   <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>seer_robot_interfaces</depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <!-- System Python dependency for dotenv -->
+  <exec_depend>python3-dotenv</exec_depend>
   
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

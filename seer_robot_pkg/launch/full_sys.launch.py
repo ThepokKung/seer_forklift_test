@@ -64,7 +64,7 @@ def generate_launch_description():
             }]
         ))
 
-        # Robot controller node
+        # Robot controller pcr node
         nodes.append(Node(
             package='seer_robot_pkg',
             executable='robot_controller_pcr.py',
@@ -83,6 +83,13 @@ def generate_launch_description():
         package='seer_robot_pkg',
         executable='task_management.py',
         name='task_management_node',
+        output='screen'
+    ))
+
+    nodes.append(Node(
+        package='ros_bridge2_api',
+        executable='fastapi_ros_bridge.py',
+        name='fastapi_ros_bridge_node',
         output='screen'
     ))
     

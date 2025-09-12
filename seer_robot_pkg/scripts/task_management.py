@@ -12,7 +12,7 @@ load_dotenv()
 
 # srv imports
 from std_srvs.srv import Trigger
-from seer_robot_interfaces.srv import AssignTask, CheckRobotAllForTask, GetNavigationPath, CheckRobotStateNow
+from seer_robot_interfaces.srv import AssignTask, GetNavigationPath, CheckRobotStateNow
 # backend imports
 from seer_robot_pkg.pallet_loader import PalletLoader
 from seer_robot_pkg.json_command_builder import JsonCommandBuilder
@@ -73,6 +73,7 @@ class TaskManagement(Node):
 
         # Service server
         self.create_service(AssignTask, 'task_management/assign_task', self.assign_task_callback)
+        
     #####################################################
     ###             Service Callbacks                 ###
     #####################################################
@@ -95,8 +96,17 @@ class TaskManagement(Node):
         self.get_logger().info(f'Received request to assign task with ID: {request.task_id} and type: {task_type_name} (ID: {request.task_type_id})')
 
         try:
+            # Validate pallet_id early to avoid int('None') errors from DB layer
+            try:
+                pallet_id_val = int(request.pallet_id)
+            except (TypeError, ValueError) as e:
+                response.success = False
+                response.message = f"Invalid pallet_id: {request.pallet_id}. Must be an integer."
+                self.get_logger().error(response.message)
+                return response
+
             # Get pallet data first
-            pallet_data = self.pallet_loader.get_pallet_data_id(request.pallet_id)
+            pallet_data = self.pallet_loader.get_pallet_data_id(pallet_id_val)
             if not pallet_data:
                 response.success = False
                 response.message = f"Pallet with ID {request.pallet_id} not found"
@@ -146,7 +156,7 @@ class TaskManagement(Node):
             self.get_logger().info(f'robot_paths: {robot_paths}')
 
             ### task allocation here
-            ## Wait alogorithm can be improved in future
+            ## Wait algorithm can be improved in future
 
             # Simple allocation: choose the robot with the shortest valid path
             min_path_length = float('inf')
@@ -166,14 +176,8 @@ class TaskManagement(Node):
                 response.message = "No valid navigation path found for any available robot"
                 return response
 
-            # Here you can proceed to assign the task to selected_robot
             # (Task assignment logic can be added here)
-
-            ### Test call robot 
-
-            task_assign_temp = AssignTask.Request()
-            use_robot = self.robot_clients[selected_robot]['assign_task']            
-
+            ### Test call robot
             ### Need to add check collision here in future
 
             response.success = True

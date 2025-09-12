@@ -27,7 +27,6 @@ ament_python_install_package(${PROJECT_NAME})
 
 # Install Python executables
 install(PROGRAMS
-  ### Dot env ###
   scripts/.env
   ### Main scripts ###
   scripts/robot_status.py
