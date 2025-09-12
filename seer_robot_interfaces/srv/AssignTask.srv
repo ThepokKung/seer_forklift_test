@@ -1,5 +1,5 @@
-int8 task_type_id #PickInit = 1, PlaceInit = 2, PickToManipulator = 3, PickFromManipulator = 4
-int8 pallet_id
+int16 task_type_id #PickInit = 1, PlaceInit = 2, PickToManipulator = 3, PickFromManipulator = 4
+int16 pallet_id
 string task_id
 ---
 bool success

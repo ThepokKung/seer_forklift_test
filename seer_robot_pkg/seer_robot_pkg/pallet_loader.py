@@ -82,7 +82,7 @@ class PalletLoader:
     #####################################################
 
     def _ensure_connection(self):
-        if self.engine is None and self.connect_db() is None:
+        if self.engine is None and not self.connect_db():
             raise RuntimeError("❌ Unable to connect to DB")
 
     def _get_pallet_by_id(self, pallet_id):
