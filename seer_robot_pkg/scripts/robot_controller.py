@@ -91,7 +91,7 @@ class RobotController(Node):
                 self.connection_attempted = True
                 return True
             else:
-                self.get_logger().warn(f"Failed to connect to robot navigation at {self.robot_ip}")
+                self.get_logger().warning(f"Failed to connect to robot navigation at {self.robot_ip}")
                 return False
         except Exception as e:
             self.get_logger().error(f"Exception during connection: {e}")
@@ -142,37 +142,37 @@ class RobotController(Node):
         try:
             # Route to appropriate task based on task_type_id
             if request.task_type_id == 1:  # PickInit
-                self.get_logger().info(f'Executing PickInit for pallet {request.pallet_id}')
-                pallet_response = self.pallet_pick_init_callback(pallet_data)
-                
-            elif request.task_type_id == 2:  # PlaceInit
-                self.get_logger().info(f'Executing PlaceInit for pallet {request.pallet_id}')
-                # pallet_response = self.pallet_place_init_callback(pallet_request, pallet_response)
-                
-            elif request.task_type_id == 3:  # PickToManipulator
-                self.get_logger().info(f'Executing PickToManipulator for pallet {request.pallet_id}')
-                # pallet_response = self.pallet_pick_to_manipulator_callback(pallet_request, pallet_response)
-                
-            elif request.task_type_id == 4:  # PickFromManipulator
-                self.get_logger().info(f'Executing PickFromManipulator for pallet {request.pallet_id}')
-                # pallet_response = self.pallet_pick_from_manipulator_callback(pallet_request, pallet_response)
-                
-            else:
-                self.get_logger().error(f'Invalid task_type_id: {request.task_type_id}. Valid values are 1-4.')
-                response.success = False
-                response.message = f'Invalid task_type_id: {request.task_type_id}. Valid values are: 1=PickInit, 2=PlaceInit, 3=PickToManipulator, 4=PickFromManipulator'
-                return response
-            
-            # Set response based on pallet task result
-            # response.success = pallet_response.success
-            # if pallet_response.success:
-            #     response.message = f'Task {request.task_id} (Type: {request.task_type_id}, Pallet: {request.pallet_id}) completed successfully. {pallet_response.message}'
-            # else:
-            #     response.message = f'Task {request.task_id} (Type: {request.task_type_id}, Pallet: {request.pallet_id}) failed. {pallet_response.message}'
+                self.get_logger().info(f"Executing PickInit for pallet {request.pallet_id}")
+                success = self.pallet_pick_init_callback(pallet_data, request.task_id)
+                response.success = bool(success)
+                response.message = "Pallet Pick Init executed successfully" if success else "Pallet Pick Init failed"
 
-            #### Check only
-            response.success = True
-            response.message = f'Task {request.task_id} (Type: {request.task_type_id}, Pallet: {request.pallet_id}) executed (simulation).'
+            elif request.task_type_id == 2:  # PlaceInit
+                self.get_logger().info(f"Executing PlaceInit for pallet {request.pallet_id}")
+                success, message = self.pallet_place_init(pallet_data, request.task_id)
+                response.success = bool(success)
+                response.message = message
+
+            elif request.task_type_id == 3:  # PickToManipulator
+                self.get_logger().info(f"Executing PickToManipulator for pallet {request.pallet_id}")
+                success, message = self.pallet_pick_to_manipulator(pallet_data, request.task_id)
+                response.success = bool(success)
+                response.message = message
+
+            elif request.task_type_id == 4:  # PickFromManipulator
+                self.get_logger().info(f"Executing PickFromManipulator for pallet {request.pallet_id}")
+                success, message = self.pallet_pick_from_manipulator(pallet_data, request.task_id)
+                response.success = bool(success)
+                response.message = message
+
+            else:
+                self.get_logger().error(f"Invalid task_type_id: {request.task_type_id}. Valid values are 1-4.")
+                response.success = False
+                response.message = (
+                    f"Invalid task_type_id: {request.task_type_id}. "
+                    "Valid values are: 1=PickInit, 2=PlaceInit, 3=PickToManipulator, 4=PickFromManipulator"
+                )
+                return response
 
         except Exception as e:
             self.get_logger().error(f'Exception during task assignment: {e}')
@@ -210,7 +210,7 @@ class RobotController(Node):
                         self.get_logger().info(f"{context_name} Step {step_num} - Task started, status changed to: {self.robot_navigation_status}")
                         break
                     elif self.robot_navigation_status is None:
-                        self.get_logger().warn(f"{context_name} Step {step_num} - Failed to get navigation status")
+                        self.get_logger().warning(f"{context_name} Step {step_num} - Failed to get navigation status")
                         return False, f"Failed to get navigation status for {context_name} step {step_num}"
             
             # Now wait for the task to complete (status becomes 4)
@@ -227,13 +227,32 @@ class RobotController(Node):
                         self.get_logger().error(f"{context_name} Step {step_num} canceled (status: CANCELED)")
                         return False, f"{context_name} step {step_num} was canceled"
                 else:
-                    self.get_logger().warn(f"{context_name} Step {step_num} - Failed to get navigation status")
+                    self.get_logger().warning(f"{context_name} Step {step_num} - Failed to get navigation status")
                     return False, f"Failed to get navigation status for {context_name} step {step_num}"
                 
                 # Add a small delay to avoid overwhelming the service
                 time.sleep(0.5)
 
         return True, f"All {len(command_list)} {context_name} commands executed successfully."
+
+    # Internal helper to run a task sequence
+    def _run_task_sequence(self, pallet_data, build_commands_fn, context_name, task_id: str = "task_123"):
+        if pallet_data is None:
+            return False, "Pallet data not provided"
+
+        # Ensure connection to robot navigation API
+        if not self.ensure_connection():
+            self.get_logger().error("Failed to connect to robot navigation API.")
+            return False, "Failed to connect to robot navigation API."
+
+        try:
+            command_list = build_commands_fn(pallet_data, task_id)
+            success, message = self.execute_navigation_commands(command_list, context_name)
+            return success, message
+        except Exception as e:
+            err = f"Error during {context_name}: {e}"
+            self.get_logger().error(err)
+            return False, err
 
     #####################################################
     ###              Pick Place Manipulator           ###
@@ -308,83 +327,49 @@ class RobotController(Node):
     #####################################################
 
     # Pick Init
-    def pallet_pick_init_callback(self,pallet_data):
-        self.get_logger().info(f'Received request to test Pallet Pick Init: {pallet_data['pallet_id']}')
+    def pallet_pick_init_callback(self, pallet_data, task_id: str = "task_123"):
+        self.get_logger().info(f"Received request to test Pallet Pick Init: {pallet_data['pallet_id']}")
         # pallet_id_temp = pallet_data.pallet_id
 
         # pallet_data = self.pallet_loader.get_pallet_data_id(int(pallet_id_temp)) # type: ignore
         # self.get_logger().info(f'Pallet data for ID {pallet_id_temp}: {pallet_data}')
 
-        if pallet_data is None:
-            # response.success = False
-            # response.message = f"Pallet data not found for ID {pallet_id_temp}"
-            # self.get_logger().error(response.message)
-            # return response
-            self.get_logger().error(f"Pallet data not found for ID {pallet_data['pallet_id']}")
-            return False
-
-        # Ensure connection to robot navigation API
-        if not self.ensure_connection():
-            # response.success = False
-            # response.message = "Failed to connect to robot navigation API."
-            # self.get_logger().error(response.message)
-            self.get_logger().error("Failed to connect to robot navigation API.")
-            return False
-
-        try:
-            # Get the list of navigation commands
-            command_list = self.json_command_builder.pallet_pick_init_command(pallet_data, "task_123")
-            
-            # Execute commands using helper method
-            success, message = self.execute_navigation_commands(command_list, "Pallet Pick Init")
-            
-            # response.success = success
-            # response.message = message
-            # return response
-
-            self.get_logger().info(success)
-            self.get_logger().info(message)
-            return True
-
-        except Exception as e:
-            # response.success = False
-            # response.message = f"Error during pallet pick init: {e}"
-            # self.get_logger().error(response.message)
-            # return response
-            self.get_logger().error(f"Error during pallet pick init: {e}")
-            return False
+        success, message = self._run_task_sequence(
+            pallet_data,
+            self.json_command_builder.pallet_pick_init_command,
+            "Pallet Pick Init",
+            task_id
+        )
+        self.get_logger().info(message)
+        return success
         
     # Place Init
-    def pallet_place_init_callback(self, request, response):
-        self.get_logger().info(f'Received request to test Pallet Place Init: {request.pallet_id}')
-        pallet_id_temp = request.pallet_id
+    def pallet_place_init(self, pallet_data, task_id: str = "task_123"):
+        self.get_logger().info(f"Received request to test Pallet Place Init: {pallet_data['pallet_id']}")
+        return self._run_task_sequence(
+            pallet_data,
+            self.json_command_builder.pallet_place_init_command,
+            "Pallet Place Init",
+            task_id
+        )
 
-        pallet_data = self.pallet_loader.get_pallet_data_id(int(pallet_id_temp)) # type: ignore
-        self.get_logger().info(f'Pallet data for ID {pallet_id_temp}: {pallet_data}')
+    def pallet_pick_to_manipulator(self, pallet_data, task_id: str = "task_123"):
+        self.get_logger().info(f"Received request to test Pallet Pick to Manipulator: {pallet_data['pallet_id']}")
+        return self._run_task_sequence(
+            pallet_data,
+            self.json_command_builder.pallet_pick_to_manipulator_command,
+            "Pallet Pick to Manipulator",
+            task_id
+        )
 
-        # Ensure connection to robot navigation API
-        if not self.ensure_connection():
-            response.success = False
-            response.message = "Failed to connect to robot navigation API."
-            self.get_logger().error(response.message)
-            return response
-
-        try:
-            # Get the list of navigation commands
-            command_list = self.json_command_builder.pallet_place_init_command(pallet_data, "task_123")
-            
-            # Execute commands using helper method
-            success, message = self.execute_navigation_commands(command_list, "Pallet Place Init")
-            
-            response.success = success
-            response.message = message
-            return response
-
-        except Exception as e:
-            response.success = False
-            response.message = f"Error during pallet place init: {e}"
-            self.get_logger().error(response.message)
-            return response
+    def pallet_pick_from_manipulator(self, pallet_data, task_id: str = "task_123"):
+        self.get_logger().info(f"Received request to test Pallet Pick from Manipulator: {pallet_data['pallet_id']}")
+        return self._run_task_sequence(
+            pallet_data,
+            self.json_command_builder.pallet_pick_from_manipulator_command,
+            "Pallet Pick from Manipulator",
+            task_id
+        )
 
     #####################################################
     ###                 Sub callback                  ###
