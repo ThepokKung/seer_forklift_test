@@ -3,7 +3,8 @@
 # ROS2 imports
 import rclpy
 from rclpy.node import Node
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup # Mutiple callback groups for service clients
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup  # Multiple callback groups for service clients
+from rclpy.executors import MultiThreadedExecutor
 
 # System imports
 import os
@@ -60,12 +61,31 @@ class RobotController(Node):
             db_pass=os.getenv('DB_PASS')
         )
 
-        # Subscriptions
-        self.create_subscription(Int32, 'robot_status/robot_navigation_status', self._sub_check_robot_navigation_status_callback, 10)
+        # Reentrant callback group so subscription updates can run while services execute
+        self.reentrant_callback_group = ReentrantCallbackGroup()
 
-        # Service server
-        self.create_service(GetNavigationPath, 'robot_controller/get_navigation_path', self.get_navigation_path_callback)
-        self.create_service(AssignTask, 'robot_controller/assign_task', self.assign_task_callback)
+        # Subscriptions
+        self.create_subscription(
+            Int32,
+            'robot_status/robot_navigation_status',
+            self._sub_check_robot_navigation_status_callback,
+            10,
+            callback_group=self.reentrant_callback_group,
+        )
+
+        # Service servers
+        self.create_service(
+            GetNavigationPath,
+            'robot_controller/get_navigation_path',
+            self.get_navigation_path_callback,
+            callback_group=self.reentrant_callback_group,
+        )
+        self.create_service(
+            AssignTask,
+            'robot_controller/assign_task',
+            self.assign_task_callback,
+            callback_group=self.reentrant_callback_group,
+        )
 
         # Service client
         self.check_robot_navigation_state_cbg = MutuallyExclusiveCallbackGroup()
@@ -200,11 +220,12 @@ class RobotController(Node):
             # robot_navigation_status = self.call_check_robot_navigation_sync()
             
             self.get_logger().info(f"{context_name} Step {step_num} - Initial status: {self.robot_navigation_status}")
-            
+
             # If status is already 4, wait for it to change to indicate the new task has started
             if self.robot_navigation_status == 4:
                 self.get_logger().info(f"{context_name} Step {step_num} - Status is 4, waiting for task to start...")
                 while self.robot_navigation_status == 4:
+                    self.get_logger().info(f"Now : robot navigation Status {self.robot_navigation_status}")
                     time.sleep(0.5)
                     if self.robot_navigation_status is not None and self.robot_navigation_status != 4:
                         self.get_logger().info(f"{context_name} Step {step_num} - Task started, status changed to: {self.robot_navigation_status}")
@@ -385,12 +406,15 @@ class RobotController(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = RobotController()
+    executor = MultiThreadedExecutor()
+    executor.add_node(node)
 
     try:
-        rclpy.spin(node)
+        executor.spin()
     except KeyboardInterrupt:
         pass
     finally:
+        executor.shutdown()
         node.destroy_node()
         rclpy.shutdown()
 
