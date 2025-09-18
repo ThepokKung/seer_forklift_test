@@ -41,6 +41,7 @@ class RobotStatus(Node):
         self.robot_charge_status = False
         self.robot_available = False
         self.robot_controller_mode_status = False
+        self.robot_fork_height = 0.0
 
         # Emergency statuses
         self.robot_driver_emergency_status = False
@@ -61,9 +62,6 @@ class RobotStatus(Node):
         self.robot_controller_mode_status_pub = self.create_publisher(Bool, 'robot_status/robot_controller_mode_status', 10)
 
         # Service Server
-        # self.create_service(CheckRobotNavigationTaskStatus, 'robot_status/check_robot_navigation_status', self.check_robot_navigation_status_callback)
-        # self.create_service(CheckRobotCurrentLocation, 'robot_status/check_robot_current_location', self.check_robot_current_location_callback)
-        # self.create_service(CheckRobotAllForTask, 'robot_status/check_robot_all_for_task', self.check_robot_all_for_task_callback)
         self.create_service(Trigger, 'robot_status/check_available', self.check_robot_available_callback)
 
         # Timer
@@ -113,6 +111,7 @@ class RobotStatus(Node):
                     self.robot_current_station = temp_batch_data_1.get('current_station', None)
                     self.robot_confidence = temp_batch_data_1.get('confidence', 0.0)
                     self.robot_charge_status = temp_batch_data_1.get('charging', False)
+                    self.robot_fork_height = temp_batch_data_1.get('fork_height', 0.0)
                     #  Emergency Status
                     self.robot_driver_emergency_status = temp_batch_data_1.get('driver_emc', False)
                     self.robot_electric_status = temp_batch_data_1.get('electric', False)
@@ -157,7 +156,6 @@ class RobotStatus(Node):
             
             # Convert navigation status integer to meaningful string
             response.robot_navigation_status = int(self.robot_navigation_status)
-            # response.robot_task_status = str(self.robot_state) 
         else:
             response.success = False
             response.robot_current_station = "Unknown"

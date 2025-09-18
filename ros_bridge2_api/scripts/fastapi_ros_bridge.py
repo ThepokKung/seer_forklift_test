@@ -6,6 +6,8 @@ import fastapi
 import uvicorn
 import json
 import asyncio
+import time
+from contextlib import suppress
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -41,13 +43,6 @@ class FastAPIClient(Node):
         )
         # Setup FastAPI routes
         self.setup_routes()
-        # Store the event loop for scheduling async tasks from ROS2 callbacks
-        self.loop = None
-        self.loop_ready = threading.Event()
-        self.server_thread = threading.Thread(target=self.start_server, daemon=True)
-        self.server_thread.start()
-        # Wait for the event loop to be ready before continuing
-        self.loop_ready.wait()
         # --- Webhook/Streaming additions ---
         self.robot_namespaces = ["robot_01", "robot_02"]
         self.status_topics = [
@@ -65,8 +60,20 @@ class FastAPIClient(Node):
         }
         # Store latest messages for each topic per robot
         self.latest_status = {ns: {topic: None for topic in self.status_topics} for ns in self.robot_namespaces}
+        self.status_last_update = {ns: {topic: None for topic in self.status_topics} for ns in self.robot_namespaces}
+        self.status_online = {ns: {topic: False for topic in self.status_topics} for ns in self.robot_namespaces}
+        self.offline_timeout = 5.0  # seconds without updates before marking offline
+        self.offline_check_interval = 1.0
         # Store websocket connections
         self.active_connections = {ns: set() for ns in self.robot_namespaces}
+        self._watchdog_task = None
+        # Store the event loop for scheduling async tasks from ROS2 callbacks
+        self.loop = None
+        self.loop_ready = threading.Event()
+        self.server_thread = threading.Thread(target=self.start_server, daemon=True)
+        self.server_thread.start()
+        # Wait for the event loop to be ready before continuing
+        self.loop_ready.wait()
         # Subscribe to all topics for each robot namespace
         for ns in self.robot_namespaces:
             for topic in self.status_topics:
@@ -81,20 +88,30 @@ class FastAPIClient(Node):
 
     def _make_callback(self, ns, topic):
         def callback(msg):
-            # Store latest message as string for UI compatibility
+            # Store latest message for UI compatibility
             value = msg.data if hasattr(msg, 'data') else msg
             self.latest_status[ns][topic] = value
-            # Always send as string for UI
+            self.status_last_update[ns][topic] = time.time()
+            was_offline = not self.status_online[ns][topic]
+            self.status_online[ns][topic] = True
+            if was_offline:
+                self.get_logger().debug(f"{ns}:{topic} stream resumed")
+            if self.loop is None or not self.loop.is_running():
+                self.get_logger().warn("Event loop not running; skipping websocket broadcast")
+                return
             try:
-                asyncio.run(self._broadcast_status(ns, topic, str(value)))
-            except RuntimeError:
-                # Already in an event loop, ignore (should not happen in ROS2 callback)
-                pass
+                asyncio.run_coroutine_threadsafe(
+                    self._broadcast_status(ns, topic, value, online=True),
+                    self.loop
+                )
+            except Exception as exc:
+                self.get_logger().error(f"Failed to schedule websocket broadcast: {exc}")
         return callback
 
-    async def _broadcast_status(self, ns, topic, value):
+    async def _broadcast_status(self, ns, topic, value, online=True):
         # Send update to all connected websocket clients for this robot
-        data = {"topic": topic, "value": value}
+        payload_value = str(value) if value is not None else None
+        data = {"topic": topic, "value": payload_value, "online": online}
         to_remove = set()
         for ws in self.active_connections[ns]:
             try:
@@ -102,10 +119,44 @@ class FastAPIClient(Node):
             except Exception:
                 to_remove.add(ws)
         self.active_connections[ns] -= to_remove
+
+    async def _status_watchdog(self):
+        while True:
+            await asyncio.sleep(self.offline_check_interval)
+            now = time.time()
+            for ns in self.robot_namespaces:
+                for topic in self.status_topics:
+                    if not self.status_online[ns][topic]:
+                        continue
+                    last_update = self.status_last_update[ns][topic]
+                    if last_update is None:
+                        continue
+                    if now - last_update > self.offline_timeout:
+                        self.status_online[ns][topic] = False
+                        self.latest_status[ns][topic] = None
+                        self.get_logger().warn(
+                            f"No updates from {ns}:{topic} for {self.offline_timeout} seconds; marking offline"
+                        )
+                        await self._broadcast_status(ns, topic, None, online=False)
         
 
     def setup_routes(self):
         node_instance = self
+
+        @self.app.on_event("startup")
+        async def on_startup():
+            node_instance.loop = asyncio.get_running_loop()
+            node_instance.loop_ready.set()
+            if node_instance._watchdog_task is None or node_instance._watchdog_task.done():
+                node_instance._watchdog_task = asyncio.create_task(node_instance._status_watchdog())
+
+        @self.app.on_event("shutdown")
+        async def on_shutdown():
+            if node_instance._watchdog_task is not None:
+                node_instance._watchdog_task.cancel()
+                with suppress(asyncio.CancelledError):
+                    await node_instance._watchdog_task
+                node_instance._watchdog_task = None
 
         @self.app.get("/")
         async def root():
@@ -148,9 +199,17 @@ class FastAPIClient(Node):
             try:
                 # On connect, send the latest status for all topics
                 for topic in node_instance.status_topics:
+                    last_update = node_instance.status_last_update[robot_id][topic]
+                    online = node_instance.status_online[robot_id][topic]
                     value = node_instance.latest_status[robot_id][topic]
-                    if value is not None:
-                        await websocket.send_text(json.dumps({"topic": topic, "value": value}))
+                    if last_update is None and not online:
+                        continue
+                    payload = {
+                        "topic": topic,
+                        "value": str(value) if value is not None else None,
+                        "online": online,
+                    }
+                    await websocket.send_text(json.dumps(payload))
                 while True:
                     # Keep connection open, but we don't expect to receive messages
                     await websocket.receive_text()
@@ -181,10 +240,20 @@ class FastAPIClient(Node):
     
     def start_server(self):
         import asyncio
+        config = uvicorn.Config(self.app, host="0.0.0.0", port=8000, log_level="info", loop="asyncio")
+        server = uvicorn.Server(config)
+        server.install_signal_handlers = False
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
-        self.loop_ready.set()
-        uvicorn.run(self.app, host="0.0.0.0", port=8000, log_level="info")
+        try:
+            self.loop.run_until_complete(server.serve())
+        finally:
+            pending = [task for task in asyncio.all_tasks(self.loop) if not task.done()]
+            for task in pending:
+                task.cancel()
+            if pending:
+                self.loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
+            self.loop.close()
 
     def call_assign_task_service(self, task_type_id: int, pallet_id: int, task_id: str):
         """Call the /assigntask service with the given data"""

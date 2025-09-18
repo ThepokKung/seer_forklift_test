@@ -73,11 +73,6 @@ class TaskManagement(Node):
 
         # Service server
         self.create_service(AssignTask, 'task_management/assign_task', self.assign_task_callback)
-        
-    #####################################################
-    ###             Service Callbacks                 ###
-    #####################################################
-
     
     #####################################################
     ###             Assign Task Callbacks             ###
@@ -178,6 +173,7 @@ class TaskManagement(Node):
 
             # (Task assignment logic can be added here)
             ### Test call robot
+            
             ### Need to add check collision here in future
 
             response.success = True

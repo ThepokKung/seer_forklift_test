@@ -20,7 +20,6 @@ from std_srvs.srv import Trigger
 # srv import
 from seer_robot_interfaces.srv import (
     AssignTask,
-    CheckCollisionNavigationPath,
     CheckRobotNavigationTaskStatus,
     GetNavigationPath,
 )
@@ -113,13 +112,6 @@ class RobotController(Node):
         # Service client
         self.check_robot_navigation_state_cbg = MutuallyExclusiveCallbackGroup()
         self.check_robot_navigation_state_client = self.create_client(CheckRobotNavigationTaskStatus, 'robot_controller/check_robot_navigation_status', callback_group=self.check_robot_navigation_state_cbg)
-        self.check_collision_navigation_cbg = MutuallyExclusiveCallbackGroup()
-        self.check_collision_navigation_client = self.create_client(
-            CheckCollisionNavigationPath,
-            'traffic_management/check_collision_navigation',
-            callback_group=self.check_collision_navigation_cbg,
-        )
-        self.collision_check_timeout_sec = 5.0
 
         # Start log
         self.get_logger().info(f'Robot Navigation API initialized for {self.robot_ip}')
@@ -146,89 +138,6 @@ class RobotController(Node):
         except Exception as e:
             self.get_logger().error(f"Exception during connection: {e}")
             return False
-
-    #####################################################
-    ###            Collision Safety Helpers           ###
-    #####################################################
-
-    def _get_navigation_path_nodes(self, command_dict):
-        """Attempt to resolve a list of nodes for the given navigation command."""
-        destination = command_dict.get('id')
-        if destination is None or destination == 'SELF_POSITION':
-            return []
-
-        path_nodes = []
-        try:
-            nav_path = self.robot_navigation_api.get_navigation_path(id2go=destination)
-            if nav_path is not None:
-                nodes = nav_path.get('path')
-                if isinstance(nodes, list) and nodes:
-                    path_nodes = [str(node) for node in nodes if node]
-        except Exception as err:
-            self.get_logger().warning(f"Failed to fetch navigation path for {destination}: {err}")
-
-        if not path_nodes:
-            source = command_dict.get('source_id')
-            source_node = str(source) if source and source != 'SELF_POSITION' else None
-            dest_node = str(destination)
-            if source_node and source_node != dest_node:
-                path_nodes = [source_node, dest_node]
-            elif source_node is None:
-                path_nodes = [dest_node]
-
-        return path_nodes
-
-    def _check_path_for_collision(self, path_nodes, context_name, step_num):
-        """Call the traffic management collision service for the given path."""
-        if len(path_nodes) < 2 or all(node == path_nodes[0] for node in path_nodes):
-            self.get_logger().debug(
-                f"{context_name} Step {step_num} - Skipping collision check (insufficient path nodes: {path_nodes})"
-            )
-            return True, "No collision check required"
-
-        if not self.check_collision_navigation_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().warning(
-                f"{context_name} Step {step_num} - Collision check service unavailable; proceeding without validation"
-            )
-            return True, "Collision check service unavailable"
-
-        request = CheckCollisionNavigationPath.Request()
-        request.path = path_nodes
-        future = self.check_collision_navigation_client.call_async(request)
-
-        start_time = time.time()
-        while rclpy.ok() and not future.done():
-            if time.time() - start_time > self.collision_check_timeout_sec:
-                self.get_logger().warning(
-                    f"{context_name} Step {step_num} - Collision check timed out after {self.collision_check_timeout_sec} seconds"
-                )
-                return False, "Collision check timed out"
-            time.sleep(0.05)
-
-        if future.cancelled():
-            return False, "Collision check future was cancelled"
-
-        if future.exception() is not None:
-            self.get_logger().error(
-                f"{context_name} Step {step_num} - Collision check failed: {future.exception()}"
-            )
-            return False, f"Collision check failed: {future.exception()}"
-
-        result = future.result()
-        if result is None:
-            self.get_logger().error(f"{context_name} Step {step_num} - Collision check returned no result")
-            return False, "Collision check returned no result"
-
-        if result.has_collision:
-            self.get_logger().error(
-                f"{context_name} Step {step_num} - Collision detected: {result.message}"
-            )
-            return False, result.message or "Collision detected"
-
-        self.get_logger().info(
-            f"{context_name} Step {step_num} - Collision check passed: {result.message}"
-        )
-        return True, result.message or "Collision check passed"
 
     #####################################################
     ###      Navigation Control Service Callbacks     ###
@@ -380,12 +289,6 @@ class RobotController(Node):
             # Convert command to JSON string
             command_json = json.dumps(command_dict)
             self.get_logger().info(f"Executing {context_name} Step {step_num}: {command_json}")
-
-            # Check for potential collisions along the planned path
-            path_nodes = self._get_navigation_path_nodes(command_dict)
-            collision_free, collision_message = self._check_path_for_collision(path_nodes, context_name, step_num)
-            if not collision_free:
-                return False, f"Collision detected before executing {context_name} step {step_num}: {collision_message}"
 
             # Send the navigation command
             response = self.robot_navigation_api.navigation_with_json(command_json)

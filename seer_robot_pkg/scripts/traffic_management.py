@@ -294,39 +294,9 @@ class TrafficManagement(Node):
     # ------------------ Check Collsion Callback
 
     def check_collision_navigation_callback(self, request, response):
-        try:
-            raw_nodes = [token for token in request.path if token]
-            if len(raw_nodes) < 2:
-                response.has_collision = False
-                response.message = "Path length < 2; no movement to evaluate"
-                return response
-
-            normalized = self._normalize_route_tokens(raw_nodes)
-            if len(normalized) < 2:
-                response.has_collision = False
-                response.message = "Insufficient valid nodes after normalization"
-                return response
-
-            try:
-                polyline = self.build_route_polyline(normalized)
-            except KeyError as err:
-                response.has_collision = True
-                response.message = f"Invalid route: {err}"
-                return response
-
-            if len(polyline) < 2:
-                response.has_collision = False
-                response.message = "Route is a single point; no collision risk"
-                return response
-
-            response.has_collision = False
-            response.message = "No collision detected with current static analysis"
-            return response
-        except Exception as error:
-            self.get_logger().error(f"Collision check failed: {error}")
-            response.has_collision = True
-            response.message = f"Collision check failed: {error}"
-            return response
+        response.has_collision = False
+        response.message = "Collision detection currently disabled"
+        return response
 
 def main(args=None):
     rclpy.init(args=args)
