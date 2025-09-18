@@ -64,20 +64,6 @@ def generate_launch_description():
             }]
         ))
 
-        # Robot controller pcr node
-        nodes.append(Node(
-            package='seer_robot_pkg',
-            executable='robot_controller_pcr.py',
-            name='robot_controller_pcr_node',
-            namespace=robot['namespace'],
-            output='screen',
-            parameters=[{
-                'robot_id': robot['robot_id'],
-                'robot_name': robot['robot_name'],
-                'robot_ip': robot['robot_ip']
-            }]
-        ))
-
     # Add task management node
     nodes.append(Node(
         package='seer_robot_pkg',

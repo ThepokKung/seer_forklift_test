@@ -18,7 +18,12 @@ from std_msgs.msg import Int32
 from std_srvs.srv import Trigger
 
 # srv import
-from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus, GetNavigationPath, PalletID, AssignTask
+from seer_robot_interfaces.srv import (
+    AssignTask,
+    CheckCollisionNavigationPath,
+    CheckRobotNavigationTaskStatus,
+    GetNavigationPath,
+)
 
 # backend imports
 from seer_robot_pkg.robot_navigation_api import RobotNavigationAPI
@@ -86,10 +91,35 @@ class RobotController(Node):
             self.assign_task_callback,
             callback_group=self.reentrant_callback_group,
         )
+        self.create_service(
+            Trigger,
+            'robot_controller/cancel_navigation',
+            self.cancel_navigation_callback,
+            callback_group=self.reentrant_callback_group,
+        )
+        self.create_service(
+            Trigger,
+            'robot_controller/pause_navigation',
+            self.pause_navigation_callback,
+            callback_group=self.reentrant_callback_group,
+        )
+        self.create_service(
+            Trigger,
+            'robot_controller/resume_navigation',
+            self.resume_navigation_callback,
+            callback_group=self.reentrant_callback_group,
+        )
 
         # Service client
         self.check_robot_navigation_state_cbg = MutuallyExclusiveCallbackGroup()
         self.check_robot_navigation_state_client = self.create_client(CheckRobotNavigationTaskStatus, 'robot_controller/check_robot_navigation_status', callback_group=self.check_robot_navigation_state_cbg)
+        self.check_collision_navigation_cbg = MutuallyExclusiveCallbackGroup()
+        self.check_collision_navigation_client = self.create_client(
+            CheckCollisionNavigationPath,
+            'traffic_management/check_collision_navigation',
+            callback_group=self.check_collision_navigation_cbg,
+        )
+        self.collision_check_timeout_sec = 5.0
 
         # Start log
         self.get_logger().info(f'Robot Navigation API initialized for {self.robot_ip}')
@@ -118,9 +148,149 @@ class RobotController(Node):
             return False
 
     #####################################################
+    ###            Collision Safety Helpers           ###
+    #####################################################
+
+    def _get_navigation_path_nodes(self, command_dict):
+        """Attempt to resolve a list of nodes for the given navigation command."""
+        destination = command_dict.get('id')
+        if destination is None or destination == 'SELF_POSITION':
+            return []
+
+        path_nodes = []
+        try:
+            nav_path = self.robot_navigation_api.get_navigation_path(id2go=destination)
+            if nav_path is not None:
+                nodes = nav_path.get('path')
+                if isinstance(nodes, list) and nodes:
+                    path_nodes = [str(node) for node in nodes if node]
+        except Exception as err:
+            self.get_logger().warning(f"Failed to fetch navigation path for {destination}: {err}")
+
+        if not path_nodes:
+            source = command_dict.get('source_id')
+            source_node = str(source) if source and source != 'SELF_POSITION' else None
+            dest_node = str(destination)
+            if source_node and source_node != dest_node:
+                path_nodes = [source_node, dest_node]
+            elif source_node is None:
+                path_nodes = [dest_node]
+
+        return path_nodes
+
+    def _check_path_for_collision(self, path_nodes, context_name, step_num):
+        """Call the traffic management collision service for the given path."""
+        if len(path_nodes) < 2 or all(node == path_nodes[0] for node in path_nodes):
+            self.get_logger().debug(
+                f"{context_name} Step {step_num} - Skipping collision check (insufficient path nodes: {path_nodes})"
+            )
+            return True, "No collision check required"
+
+        if not self.check_collision_navigation_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().warning(
+                f"{context_name} Step {step_num} - Collision check service unavailable; proceeding without validation"
+            )
+            return True, "Collision check service unavailable"
+
+        request = CheckCollisionNavigationPath.Request()
+        request.path = path_nodes
+        future = self.check_collision_navigation_client.call_async(request)
+
+        start_time = time.time()
+        while rclpy.ok() and not future.done():
+            if time.time() - start_time > self.collision_check_timeout_sec:
+                self.get_logger().warning(
+                    f"{context_name} Step {step_num} - Collision check timed out after {self.collision_check_timeout_sec} seconds"
+                )
+                return False, "Collision check timed out"
+            time.sleep(0.05)
+
+        if future.cancelled():
+            return False, "Collision check future was cancelled"
+
+        if future.exception() is not None:
+            self.get_logger().error(
+                f"{context_name} Step {step_num} - Collision check failed: {future.exception()}"
+            )
+            return False, f"Collision check failed: {future.exception()}"
+
+        result = future.result()
+        if result is None:
+            self.get_logger().error(f"{context_name} Step {step_num} - Collision check returned no result")
+            return False, "Collision check returned no result"
+
+        if result.has_collision:
+            self.get_logger().error(
+                f"{context_name} Step {step_num} - Collision detected: {result.message}"
+            )
+            return False, result.message or "Collision detected"
+
+        self.get_logger().info(
+            f"{context_name} Step {step_num} - Collision check passed: {result.message}"
+        )
+        return True, result.message or "Collision check passed"
+
+    #####################################################
+    ###      Navigation Control Service Callbacks     ###
+    #####################################################
+
+    def _run_navigation_control(self, action_name, api_call, success_message, failure_message):
+        self.get_logger().info(f'Received request to {action_name} navigation')
+
+        if not self.ensure_connection():
+            self.get_logger().error('Failed to connect to robot navigation API')
+            return False, f'Failed to connect to robot for {action_name} navigation'
+
+        try:
+            result = api_call()
+        except Exception as error:
+            self.get_logger().error(f'Exception during {action_name}: {error}')
+            return False, failure_message
+
+        if result is not None and result.get('ret_code') == 0:
+            self.get_logger().info(success_message)
+            return True, success_message
+
+        self.get_logger().error(failure_message)
+        return False, failure_message
+
+    def cancel_navigation_callback(self, request, response):
+        success, message = self._run_navigation_control(
+            'cancel',
+            self.robot_navigation_api.cancel_navigation,
+            'Navigation canceled successfully',
+            'Failed to cancel navigation',
+        )
+        response.success = success
+        response.message = message
+        return response
+
+    def pause_navigation_callback(self, request, response):
+        success, message = self._run_navigation_control(
+            'pause',
+            self.robot_navigation_api.pause_navigation,
+            'Navigation paused successfully',
+            'Failed to pause navigation',
+        )
+        response.success = success
+        response.message = message
+        return response
+
+    def resume_navigation_callback(self, request, response):
+        success, message = self._run_navigation_control(
+            'resume',
+            self.robot_navigation_api.resume_navigation,
+            'Navigation resumed successfully',
+            'Failed to resume navigation',
+        )
+        response.success = success
+        response.message = message
+        return response
+
+    #####################################################
     ###             Service Callbacks                 ###
     #####################################################
-    
+
     def get_navigation_path_callback(self, request, response):
         id2go = request.id2go
         self.get_logger().info(f'Received request for navigation path to {id2go}')
@@ -210,7 +380,13 @@ class RobotController(Node):
             # Convert command to JSON string
             command_json = json.dumps(command_dict)
             self.get_logger().info(f"Executing {context_name} Step {step_num}: {command_json}")
-            
+
+            # Check for potential collisions along the planned path
+            path_nodes = self._get_navigation_path_nodes(command_dict)
+            collision_free, collision_message = self._check_path_for_collision(path_nodes, context_name, step_num)
+            if not collision_free:
+                return False, f"Collision detected before executing {context_name} step {step_num}: {collision_message}"
+
             # Send the navigation command
             response = self.robot_navigation_api.navigation_with_json(command_json)
             self.get_logger().info(f"Response from navigation: {response}")
@@ -406,7 +582,8 @@ class RobotController(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = RobotController()
-    executor = MultiThreadedExecutor()
+    executor = MultiThreadedExecutor(num_threads=4)
+    node.executor = executor
     executor.add_node(node)
 
     try:
