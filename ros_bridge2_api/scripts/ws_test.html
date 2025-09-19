@@ -13,7 +13,7 @@
     <center><h2>Robot Status WebSocket Stream</h2></center>
     <div style="display: flex; gap: 2em;">
         <div style="flex:1; border: 1px solid #aaa; border-radius: 8px; padding: 1em;">
-            <h3>robot_01</h3>
+            <center> <h3>robot_01</h3> </center>
             <div id="robot_01_status">
                 <div>robot_battery_percentage: <span id="robot_01_battery"></span> <span id="robot_01_battery_time" style="color:#888;font-size:0.9em;"></span></div>
                 <div>robot_controller_mode_status: <span id="robot_01_mode"></span> <span id="robot_01_mode_time" style="color:#888;font-size:0.9em;"></span></div>
@@ -31,7 +31,7 @@
             <div id="robot_01_nav_result" style="font-size:0.95em;color:#006400;"></div>
         </div>
         <div style="flex:1; border: 1px solid #aaa; border-radius: 8px; padding: 1em;">
-            <h3>robot_02</h3>
+            <center> <h3>robot_02</h3> </center>
             <div id="robot_02_status">
                 <div>robot_battery_percentage: <span id="robot_02_battery"></span> <span id="robot_02_battery_time" style="color:#888;font-size:0.9em;"></span></div>
                 <div>robot_controller_mode_status: <span id="robot_02_mode"></span> <span id="robot_02_mode_time" style="color:#888;font-size:0.9em;"></span></div>
@@ -84,18 +84,38 @@
         }
     </script>
     <br>
-    <div style="max-width: 500px; margin: 2em auto; border: 1px solid #aaa; border-radius: 8px; padding: 1em;">
-        <h3>Assign Task</h3>
-        <form id="assignTaskForm" onsubmit="assignTask(event)">
-            <label for="task_type_id">Task Type ID:</label>
-            <input type="number" id="task_type_id" min="1" max="4" required placeholder="1-4"><br><br>
-            <label for="pallet_id">Pallet ID:</label>
-            <input type="text" id="pallet_id" required><br><br>
-            <label for="task_id">Task ID:</label>
-            <input type="text" id="task_id" required><br><br>
-            <button type="submit">Assign Task</button>
-        </form>
-        <div id="assign_result" style="margin-top:1em;color:#006400;"></div>
+    <div style="max-width: 1100px; margin: 2em auto; display: flex; gap: 2em; flex-wrap: wrap;">
+        <div style="flex: 1 1 320px; border: 1px solid #aaa; border-radius: 8px; padding: 1em; min-width: 280px;">
+            <center> <h3>Assign Task Direct To Robot</h3> </center>
+            <form id="assignRobotForm" onsubmit="assignTaskDirect(event)">
+                <label for="direct_robot">Robot:</label>
+                <select id="direct_robot">
+                    <option value="robot_01">robot_01</option>
+                    <option value="robot_02">robot_02</option>
+                </select><br><br>
+                <label for="direct_task_type">Task Type ID:</label>
+                <input type="number" id="direct_task_type" min="1" max="4" required placeholder="1-4"><br><br>
+                <label for="direct_pallet">Pallet ID:</label>
+                <input type="number" id="direct_pallet" required><br><br>
+                <label for="direct_task_id">Task ID:</label>
+                <input type="text" id="direct_task_id" required><br><br>
+                <button type="submit">Send To Robot</button>
+            </form>
+            <div id="assign_robot_result" style="margin-top:1em;color:#006400;"></div>
+        </div>
+        <div style="flex: 1 1 320px; border: 1px solid #aaa; border-radius: 8px; padding: 1em; min-width: 280px;">
+            <center> <h3>Assign Task (Task Manager)</h3> </center>
+            <form id="assignTaskForm" onsubmit="assignTask(event)">
+                <label for="task_type_id">Task Type ID:</label>
+                <input type="number" id="task_type_id" min="1" max="4" required placeholder="1-4"><br><br>
+                <label for="pallet_id">Pallet ID:</label>
+                <input type="text" id="pallet_id" required><br><br>
+                <label for="task_id">Task ID:</label>
+                <input type="text" id="task_id" required><br><br>
+                <button type="submit">Assign Task</button>
+            </form>
+            <div id="assign_result" style="margin-top:1em;color:#006400;"></div>
+        </div>
     </div>
     <script>
         // Assign Task logic
@@ -115,6 +135,29 @@
                 })
                 .catch(err => {
                     document.getElementById('assign_result').textContent = 'Error: ' + err;
+                });
+        }
+
+        function assignTaskDirect(event) {
+            event.preventDefault();
+            const robot = document.getElementById('direct_robot').value;
+            const task_type_id = document.getElementById('direct_task_type').value;
+            const pallet_id = document.getElementById('direct_pallet').value;
+            const task_id = document.getElementById('direct_task_id').value;
+            let host = location.hostname;
+            if (!host) host = 'localhost';
+            const url = `http://${host}:8000/robot/${robot}/assign_task/${task_type_id}/${pallet_id}/${encodeURIComponent(task_id)}`;
+            document.getElementById('assign_robot_result').style.color = '#006400';
+            document.getElementById('assign_robot_result').textContent = 'Sending...';
+            fetch(url, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('assign_robot_result').textContent = JSON.stringify(data, null, 2);
+                    document.getElementById('assign_robot_result').style.color = data.success ? '#006400' : '#d32f2f';
+                })
+                .catch(err => {
+                    document.getElementById('assign_robot_result').textContent = 'Error: ' + err;
+                    document.getElementById('assign_robot_result').style.color = '#d32f2f';
                 });
         }
 

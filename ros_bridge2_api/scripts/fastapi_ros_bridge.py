@@ -24,11 +24,13 @@ class FastAPIClient(Node):
                 'cancel': '/robot_01/robot_controller/cancel_navigation',
                 'pause': '/robot_01/robot_controller/pause_navigation',
                 'resume': '/robot_01/robot_controller/resume_navigation',
+                'assign_task': '/robot_01/robot_controller/assign_task',
             },
             'robot_02': {
                 'cancel': '/robot_02/robot_controller/cancel_navigation',
                 'pause': '/robot_02/robot_controller/pause_navigation',
                 'resume': '/robot_02/robot_controller/resume_navigation',
+                'assign_task': '/robot_02/robot_controller/assign_task',
             },
         }
         # Initialize FastAPI app
@@ -67,6 +69,7 @@ class FastAPIClient(Node):
         # Store websocket connections
         self.active_connections = {ns: set() for ns in self.robot_namespaces}
         self._watchdog_task = None
+        self._assign_task_clients = {}
         # Store the event loop for scheduling async tasks from ROS2 callbacks
         self.loop = None
         self.loop_ready = threading.Event()
@@ -138,8 +141,20 @@ class FastAPIClient(Node):
                             f"No updates from {ns}:{topic} for {self.offline_timeout} seconds; marking offline"
                         )
                         await self._broadcast_status(ns, topic, None, online=False)
-        
 
+    def _robot_connectivity_state(self, robot_id):
+        """Return 'online', 'offline', or 'unknown' based on recent status topics."""
+        topics = self.status_online.get(robot_id)
+        if not topics:
+            return "unknown"
+        if any(topics.values()):
+            return "online"
+        last_updates = self.status_last_update.get(robot_id, {})
+        if any(ts is not None for ts in last_updates.values()):
+            return "offline"
+        return "unknown"
+
+    
     def setup_routes(self):
         node_instance = self
 
@@ -189,6 +204,33 @@ class FastAPIClient(Node):
         async def resume_navigation(robot_id: str):
             return await node_instance._call_controller_service(robot_id, 'resume')
 
+        @self.app.post("/robot/{robot_id}/assign_task/{task_type_id}/{pallet_id}/{task_id}")
+        async def assign_task_robot(robot_id: str, task_type_id: int, pallet_id: int, task_id: str):
+            if robot_id not in node_instance.robot_namespaces:
+                return {"success": False, "error": f"Unknown robot_id: {robot_id}"}
+            if task_type_id not in [1, 2, 3, 4]:
+                return {"success": False, "error": "task_type_id must be 1, 2, 3, or 4 (PickInit, PlaceInit, PickToManipulator, PickFromManipulator)"}
+            return await node_instance._call_robot_assign_task(robot_id, task_type_id, pallet_id, task_id)
+
+        @self.app.get("/robot/{robot_id}/status")
+        async def robot_status(robot_id: str):
+            if robot_id not in node_instance.robot_namespaces:
+                return {"success": False, "error": f"Unknown robot_id: {robot_id}"}
+            state = node_instance._robot_connectivity_state(robot_id)
+            return {
+                "success": True,
+                "robot_id": robot_id,
+                "state": state,
+                "topics": {
+                    topic: {
+                        "online": node_instance.status_online[robot_id][topic],
+                        "last_update": node_instance.status_last_update[robot_id][topic],
+                        "value": node_instance.latest_status[robot_id][topic],
+                    }
+                    for topic in node_instance.status_topics
+                },
+            }
+
         @self.app.websocket("/ws/{robot_id}")
         async def websocket_endpoint(websocket: WebSocket, robot_id: str):
             if robot_id not in node_instance.robot_namespaces:
@@ -224,6 +266,12 @@ class FastAPIClient(Node):
         from std_srvs.srv import Trigger
         if robot_id not in self.controller_services:
             return {"success": False, "error": f"Unknown robot_id: {robot_id}"}
+        connectivity_state = self._robot_connectivity_state(robot_id)
+        if connectivity_state == "offline":
+            return {
+                "success": False,
+                "error": f"Robot {robot_id} appears offline; no recent status messages"
+            }
         service_name = self.controller_services[robot_id][action]
         client = self.create_client(Trigger, service_name)
         if not client.wait_for_service(timeout_sec=2.0):
@@ -236,24 +284,68 @@ class FastAPIClient(Node):
             return {"success": result.success, "message": result.message}
         else:
             return {"success": False, "error": "Service call failed or returned invalid result"}
+    
+    async def _call_robot_assign_task(self, robot_id, task_type_id, pallet_id, task_id):
+        from seer_robot_interfaces.srv import AssignTask
+        if robot_id not in self.controller_services:
+            return {"success": False, "error": f"Unknown robot_id: {robot_id}"}
+        connectivity_state = self._robot_connectivity_state(robot_id)
+        if connectivity_state == "offline":
+            return {
+                "success": False,
+                "error": f"Robot {robot_id} appears offline; no recent status messages"
+            }
+        service_name = self.controller_services[robot_id].get('assign_task')
+        if not service_name:
+            return {"success": False, "error": "Assign task service not configured for this robot"}
+
+        client = self._assign_task_clients.get(robot_id)
+        if client is None:
+            client = self.create_client(AssignTask, service_name)
+            self._assign_task_clients[robot_id] = client
+
+        if not client.wait_for_service(timeout_sec=5.0):
+            self.get_logger().error(f"Assign task service {service_name} not available for {robot_id}")
+            return {"success": False, "error": f"Service {service_name} not available"}
+
+        try:
+            request = AssignTask.Request()
+            request.task_type_id = int(task_type_id)
+            request.pallet_id = int(pallet_id)
+            request.task_id = str(task_id)
+        except (TypeError, ValueError) as exc:
+            return {"success": False, "error": f"Invalid request parameters: {exc}"}
+
+        self.get_logger().info(
+            f"Calling {service_name} with task_type_id={request.task_type_id}, pallet_id={request.pallet_id}, task_id='{request.task_id}'"
+        )
+
+        future = client.call_async(request)
+        rclpy.spin_until_future_complete(self, future, timeout_sec=10.0)
+
+        if future.cancelled():
+            self.get_logger().error(f"Assign task call to {service_name} cancelled")
+            return {"success": False, "error": "Assign task request cancelled"}
+
+        if future.done():
+            exc = future.exception()
+            if exc is not None:
+                self.get_logger().error(f"Assign task service raised exception: {exc}")
+                return {"success": False, "error": f"Service call failed: {exc}"}
+            result = future.result()
+            if result is not None and hasattr(result, 'success') and hasattr(result, 'message'):
+                return {"success": result.success, "message": result.message}
+
+        self.get_logger().error("Assign task service returned no result")
+        return {"success": False, "error": "Service call failed or returned invalid result"}
                 
     
     def start_server(self):
         import asyncio
-        config = uvicorn.Config(self.app, host="0.0.0.0", port=8000, log_level="info", loop="asyncio")
-        server = uvicorn.Server(config)
-        server.install_signal_handlers = False
-        self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
-        try:
-            self.loop.run_until_complete(server.serve())
-        finally:
-            pending = [task for task in asyncio.all_tasks(self.loop) if not task.done()]
-            for task in pending:
-                task.cancel()
-            if pending:
-                self.loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
-            self.loop.close()
+        # uvicorn.run blocks and manages its own shutdown, but the FastAPI
+        # startup hook captures the running loop so ROS callbacks can still
+        # schedule websocket broadcasts safely.
+        uvicorn.run(self.app, host="0.0.0.0", port=8000, log_level="info")
 
     def call_assign_task_service(self, task_type_id: int, pallet_id: int, task_id: str):
         """Call the /assigntask service with the given data"""
