@@ -72,11 +72,20 @@ def generate_launch_description():
         output='screen'
     ))
 
+    # fastapi_ros_bridge node
     nodes.append(Node(
         package='ros_bridge2_api',
         executable='fastapi_ros_bridge.py',
         name='fastapi_ros_bridge_node',
         output='screen'
     ))
-    
+
+    # traffic management node
+    nodes.append(Node(
+        package='seer_robot_pkg',
+        executable='traffic_management.py',
+        name='traffic_management_node',
+        output='screen'
+    ))
+
     return LaunchDescription(nodes)

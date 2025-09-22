@@ -1,3 +1,4 @@
+int8 this_robot_id
 string[] path
 ---
 # Response

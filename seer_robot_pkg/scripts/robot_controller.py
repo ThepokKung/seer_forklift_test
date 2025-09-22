@@ -326,9 +326,6 @@ class RobotController(Node):
                     elif self.robot_navigation_status == 6:
                         self.get_logger().error(f"{context_name} Step {step_num} canceled (status: CANCELED)")
                         return False, f"{context_name} step {step_num} was canceled"
-                    elif self.robot_navigation_status == 0:
-                        self.get_logger().error(f"{context_name} Step {step_num} idle (status: IDLE)")
-                        return False, f"{context_name} step {step_num} is idle unexpectedly"
                 else:
                     self.get_logger().warning(f"{context_name} Step {step_num} - Failed to get navigation status")
                     return False, f"Failed to get navigation status for {context_name} step {step_num}"
