@@ -71,6 +71,9 @@ class TrafficManagement(Node):
         self.check_robot_current_location_cbg = MutuallyExclusiveCallbackGroup()
         self.check_robot_current_location_client = self.create_client(CheckRobotCurrentLocation, 'robot_status/check_robot_current_location', callback_group=self.check_robot_current_location_cbg)
 
+        # Subscribe to topics
+        
+
         # ถ้ามี SimDt/SimTime ในไฟล์ ให้ override dt/t_max (optional)
         # if self.fk.get('sim_dt') is not None:
         #     self.dt = float(self.fk['sim_dt'])
@@ -83,9 +86,6 @@ class TrafficManagement(Node):
         _build_geometry_from_map(self, step=self.step)
         self.get_logger().info(f"Geometry ready: points={len(self.points)}, edges={len(self.edges)}")  # type: ignore
 
-        # ---------------- Demo timer (ลองชน: รถค้างที่ LM52 vs เส้นทาง) ----------------
-        self._demo_done = False
-        self.create_timer(1.0, self._demo_once)
 
     # ---------------- Utilities ----------------
     def _declare_param_safe(self, name: str, default: Any):
@@ -291,11 +291,19 @@ class TrafficManagement(Node):
         except Exception as e:
             self.get_logger().error(f"[DEMO] {e}")
 
-    # ------------------ Check Collsion Callback
+    # ------------------ Check Collision Callback
 
     def check_collision_navigation_callback(self, request, response):
-        response.has_collision = False
-        response.message = "Collision detection currently disabled"
+        # ตรวจสอบว่ารถพร้อมหรือไม่ (available)
+        self.get_logger().info(f"Received collision check request: robot_id={request.this_robot_id}, route={request.route}")
+        route = request.route
+        this_id = request.this_robot_id
+
+        res = self.check_collision_stationary_vs_route('LM52', route, v=None, loaded=False)
+
+        response.has_collision = res["collision"]
+        response.message = f'This robot ID: {this_id}, Route: {route}, Collision: {res["collision"]}'
+        self.get_logger().info(response.message)
         return response
 
 def main(args=None):

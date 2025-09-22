@@ -1,5 +1,5 @@
 int8 this_robot_id
-string[] path
+string[] route
 ---
 # Response
 bool has_collision
