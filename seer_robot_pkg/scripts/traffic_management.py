@@ -1,20 +1,25 @@
 #!/usr/bin/env python3
 import os, json, math
+from functools import partial
 from typing import Any, Dict, List, Tuple
 
 import rclpy
 from rclpy.node import Node
 from rclpy.exceptions import ParameterAlreadyDeclaredException
 from ament_index_python.packages import get_package_share_directory
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup # Mutiple callback groups for service clients
+from rclpy.callback_groups import (
+    MutuallyExclusiveCallbackGroup,
+    ReentrantCallbackGroup,
+)  # Multiple callback groups for service clients and non-blocking subscriptions
 
 
 from std_srvs.srv import Trigger
+from std_msgs.msg import String
 
 from seer_robot_pkg.collision_buildmap import _build_geometry_from_map
 from seer_robot_pkg.collision_geom import pose_along_polyline, collide_OBB
 
-from seer_robot_interfaces.srv import CheckCollisionNavigationPath,CheckRobotCurrentLocation
+from seer_robot_interfaces.srv import CheckCollisionNavigationPath,CheckRobotCurrentLocation,UpdateRobotStationForCollision
 
 class TrafficManagement(Node):
     def __init__(self):
@@ -30,6 +35,7 @@ class TrafficManagement(Node):
         self._declare_param_safe('safety_buffer', 0.15)   # เผื่อขั้นต่ำ (ขั้นต่ำของระบบ)
         self._declare_param_safe('dt', 0.1)
         self._declare_param_safe('t_max', 600.0)
+        self._declare_param_safe('robot_namespaces', ['robot_01', 'robot_02'])
 
         # อ่านค่าพารามิเตอร์
         self.map_file  = self.get_parameter('map_file').get_parameter_value().string_value
@@ -40,6 +46,10 @@ class TrafficManagement(Node):
         self.buffer    = self.get_parameter('safety_buffer').get_parameter_value().double_value
         self.dt        = self.get_parameter('dt').get_parameter_value().double_value
         self.t_max     = self.get_parameter('t_max').get_parameter_value().double_value
+        robot_ns_param = self.get_parameter('robot_namespaces').get_parameter_value().string_array_value
+        self.robot_namespaces = list(robot_ns_param) if robot_ns_param else ['robot_01', 'robot_02']
+        if not self.robot_namespaces:
+            self.robot_namespaces = ['robot_01', 'robot_02']
 
         try:
             # ---------------- Load map ----------------
@@ -71,8 +81,24 @@ class TrafficManagement(Node):
         self.check_robot_current_location_cbg = MutuallyExclusiveCallbackGroup()
         self.check_robot_current_location_client = self.create_client(CheckRobotCurrentLocation, 'robot_status/check_robot_current_location', callback_group=self.check_robot_current_location_cbg)
 
+        # robot current station
+        self.robot_01_station = None
+        self.robot_02_station = None
+        self.robot_stations: Dict[str, str | None] = {ns: None for ns in self.robot_namespaces}
+        self.robot_station_subs = {}
+        self.robot_station_cbg = ReentrantCallbackGroup()
+
         # Subscribe to topics
-        
+        for robot_ns in self.robot_namespaces:
+            topic = f'/{robot_ns}/robot_status/robot_current_station'
+            self.robot_station_subs[robot_ns] = self.create_subscription(
+                String,
+                topic,
+                partial(self._robot_current_station_callback, robot_ns),
+                10,
+                callback_group=self.robot_station_cbg,
+            )
+            self.get_logger().info(f'Subscribed to {topic}')
 
         # ถ้ามี SimDt/SimTime ในไฟล์ ให้ override dt/t_max (optional)
         # if self.fk.get('sim_dt') is not None:
@@ -276,6 +302,18 @@ class TrafficManagement(Node):
             t += dt
         return {"collision": False, "v_used": v_run, "buffer_used": buf, "loaded": loaded}
 
+    def _robot_current_station_callback(self, robot_ns: str, msg: String):
+        station = msg.data.strip() if msg.data else None
+        if station == "":
+            station = None
+        self.robot_stations[robot_ns] = station
+        if robot_ns == 'robot_01':
+            self.robot_01_station = station
+        elif robot_ns == 'robot_02':
+            self.robot_02_station = station
+        self.get_logger().info(f'[{robot_ns}] current station updated: {station}')
+        self.get_logger().debug(f'[{robot_ns}] current station updated: {station}')
+
     # ---------------- Demo ----------------
     def _demo_once(self):
         if self._demo_done: 
@@ -298,8 +336,23 @@ class TrafficManagement(Node):
         self.get_logger().info(f"Received collision check request: robot_id={request.this_robot_id}, route={request.route}")
         route = request.route
         this_id = request.this_robot_id
-
-        res = self.check_collision_stationary_vs_route('LM52', route, v=None, loaded=False)
+        if this_id == 1:
+            other_robot_station = self.robot_stations['robot_02']
+        elif this_id == 2:
+            other_robot_station = self.robot_stations['robot_01']
+        else:
+            self.get_logger().error(f"Invalid robot_id: {this_id}")
+            response.has_collision = False
+            response.message = f'Invalid robot_id: {this_id}'
+            return response
+        
+        if other_robot_station is None or other_robot_station not in self.points: # type: ignore
+            self.get_logger().info(f"Other robot station is unknown or invalid ({other_robot_station}), assuming no collision")
+            response.has_collision = False
+            response.message = f'This robot ID: {this_id}, Route: {route}, Other station {other_robot_station}, no collision'
+            return response
+        
+        res = self.check_collision_stationary_vs_route(other_robot_station, route, v=None, loaded=False)
 
         response.has_collision = res["collision"]
         response.message = f'This robot ID: {this_id}, Route: {route}, Collision: {res["collision"]}'
@@ -316,7 +369,6 @@ def main(args=None):
     finally:
         node.destroy_node()
         rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()

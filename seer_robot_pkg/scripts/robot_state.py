@@ -43,7 +43,7 @@ class RobotStateNode(Node):
         self.create_service(CheckRobotStateNow, 'robot_state/check_robot_state_now', self.check_robot_state_now_callback)
         
         # timer
-        self.timer = self.create_timer(1.0, self._update_robot_state_callbacks) #1.0 seconds interval
+        self.timer = self.create_timer(0.5, self._update_robot_state_callbacks) #0.5 seconds interval
 
     #####################################################
     ###                 Update State                  ###

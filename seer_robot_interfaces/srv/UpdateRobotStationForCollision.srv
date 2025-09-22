@@ -1,0 +1,4 @@
+string robot_station
+---
+bool success
+string message

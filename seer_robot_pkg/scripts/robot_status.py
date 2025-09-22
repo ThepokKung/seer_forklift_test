@@ -10,7 +10,7 @@ from std_msgs.msg import String,Float32,Bool,Int32
 
 # srv imports
 from std_srvs.srv import Trigger
-from seer_robot_interfaces.srv import CheckRobotNavigationTaskStatus,CheckRobotCurrentLocation,CheckRobotAllForTask
+from seer_robot_interfaces.srv import UpdateRobotStationForCollision
 
 # backend imports
 from seer_robot_pkg.robot_status_api import RobotStatusAPI
@@ -49,6 +49,12 @@ class RobotStatus(Node):
         self.robot_solf_emergency_status = False
         self.robot_electric_status = False
 
+        # Previous values for change detection
+        self.prev_robot_battery = None
+        self.prev_robot_current_station = None
+        self.prev_robot_navigation_status = None
+        self.prev_robot_controller_mode_status = None
+
         # Create RobotStatusAPI instance but don't auto-connect
         self.robot_status_api = RobotStatusAPI(self.robot_ip)
         
@@ -63,9 +69,10 @@ class RobotStatus(Node):
 
         # Service Server
         self.create_service(Trigger, 'robot_status/check_available', self.check_robot_available_callback)
+        self.create_service(UpdateRobotStationForCollision, 'robot_status/update_robot_station', self.update_robot_station)
 
         # Timer
-        self.timer = self.create_timer(1.0, self.update_robot_callbacks) #1.0 seconds interval
+        self.timer = self.create_timer(0.5, self.update_robot_callbacks) #0.5 seconds interval
 
     #####################################################
     ###               Check Connection                ###
@@ -98,6 +105,7 @@ class RobotStatus(Node):
 
     def update_robot_callbacks(self):
         self.update_robot_batch_data1_status()
+        self.pub_data()
 
     def update_robot_batch_data1_status(self):
         try:
@@ -117,51 +125,28 @@ class RobotStatus(Node):
                     self.robot_electric_status = temp_batch_data_1.get('electric', False)
                     self.robot_emergency_status = temp_batch_data_1.get('emergency', False)
                     self.robot_solf_emergency_status = temp_batch_data_1.get('solf_emc', False)
-                    # Publish relevant data
-                    self.robot_battery_pub.publish(Float32(data=self.robot_battery if self.robot_battery is not None else 0.0))
-                    self.robot_current_station_pub.publish(String(data=self.robot_current_station if self.robot_current_station is not None else "Unknown"))
-                    self.robot_navigation_status_pub.publish(Int32(data=self.robot_navigation_status if self.robot_navigation_status is not None else 0))
-                    self.robot_controller_mode_status_pub.publish(Bool(data=self.robot_controller_mode_status if self.robot_controller_mode_status is not None else False))
-
+                    # # Publish relevant data
+                    # self.robot_battery_pub.publish(Float32(data=self.robot_battery if self.robot_battery is not None else 0.0))
+                    # self.robot_current_station_pub.publish(String(data=self.robot_current_station if self.robot_current_station is not None else "Unknown"))
+                    # self.robot_navigation_status_pub.publish(Int32(data=self.robot_navigation_status if self.robot_navigation_status is not None else 0))
+                    # self.robot_controller_mode_status_pub.publish(Bool(data=self.robot_controller_mode_status if self.robot_controller_mode_status is not None else False))
                 else:
                     self.get_logger().debug(f"Robot ID: {self.robot_id}, No batch data received")
             else:
                 self.get_logger().debug(f"Robot ID: {self.robot_id}, Not connected to robot")
         except Exception as e:
             self.get_logger().error(f"Error updating batch data 1 status: {e}")
+
+    def pub_data(self):
+        self.robot_battery_pub.publish(Float32(data=self.robot_battery if self.robot_battery is not None else 0.0))
+        self.robot_current_station_pub.publish(String(data=self.robot_current_station if self.robot_current_station is not None else "Unknown"))
+        self.robot_navigation_status_pub.publish(Int32(data=self.robot_navigation_status if self.robot_navigation_status is not None else 0))
+        self.robot_controller_mode_status_pub.publish(Bool(data=self.robot_controller_mode_status if self.robot_controller_mode_status is not None else False))
                     
 
     #####################################################
     ###             Service Callbacks                 ###
     #####################################################
-
-    def check_robot_navigation_status_callback(self, request, response):
-        response.success = True
-        response.task_status = self.robot_navigation_status
-        return response
-    
-    def check_robot_current_location_callback(self, request, response):
-        if self.robot_current_station is not None:
-            response.success = True
-            response.robot_current_station = self.robot_current_station
-        else:
-            response.success = False
-            response.robot_current_station = "Unknown"
-        return response
-    
-    def check_robot_all_for_task_callback(self, request, response):
-        if self.robot_current_station is not None and self.robot_navigation_status is not None:
-            response.success = True
-            response.robot_current_station = str(self.robot_current_station) if self.robot_current_station is not None else "Unknown"
-            
-            # Convert navigation status integer to meaningful string
-            response.robot_navigation_status = int(self.robot_navigation_status)
-        else:
-            response.success = False
-            response.robot_current_station = "Unknown"
-            response.robot_task_status = "Unknown"
-            response.robot_navigation_status = None
-        return response
     
     def check_robot_available_callback(self, request, response):
         """Service to check if the robot is available"""
@@ -177,6 +162,13 @@ class RobotStatus(Node):
             response.success = False
             response.message = f"Error checking robot {self.robot_id}: {str(e)}"
             return response
+        
+    def update_robot_station(self, request, response):
+        self.get_logger().info(f"Service called: updating robot station to {request.robot_station} for robot {self.robot_id}")
+        self.robot_current_station = request.robot_station
+        response.success = True
+        response.message = f"Robot {self.robot_id} station updated to {self.robot_current_station}."
+        return response
 
 def main(args=None):
     rclpy.init(args=args)

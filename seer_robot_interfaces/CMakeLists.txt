@@ -24,6 +24,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/CheckRobotAllForTask.srv"
   "srv/CheckCollisionNavigationPath.srv"
   "srv/CheckRobotStateNow.srv"
+  "srv/UpdateRobotStationForCollision.srv"
   DEPENDENCIES geometry_msgs # Add packages that above messages depend on, in this case geometry_msgs for Sphere.msg
 )
 
