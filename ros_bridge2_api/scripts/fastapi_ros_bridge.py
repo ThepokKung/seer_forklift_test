@@ -2,17 +2,14 @@
 import rclpy
 from rclpy.node import Node
 import threading
-import fastapi
 import uvicorn
 import json
-import asyncio
 import time
 from contextlib import suppress
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from std_msgs.msg import String, Float32, Bool, Int32
-from geometry_msgs.msg import PointStamped
+import asyncio
 
 class FastAPIClient(Node):
     def __init__(self):
@@ -92,15 +89,15 @@ class FastAPIClient(Node):
     def _make_callback(self, ns, topic):
         def callback(msg):
             # Store latest message for UI compatibility
-            value = msg.data if hasattr(msg, 'data') else msg
+            value = getattr(msg, 'data', msg)
             self.latest_status[ns][topic] = value
-            self.status_last_update[ns][topic] = time.time()
+            self.status_last_update[ns][topic] = time.time()  # type: ignore
             was_offline = not self.status_online[ns][topic]
             self.status_online[ns][topic] = True
             if was_offline:
                 self.get_logger().debug(f"{ns}:{topic} stream resumed")
             if self.loop is None or not self.loop.is_running():
-                self.get_logger().warn("Event loop not running; skipping websocket broadcast")
+                self.get_logger().warning("Event loop not running; skipping websocket broadcast")
                 return
             try:
                 asyncio.run_coroutine_threadsafe(
@@ -116,7 +113,7 @@ class FastAPIClient(Node):
         payload_value = str(value) if value is not None else None
         data = {"topic": topic, "value": payload_value, "online": online}
         to_remove = set()
-        for ws in self.active_connections[ns]:
+        for ws in list(self.active_connections[ns]):
             try:
                 await ws.send_text(json.dumps(data))
             except Exception:
@@ -170,7 +167,7 @@ class FastAPIClient(Node):
             if node_instance._watchdog_task is not None:
                 node_instance._watchdog_task.cancel()
                 with suppress(asyncio.CancelledError):
-                    await node_instance._watchdog_task
+                    await node_instance._watchdog_task # type: ignore
                 node_instance._watchdog_task = None
 
         @self.app.get("/")
@@ -185,7 +182,7 @@ class FastAPIClient(Node):
         async def call_assign_task_post(task_type_id: int, pallet_id: int, task_id: str):
             if task_type_id not in [1, 2, 3, 4]:
                 return {"error": "task_type_id must be 1, 2, 3, or 4 (PickInit, PlaceInit, PickToManipulator, PickFromManipulator)"}
-            result = node_instance.call_assign_task_service(task_type_id, pallet_id, task_id)
+            result = await node_instance.call_assign_task_service_async(task_type_id, pallet_id, task_id)
             if result:
                 return {"success": True, "result": result.success, "message": result.message}
             else:
@@ -262,8 +259,6 @@ class FastAPIClient(Node):
 
 
     async def _call_controller_service(self, robot_id, action):
-        # Call the appropriate ROS2 service for cancel/pause/resume navigation
-        from std_srvs.srv import Trigger
         if robot_id not in self.controller_services:
             return {"success": False, "error": f"Unknown robot_id: {robot_id}"}
         connectivity_state = self._robot_connectivity_state(robot_id)
@@ -273,6 +268,14 @@ class FastAPIClient(Node):
                 "error": f"Robot {robot_id} appears offline; no recent status messages"
             }
         service_name = self.controller_services[robot_id][action]
+        
+        # Run the blocking ROS call in a thread pool
+        loop = asyncio.get_running_loop()
+        result = await loop.run_in_executor(None, self._blocking_controller_call, service_name)
+        return result
+    
+    def _blocking_controller_call(self, service_name):
+        from std_srvs.srv import Trigger
         client = self.create_client(Trigger, service_name)
         if not client.wait_for_service(timeout_sec=2.0):
             return {"success": False, "error": f"Service {service_name} not available"}
@@ -287,6 +290,8 @@ class FastAPIClient(Node):
     
     async def _call_robot_assign_task(self, robot_id, task_type_id, pallet_id, task_id):
         from seer_robot_interfaces.srv import AssignTask
+        import asyncio
+        
         if robot_id not in self.controller_services:
             return {"success": False, "error": f"Unknown robot_id: {robot_id}"}
         connectivity_state = self._robot_connectivity_state(robot_id)
@@ -298,7 +303,18 @@ class FastAPIClient(Node):
         service_name = self.controller_services[robot_id].get('assign_task')
         if not service_name:
             return {"success": False, "error": "Assign task service not configured for this robot"}
-
+        
+        # Run the blocking ROS call in a thread pool
+        loop = asyncio.get_running_loop()
+        result = await loop.run_in_executor(None, self._blocking_assign_task_call, robot_id, task_type_id, pallet_id, task_id)
+        return result
+    
+    def _blocking_assign_task_call(self, robot_id, task_type_id, pallet_id, task_id):
+        from seer_robot_interfaces.srv import AssignTask
+        service_name = self.controller_services[robot_id].get('assign_task')
+        if not service_name:
+            return {"success": False, "error": "Assign task service not configured for this robot"}
+        
         client = self._assign_task_clients.get(robot_id)
         if client is None:
             client = self.create_client(AssignTask, service_name)
@@ -341,11 +357,17 @@ class FastAPIClient(Node):
                 
     
     def start_server(self):
-        import asyncio
         # uvicorn.run blocks and manages its own shutdown, but the FastAPI
         # startup hook captures the running loop so ROS callbacks can still
         # schedule websocket broadcasts safely.
         uvicorn.run(self.app, host="0.0.0.0", port=8000, log_level="info")
+
+    async def call_assign_task_service_async(self, task_type_id: int, pallet_id: int, task_id: str):
+        """Call the /assigntask service with the given data asynchronously"""
+        import asyncio
+        loop = asyncio.get_running_loop()
+        result = await loop.run_in_executor(None, self.call_assign_task_service, task_type_id, pallet_id, task_id)
+        return result
 
     def call_assign_task_service(self, task_type_id: int, pallet_id: int, task_id: str):
         """Call the /assigntask service with the given data"""
@@ -380,15 +402,9 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     finally:
-        try:
-            node.destroy_node()
-        except:
-            pass
-        try:
-            if rclpy.ok():
-                rclpy.shutdown()
-        except:
-            pass
+        node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
