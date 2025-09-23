@@ -311,7 +311,7 @@ class TrafficManagement(Node):
             self.robot_01_station = station
         elif robot_ns == 'robot_02':
             self.robot_02_station = station
-        self.get_logger().info(f'[{robot_ns}] current station updated: {station}')
+        # self.get_logger().info(f'[{robot_ns}] current station updated: {station}')
         self.get_logger().debug(f'[{robot_ns}] current station updated: {station}')
 
     # ---------------- Demo ----------------

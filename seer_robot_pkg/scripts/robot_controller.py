@@ -22,6 +22,7 @@ from seer_robot_interfaces.srv import (
     AssignTask,
     CheckRobotNavigationTaskStatus,
     GetNavigationPath,
+    CheckCollisionNavigationPath
 )
 
 # backend imports
@@ -43,6 +44,11 @@ class RobotController(Node):
         self.robot_id = self.get_parameter('robot_id').get_parameter_value().string_value
         self.robot_name = self.get_parameter('robot_name').get_parameter_value().string_value
         self.robot_ip = self.get_parameter('robot_ip').get_parameter_value().string_value
+
+        # Extract numeric ID for collision service usage
+        self.robot_numeric_id = self._parse_robot_numeric_id(self.robot_id)
+        if self.robot_numeric_id is None:
+            self.get_logger().warning(f"Unable to determine numeric robot id from '{self.robot_id}', collision checks may fail")
 
         # robot parameter
         self.robot_navigation_status = 0
@@ -112,6 +118,12 @@ class RobotController(Node):
         # Service client
         self.check_robot_navigation_state_cbg = MutuallyExclusiveCallbackGroup()
         self.check_robot_navigation_state_client = self.create_client(CheckRobotNavigationTaskStatus, 'robot_controller/check_robot_navigation_status', callback_group=self.check_robot_navigation_state_cbg)
+        self.check_collision_navigation_path_cbg = MutuallyExclusiveCallbackGroup()
+        self.check_collision_navigation_path_client = self.create_client(
+            CheckCollisionNavigationPath,
+            '/traffic_management/check_collision_navigation',
+            callback_group=self.check_collision_navigation_path_cbg,
+        )
 
         # Start log
         self.get_logger().info(f'Robot Navigation API initialized for {self.robot_ip}')
@@ -119,7 +131,7 @@ class RobotController(Node):
     #####################################################
     ###               Check Connection                ###
     #####################################################
-    
+
     def ensure_connection(self):
         """Ensure connection to robot navigation API"""
         # Check if already connected
@@ -138,6 +150,122 @@ class RobotController(Node):
         except Exception as e:
             self.get_logger().error(f"Exception during connection: {e}")
             return False
+
+    def _parse_robot_numeric_id(self, robot_id_value: str):
+        """Extract the numeric robot identifier (e.g. robot_01 -> 1)."""
+        digits = ''.join(ch for ch in robot_id_value if ch.isdigit())
+        if not digits:
+            return None
+
+        try:
+            stripped = digits.lstrip('0') or '0'
+            numeric_id = int(stripped)
+        except ValueError:
+            return None
+
+        return numeric_id if numeric_id > 0 else None
+
+    def _get_navigation_route(self, target_id: str):
+        """Retrieve the navigation path for the given target id."""
+        if not target_id:
+            return False, [], "Target id not provided for path lookup"
+
+        if not self.ensure_connection():
+            message = f"Failed to connect to robot navigation API while fetching path to {target_id}"
+            return False, [], message
+
+        try:
+            path_response = self.robot_navigation_api.get_navigation_path(id2go=target_id)
+        except Exception as exc:
+            message = f"Exception raised while retrieving navigation path to {target_id}: {exc}"
+            self.get_logger().error(message)
+            return False, [], message
+
+        if not path_response:
+            message = f"Navigation API returned no data for target {target_id}"
+            self.get_logger().error(message)
+            return False, [], message
+
+        route = path_response.get('path')
+        if route is None:
+            route = path_response.get('route')
+        if route is None:
+            message = f"Navigation API response missing path information for target {target_id}: {path_response}"
+            self.get_logger().error(message)
+            return False, [], message
+
+        if not isinstance(route, list):
+            route = list(route)
+
+        route_as_strings = [str(point) for point in route if point is not None]
+        if not route_as_strings:
+            message = f"Navigation path to {target_id} is empty"
+            self.get_logger().warning(message)
+            return False, [], message
+
+        self.get_logger().info(f"Retrieved navigation route to {target_id}: {route_as_strings}")
+        return True, route_as_strings, f"Retrieved path with {len(route_as_strings)} nodes for target {target_id}"
+
+    def _check_collision_for_route(self, route):
+        """Invoke collision check service for the provided route."""
+        if self.robot_numeric_id is None:
+            message = "Numeric robot id unavailable; cannot perform collision check"
+            self.get_logger().error(message)
+            return False, message
+
+        if not route:
+            message = "Route is empty; skipping collision verification"
+            self.get_logger().info(message)
+            return True, message
+
+        if len(route) < 2:
+            message = f"Route {route} has fewer than 2 nodes; skipping collision verification"
+            self.get_logger().info(message)
+            return True, message
+
+        if not self.check_collision_navigation_path_client.wait_for_service(timeout_sec=2.0):
+            message = "Collision check service unavailable"
+            self.get_logger().error(message)
+            return False, message
+
+        request = CheckCollisionNavigationPath.Request()
+        request.this_robot_id = int(self.robot_numeric_id)
+        request.route = route
+
+        future = self.check_collision_navigation_path_client.call_async(request)
+
+        timeout_sec = 5.0
+        poll_interval = 0.05
+        waited = 0.0
+        while not future.done() and waited < timeout_sec:
+            time.sleep(poll_interval)
+            waited += poll_interval
+
+        if not future.done():
+            message = "Collision check service timed out"
+            self.get_logger().error(message)
+            return False, message
+
+        try:
+            service_response = future.result()
+        except Exception as exc:
+            message = f"Collision check service failed: {exc}"
+            self.get_logger().error(message)
+            return False, message
+
+        if service_response is None:
+            message = "Collision check service returned no data"
+            self.get_logger().error(message)
+            return False, message
+
+        if service_response.has_collision:
+            collision_message = service_response.message or "Collision detected on route"
+            self.get_logger().warning(collision_message)
+            return False, collision_message
+
+        success_message = service_response.message or "No collision detected"
+        self.get_logger().info(success_message)
+        return True, success_message
 
     #####################################################
     ###      Navigation Control Service Callbacks     ###
@@ -290,6 +418,25 @@ class RobotController(Node):
             command_json = json.dumps(command_dict)
             self.get_logger().info(f"Executing {context_name} Step {step_num}: {command_json}")
 
+            target_id = command_dict.get("id")
+            if target_id and target_id != "SELF_POSITION":
+                self.get_logger().info(f"{context_name} Step {step_num} - Fetching navigation route to {target_id}")
+                path_ok, route, path_message = self._get_navigation_route(target_id)
+                if not path_ok:
+                    failure_message = f"{context_name} Step {step_num} - {path_message}"
+                    return False, failure_message
+
+                self.get_logger().info(f"{context_name} Step {step_num} - Route lookup result: {path_message}")
+
+                collision_ok, collision_message = self._check_collision_for_route(route)
+                if not collision_ok:
+                    failure_message = f"{context_name} Step {step_num} - {collision_message}"
+                    return False, failure_message
+
+                self.get_logger().info(f"{context_name} Step {step_num} - Collision check passed: {collision_message}")
+            else:
+                self.get_logger().info(f"{context_name} Step {step_num} - No movement target, skipping collision check")
+
             # Send the navigation command
             response = self.robot_navigation_api.navigation_with_json(command_json)
             self.get_logger().info(f"Response from navigation: {response}")
@@ -429,10 +576,6 @@ class RobotController(Node):
     # Pick Init
     def pallet_pick_init_callback(self, pallet_data, task_id: str = "task_123"):
         self.get_logger().info(f"Received request to test Pallet Pick Init: {pallet_data['pallet_id']}")
-        # pallet_id_temp = pallet_data.pallet_id
-
-        # pallet_data = self.pallet_loader.get_pallet_data_id(int(pallet_id_temp)) # type: ignore
-        # self.get_logger().info(f'Pallet data for ID {pallet_id_temp}: {pallet_data}')
 
         success, message = self._run_task_sequence(
             pallet_data,
