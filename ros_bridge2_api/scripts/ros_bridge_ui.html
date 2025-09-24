@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Forklift Controller • Plus</title>
+  <style>
+    :root {
+      --bg:#fff; --fg:#111; --muted:#6b7280; --card:#f8f9fb; --ok:#16a34a; --warn:#f59e0b;
+      --err:#dc2626; --line:#e5e7eb; --pill:#e5e7eb;
+      --btn:#2563eb; --btnfg:#fff;
+      --btn-cancel:#d32f2f; --btn-pause:#f59e0b; --btn-resume:#16a34a; --btn-apply:#9333ea;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:#0b0c0f; --fg:#e5e7eb; --muted:#9ca3af; --card:#111318; --line:#272a31;
+        --pill:#1f2937; --btn:#3b82f6; --btnfg:#0b0c0f;
+        --btn-cancel:#ef4444; --btn-pause:#f59e0b; --btn-resume:#22c55e; --btn-apply:#a855f7;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+    header { padding: 16px; border-bottom: 1px solid var(--line);
+      display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+    .brand { font-weight: 700; letter-spacing:.2px; }
+    .row { display:flex; gap: 8px; align-items:center; flex-wrap:wrap; }
+    input, select, button { font: inherit; }
+    input[type=text], input[type=number] {
+      background: var(--card); color: var(--fg); border: 1px solid var(--line);
+      padding: 8px 10px; border-radius: 10px; min-width: 0;
+    }
+    button {
+      background: var(--btn); color: var(--btnfg); border: 0;
+      padding: 10px 14px; border-radius: 12px; cursor: pointer; font-weight:600;
+    }
+    button.ghost { background: var(--pill); color: var(--fg); }
+    button:disabled { opacity:.5; cursor:not-allowed; }
+    main { padding: 16px; max-width: 1200px; margin: 0 auto; display: grid; gap: 16px; }
+    .cards { display:grid; grid-template-columns: repeat( auto-fit, minmax(280px, 1fr) ); gap: 16px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+      padding: 14px; display:flex; flex-direction:column; gap:12px; }
+    .card h3 { margin: 0; font-size: 1.05rem; display:flex; align-items:center; gap:8px; }
+    .dot { width:10px; height:10px; border-radius:999px; background: var(--muted); display:inline-block; }
+    .dot.ok{ background: var(--ok); } .dot.warn{ background: var(--warn);} .dot.err{ background: var(--err);}
+    .kv { display:grid; grid-template-columns: 1fr auto; gap: 6px 10px; align-items:center; }
+    .k { color: var(--muted); font-size: .95rem; }
+    .v { font-weight: 600; text-align:right; }
+    .actions { display:flex; gap:8px; flex-wrap: wrap; }
+    .pill { background: var(--pill); color: var(--fg); font-size:.85rem;
+      padding:4px 8px; border-radius:999px; }
+    .small { color: var(--muted); font-size:.9rem; }
+    .grid { display:grid; gap: 10px; grid-template-columns: repeat( auto-fit, minmax(220px, 1fr) ); }
+    footer { padding: 16px; color: var(--muted); text-align:center; }
+    .toast {
+      position: fixed; left:50%; transform: translateX(-50%);
+      bottom: 20px; background: var(--fg); color: var(--bg);
+      padding:12px 16px; border-radius: 12px; display:none;
+      box-shadow:0 4px 12px rgba(0,0,0,.3); font-weight:600;
+      min-width: 200px; text-align:center;
+    }
+    .toast.danger { background: var(--err); color:#fff; }
+    .btn-cancel { background: var(--btn-cancel); color:#fff; }
+    .btn-pause { background: var(--btn-pause); color:#fff; }
+    .btn-resume { background: var(--btn-resume); color:#fff; }
+    .btn-apply { background: var(--btn-apply); color:#fff; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="row">
+      <div class="brand">Forklift Robot Controller</div>
+      <span class="pill" id="healthPill">checking…</span>
+    </div>
+    <div class="row" style="gap:10px;">
+      <span class="small">Server</span>
+      <input id="host" type="text" placeholder="hostname or IP" style="width:160px">
+      <input id="port" type="number" min="1" max="65535" value="8000" style="width:90px">
+      <button id="applyHost" class="btn-apply" title="Reconnect with this host/port">Apply</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="cards" id="robots"></section>
+
+    <!-- DIRECT CONTROL -->
+    <section class="card section">
+      <h3>Assign Task • Direct to Robot</h3>
+      <div class="grid">
+        <label>
+          <div class="small">Robot</div>
+          <select id="direct_robot"></select>
+        </label>
+        <label>
+          <div class="small">Task Type</div>
+          <select id="direct_task_type">
+            <option value="1">1 • PickInit</option>
+            <option value="2">2 • PlaceInit</option>
+            <option value="3">3 • PickToManipulator</option>
+            <option value="4">4 • PickFromManipulator</option>
+          </select>
+        </label>
+        <label>
+          <div class="small">Pallet ID</div>
+          <input id="direct_pallet" type="text" placeholder="e.g. 101" />
+        </label>
+        <label>
+          <div class="small">Task ID</div>
+          <input id="direct_task_id" type="text" placeholder="e.g. T-2025-0001" />
+        </label>
+      </div>
+      <div class="actions">
+        <button id="directAssignBtn">Send To Robot</button>
+        <span class="small" id="directAssignMsg"></span>
+      </div>
+    </section>
+
+    <!-- TASK MANAGER ASSIGN -->
+    <section class="card section">
+      <h3>Assign Task • Task Manager</h3>
+      <div class="grid">
+        <label>
+          <div class="small">Task Type</div>
+          <select id="taskType">
+            <option value="1">1 • PickInit</option>
+            <option value="2">2 • PlaceInit</option>
+            <option value="3">3 • PickToManipulator</option>
+            <option value="4">4 • PickFromManipulator</option>
+          </select>
+        </label>
+        <label>
+          <div class="small">Pallet ID</div>
+          <input id="palletId" type="text" placeholder="e.g. 101" />
+        </label>
+        <label>
+          <div class="small">Task ID</div>
+          <input id="taskId" type="text" placeholder="e.g. T-2025-0001" />
+        </label>
+      </div>
+      <div class="actions">
+        <button id="assignBtn">Assign Task</button>
+        <span class="small" id="assignMsg"></span>
+      </div>
+    </section>
+  </main>
+
+  <footer>Minimal UI • Works with /robot/{id}/{action}, /robot/{id}/assign_task, /assigntask, and /ws/{id}</footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const ROBOTS = ["robot_01","robot_02"];
+    const TOPICS = {
+      robot_battery_percentage: "Battery (%)",
+      robot_controller_mode_status: "Controller Mode",
+      robot_current_station: "Current Station",
+      robot_navigation_status: "Navigation Status",
+    };
+    const state = { host:"", port:8000, ws:{}, lastUpdate:{} };
+
+    const $ = s => document.querySelector(s);
+    const el = (tag, attrs={}, children=[]) => {
+      const n = document.createElement(tag);
+      Object.entries(attrs).forEach(([k,v]) => {
+        if (k === "class") n.className = v;
+        else if (k.startsWith("on") && typeof v === "function") n.addEventListener(k.slice(2), v);
+        else if (v != null) n.setAttribute(k, v);
+      });
+      (Array.isArray(children)?children:[children]).forEach(c=>{
+        if(c==null) return;
+        n.appendChild(typeof c==="string"?document.createTextNode(c):c);
+      });
+      return n;
+    };
+    const toast = (msg, danger=false) => {
+      const t=$("#toast");
+      t.textContent=msg;
+      t.classList.toggle("danger", !!danger);
+      t.style.display="block";
+      clearTimeout(t._h);
+      t._h=setTimeout(()=>t.style.display="none", 2500);
+    };
+
+    const robotsRoot=$("#robots");
+    const robotCard=id=>{
+      const card=el("div",{class:"card",id:`card_${id}`},[
+        el("h3",{},[ el("span",{class:"dot",id:`dot_${id}`}), ` ${id}` ]),
+        el("div",{class:"kv"},Object.entries(TOPICS).flatMap(([topic,label])=>([
+          el("div",{class:"k"},label),
+          el("div",{class:"v",id:`val_${id}_${topic}`},"—")
+        ]))),
+        el("div",{class:"small",id:`time_${id}`},"Last update: —"),
+        el("div",{class:"actions"},[
+          el("button",{class:"btn-cancel",onclick:()=>nav(id,"cancel_navigation")},"Cancel"),
+          el("button",{class:"btn-pause",onclick:()=>nav(id,"pause_navigation")},"Pause"),
+          el("button",{class:"btn-resume",onclick:()=>nav(id,"resume_navigation")},"Resume"),
+        ]),
+      ]);
+      return card;
+    };
+
+    const baseHttp=()=>`http://${state.host}:${state.port}`;
+    const baseWs=()=>`ws://${state.host}:${state.port}`;
+
+    async function healthCheck(){
+      $("#healthPill").textContent="checking…";
+      try{
+        const res=await fetch(`${baseHttp()}/health`,{cache:"no-store"});
+        if(!res.ok) throw new Error(res.status);
+        await res.json();
+        $("#healthPill").textContent="healthy";
+        $("#healthPill").style.background="var(--pill)";
+      }catch(e){
+        $("#healthPill").textContent="unreachable";
+        $("#healthPill").style.background="var(--err)";
+      }
+    }
+
+    function connectRobot(id){
+      if(state.ws[id]){ try{state.ws[id].close();}catch{} }
+      const url=`${baseWs()}/ws/${id}`;
+      const ws=new WebSocket(url);
+      state.ws[id]=ws;
+      const dot=$(`#dot_${id}`);
+      const time=$(`#time_${id}`);
+
+      ws.onopen=()=>{ dot.className="dot ok"; toast(`${id}: connected`); };
+      ws.onmessage=(ev)=>{
+        try{
+          const {topic,value}=JSON.parse(ev.data);
+          const cell=$(`#val_${id}_${topic}`);
+          if(cell) cell.textContent=value;
+          state.lastUpdate[id]=Date.now();
+          time.textContent="Last update: "+new Date().toLocaleTimeString();
+        }catch{}
+      };
+      ws.onclose=()=>{ dot.className="dot warn"; setTimeout(()=>connectRobot(id),1500); };
+      ws.onerror=()=>{ dot.className="dot err"; };
+    }
+
+    async function nav(id,action){
+      try{
+        const res=await fetch(`${baseHttp()}/robot/${id}/${action}`,{method:"POST"});
+        const data=await res.json();
+        if(data.success) toast(`${id} • ${action.replaceAll("_"," ")}: OK`);
+        else toast(`${id} • ${action}: ${data.error||data.message||"failed"}`,true);
+      }catch(e){ toast(`${id} • ${action}: network error`,true); }
+    }
+
+    async function assignTask(){
+      const type=$("#taskType").value;
+      const pallet=($("#palletId").value||"").trim();
+      const task=($("#taskId").value||"").trim();
+      const msg=$("#assignMsg");
+      msg.textContent="Sending…";
+      try{
+        const res=await fetch(`${baseHttp()}/assigntask/${type}/${encodeURIComponent(pallet)}/${encodeURIComponent(task)}`,{method:"POST"});
+        const data=await res.json();
+        if(data.success){ msg.textContent="Assigned ✔"; toast("Task assigned"); }
+        else { msg.textContent=(data.error||data.message||"failed"); toast("Assign failed",true); }
+      }catch(e){ msg.textContent="Network error"; toast("Network error",true); }
+    }
+
+    async function assignTaskDirect(){
+      const robot=$("#direct_robot").value;
+      const type=$("#direct_task_type").value;
+      const pallet=($("#direct_pallet").value||"").trim();
+      const task=($("#direct_task_id").value||"").trim();
+      const msg=$("#directAssignMsg");
+      msg.textContent="Sending…";
+      try{
+        const url=`${baseHttp()}/robot/${robot}/assign_task/${type}/${encodeURIComponent(pallet)}/${encodeURIComponent(task)}`;
+        const res=await fetch(url,{method:"POST"});
+        const data=await res.json();
+        if(data.success){ msg.textContent="Sent ✔"; toast(`Direct assign to ${robot}: OK`); }
+        else { msg.textContent=(data.error||data.message||"failed"); toast(`Direct assign failed`,true); }
+      }catch(e){ msg.textContent="Network error"; toast("Network error",true); }
+    }
+
+    function inferHost(){
+      const hn=location.hostname||"localhost";
+      $("#host").value=hn;
+      state.host=hn;
+      $("#port").value=state.port;
+    }
+    function render(){
+      robotsRoot.innerHTML="";
+      ROBOTS.forEach(r=>robotsRoot.appendChild(robotCard(r)));
+      $("#direct_robot").innerHTML=ROBOTS.map(r=>`<option value="${r}">${r}</option>`).join("");
+    }
+    function applyHost(){
+      state.host=($("#host").value||"localhost").trim();
+      state.port=parseInt($("#port").value||"8000",10);
+      healthCheck();
+      ROBOTS.forEach(connectRobot);
+    }
+
+    $("#applyHost").addEventListener("click",applyHost);
+    $("#assignBtn").addEventListener("click",assignTask);
+    $("#directAssignBtn").addEventListener("click",assignTaskDirect);
+
+    render(); inferHost(); applyHost(); setInterval(healthCheck,5000);
+  </script>
+</body>
+</html>

@@ -28,6 +28,7 @@ ament_python_install_package(${PROJECT_NAME})
 # Install Python executables
 install(PROGRAMS
   scripts/fastapi_ros_bridge.py
+  scripts/ros_bridge_ui.html
   DESTINATION lib/${PROJECT_NAME}
 )
 

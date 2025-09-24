@@ -10,6 +10,8 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from std_msgs.msg import String, Float32, Bool, Int32
 import asyncio
+import os
+from fastapi.responses import HTMLResponse
 
 class FastAPIClient(Node):
     def __init__(self):
@@ -134,7 +136,7 @@ class FastAPIClient(Node):
                     if now - last_update > self.offline_timeout:
                         self.status_online[ns][topic] = False
                         self.latest_status[ns][topic] = None
-                        self.get_logger().warn(
+                        self.get_logger().warning(
                             f"No updates from {ns}:{topic} for {self.offline_timeout} seconds; marking offline"
                         )
                         await self._broadcast_status(ns, topic, None, online=False)
@@ -154,6 +156,15 @@ class FastAPIClient(Node):
     
     def setup_routes(self):
         node_instance = self
+        @self.app.get("/ui", response_class=HTMLResponse)
+        async def serve_ui():
+            html_path = os.path.join(os.path.dirname(__file__), "ros_bridge_ui.html")
+            try:
+                with open(html_path, "r", encoding="utf-8") as f:
+                    html_content = f.read()
+                return HTMLResponse(content=html_content, status_code=200)
+            except Exception as e:
+                return HTMLResponse(content=f"<h1>UI Not Found</h1><p>{e}</p>", status_code=404)
 
         @self.app.on_event("startup")
         async def on_startup():
@@ -289,9 +300,6 @@ class FastAPIClient(Node):
             return {"success": False, "error": "Service call failed or returned invalid result"}
     
     async def _call_robot_assign_task(self, robot_id, task_type_id, pallet_id, task_id):
-        from seer_robot_interfaces.srv import AssignTask
-        import asyncio
-        
         if robot_id not in self.controller_services:
             return {"success": False, "error": f"Unknown robot_id: {robot_id}"}
         connectivity_state = self._robot_connectivity_state(robot_id)
@@ -303,7 +311,6 @@ class FastAPIClient(Node):
         service_name = self.controller_services[robot_id].get('assign_task')
         if not service_name:
             return {"success": False, "error": "Assign task service not configured for this robot"}
-        
         # Run the blocking ROS call in a thread pool
         loop = asyncio.get_running_loop()
         result = await loop.run_in_executor(None, self._blocking_assign_task_call, robot_id, task_type_id, pallet_id, task_id)
@@ -364,7 +371,6 @@ class FastAPIClient(Node):
 
     async def call_assign_task_service_async(self, task_type_id: int, pallet_id: int, task_id: str):
         """Call the /assigntask service with the given data asynchronously"""
-        import asyncio
         loop = asyncio.get_running_loop()
         result = await loop.run_in_executor(None, self.call_assign_task_service, task_type_id, pallet_id, task_id)
         return result
