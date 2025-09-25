@@ -19,7 +19,7 @@ from std_msgs.msg import String
 from seer_robot_pkg.collision_buildmap import _build_geometry_from_map
 from seer_robot_pkg.collision_geom import pose_along_polyline, collide_OBB
 
-from seer_robot_interfaces.srv import CheckCollisionNavigationPath,CheckRobotCurrentLocation,UpdateRobotStationForCollision
+from seer_robot_interfaces.srv import CheckCollisionNavigationPath, UpdateRobotStationForCollision
 
 class TrafficManagement(Node):
     def __init__(self):
@@ -75,15 +75,7 @@ class TrafficManagement(Node):
         # Service server
         self.create_service(CheckCollisionNavigationPath, 'traffic_management/check_collision_navigation', self.check_collision_navigation_callback)
 
-        # Service client
-        self.check_robot_available_cbg = MutuallyExclusiveCallbackGroup()
-        self.check_robot_available_client = self.create_client(Trigger, 'robot_status/check_available', callback_group=self.check_robot_available_cbg)
-        self.check_robot_current_location_cbg = MutuallyExclusiveCallbackGroup()
-        self.check_robot_current_location_client = self.create_client(CheckRobotCurrentLocation, 'robot_status/check_robot_current_location', callback_group=self.check_robot_current_location_cbg)
-
         # robot current station
-        self.robot_01_station = None
-        self.robot_02_station = None
         self.robot_stations: Dict[str, str | None] = {ns: None for ns in self.robot_namespaces}
         self.robot_station_subs = {}
         self.robot_station_cbg = ReentrantCallbackGroup()
@@ -307,27 +299,8 @@ class TrafficManagement(Node):
         if station == "":
             station = None
         self.robot_stations[robot_ns] = station
-        if robot_ns == 'robot_01':
-            self.robot_01_station = station
-        elif robot_ns == 'robot_02':
-            self.robot_02_station = station
         # self.get_logger().info(f'[{robot_ns}] current station updated: {station}')
         self.get_logger().debug(f'[{robot_ns}] current station updated: {station}')
-
-    # ---------------- Demo ----------------
-    def _demo_once(self):
-        if self._demo_done: 
-            return
-        self._demo_done = True
-        try:
-            route = ['LM44','LM45','LM46','LM30','AP6','LM30','LM46','LM45','LM44','LM25','LM22','AP1','LM22']
-            res = self.check_collision_stationary_vs_route('LM52', route, v=None, loaded=False)
-            if res["collision"]:
-                self.get_logger().warn(f"[DEMO] COLLISION t={res['t_hit']:.2f}s  v={res['v_used']:.2f}  buf={res['buffer_used']:.2f}")
-            else:
-                self.get_logger().info(f"[DEMO] SAFE  v={res['v_used']:.2f}  buf={res['buffer_used']:.2f}")
-        except Exception as e:
-            self.get_logger().error(f"[DEMO] {e}")
 
     # ------------------ Check Collision Callback
 

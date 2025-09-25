@@ -16,12 +16,10 @@ class RobotStateNode(Node):
         # Declare parameters
         self.declare_parameter('robot_id', 'robot_01')
         self.declare_parameter('robot_name', 'SEER_Robot_01')
-        self.declare_parameter('robot_ip', '192.168.0.180')
 
         # Parameters
         self.robot_id = self.get_parameter('robot_id').get_parameter_value().string_value
         self.robot_name = self.get_parameter('robot_name').get_parameter_value().string_value
-        self.robot_ip = self.get_parameter('robot_ip').get_parameter_value().string_value
 
         # Robot Status
         self.robot_state = 'IDLE'

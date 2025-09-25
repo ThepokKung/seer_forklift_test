@@ -92,13 +92,6 @@ class RobotStatus(Node):
         self.robot_available = True
         return True
 
-    def force_reconnect(self):
-        """Force a reconnection attempt"""
-        self.get_logger().info("Forcing reconnection...")
-        self.robot_status_api.disconnect()
-        self.connection_attempted = False
-        return self.ensure_connection()
-
     #####################################################
     ###                 Update Status                  ###
     #####################################################

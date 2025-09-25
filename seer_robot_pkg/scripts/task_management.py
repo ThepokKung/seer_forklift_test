@@ -15,7 +15,6 @@ from std_srvs.srv import Trigger
 from seer_robot_interfaces.srv import AssignTask, GetNavigationPath, CheckRobotStateNow
 # backend imports
 from seer_robot_pkg.pallet_loader import PalletLoader
-from seer_robot_pkg.json_command_builder import JsonCommandBuilder
 
 class TaskManagement(Node):
     def __init__(self):
@@ -190,26 +189,7 @@ class TaskManagement(Node):
     ###             Check Robot                      ###
     #####################################################
 
-    def find_available_robot(self):
-        """Find an available robot from all connected robots"""
-        for robot_ns in self.robot_namespaces:
-            # First check if robot is available using the simple availability check
-            if self.check_robot_availability(robot_ns):
-                robot_state = self.check_robot_state(robot_ns)
-                if robot_state and robot_state.success:
-                    # Check if robot_state indicates it's idle
-                    if robot_state.robot_state == "IDLE" or robot_state.robot_state == "READY":
-                        self.get_logger().info(f'Robot {robot_ns} is available and ready')
-                        return robot_ns
-                    else:
-                        self.get_logger().info(f'Robot {robot_ns} is connected but busy: {robot_state.robot_state}')
-                else:
-                    # If detailed status unavailable, accept the robot based on availability alone
-                    self.get_logger().warning(f'Robot {robot_ns} is available but detailed status unavailable — selecting based on availability')
-                    return robot_ns
-            else:
-                self.get_logger().warning(f'Robot {robot_ns} is not available')
-        return None
+
     
     def find_all_available_robots(self):
         """Return a list of all available and ready robots."""
@@ -308,17 +288,7 @@ class TaskManagement(Node):
             self.get_logger().error(f'Exception during service call for {robot_namespace}: {str(e)}')
             return None
     
-    def check_robot_all(self, request, response):
-        """Legacy method - now uses find_available_robot instead"""
-        available_robot_ns = self.find_available_robot()
-        if available_robot_ns:
-            return self.check_robot_state(available_robot_ns)
-        else:
-            response.success = False
-            response.robot_current_station = "Unknown"
-            response.robot_task_status = "Unknown"
-            response.robot_navigation_status = 0
-            return response
+
 
 def main(args=None):
     rclpy.init(args=args)
