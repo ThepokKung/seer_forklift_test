@@ -48,11 +48,11 @@ class TaskManagement(Node):
         for robot_ns in self.robot_namespaces:
             # Create client for robot availability check
             availability_callback_group = MutuallyExclusiveCallbackGroup()
-            availability_client = self.create_client(Trigger, f'/{robot_ns}/robot_status/check_available', callback_group=availability_callback_group)
+            availability_client = self.create_client(Trigger, f'/{robot_ns}/robot_monitor/check_available', callback_group=availability_callback_group)
 
             # Create client for robot state check (detailed info)
             state_callback_group = MutuallyExclusiveCallbackGroup()
-            state_client = self.create_client(CheckRobotStateNow,f'/{robot_ns}/robot_state/check_robot_state_now',callback_group=state_callback_group)
+            state_client = self.create_client(CheckRobotStateNow,f'/{robot_ns}/robot_monitor/check_robot_state_now',callback_group=state_callback_group)
 
             # Create client for navigation path
             nav_callback_group = MutuallyExclusiveCallbackGroup()
@@ -176,7 +176,8 @@ class TaskManagement(Node):
             ### Need to add check collision here in future
 
             response.success = True
-            response.message = f"Task {request.task_id} ({task_type_name}) for pallet {request.pallet_id} with data: {pallet_data}"
+            # response.message = f"Task {request.task_id} ({task_type_name}) for pallet {request.pllet_id} with data: {pallet_data}"
+            response.message = f"Assigning task {request.task_id} ({task_type_name}) for pallet {request.pallet_id} to robot {selected_robot}"
             self.get_logger().info(response.message)
             
         except Exception as e:
@@ -189,8 +190,6 @@ class TaskManagement(Node):
     ###             Check Robot                      ###
     #####################################################
 
-
-    
     def find_all_available_robots(self):
         """Return a list of all available and ready robots."""
         available_robots = []
@@ -259,10 +258,10 @@ class TaskManagement(Node):
         
         # Wait for service to be ready with a timeout (like availability check)
         if not client.service_is_ready():
-            self.get_logger().info(f'Waiting for service {robot_namespace}/robot_state/check_robot_state_now to become available...')
+            self.get_logger().info(f'Waiting for service {robot_namespace}/robot_monitor/check_robot_state_now to become available...')
             ready = client.wait_for_service(timeout_sec=2.0)
             if not ready:
-                self.get_logger().warning(f'Service {robot_namespace}/robot_state/check_robot_state_now not available after waiting')
+                self.get_logger().warning(f'Service {robot_namespace}/robot_monitor/check_robot_state_now not available after waiting')
                 return None
 
         service_request = CheckRobotStateNow.Request()
@@ -287,8 +286,6 @@ class TaskManagement(Node):
         except Exception as e:
             self.get_logger().error(f'Exception during service call for {robot_namespace}: {str(e)}')
             return None
-    
-
 
 def main(args=None):
     rclpy.init(args=args)

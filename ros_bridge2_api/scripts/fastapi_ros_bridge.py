@@ -5,10 +5,12 @@ import threading
 import uvicorn
 import json
 import time
+from typing import Dict, Any, Optional
 from contextlib import suppress
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from std_msgs.msg import String, Float32, Bool, Int32
+from seer_robot_interfaces.msg import RobotBatchData
 import asyncio
 import os
 from fastapi.responses import HTMLResponse
@@ -46,25 +48,33 @@ class FastAPIClient(Node):
         self.setup_routes()
         # --- Webhook/Streaming additions ---
         self.robot_namespaces = ["robot_01", "robot_02"]
-        self.status_topics = [
+        
+        # All available topics from RobotBatchData message
+        self.available_topics = [
             "robot_battery_percentage",
-            "robot_controller_mode_status",
+            "robot_controller_mode_status", 
             "robot_current_station",
-            "robot_navigation_status"
+            "robot_navigation_status",
+            "robot_fork_height",
+            "robot_confidence",
+            "robot_state"
         ]
-        # Map topic to correct ROS2 message type
-        self.topic_types = {
-            "robot_battery_percentage": Float32,
-            "robot_controller_mode_status": Bool,
-            "robot_current_station": String,
-            "robot_navigation_status": Int32,
-        }
-        # Store latest messages for each topic per robot
-        self.latest_status = {ns: {topic: None for topic in self.status_topics} for ns in self.robot_namespaces}
-        self.status_last_update = {ns: {topic: None for topic in self.status_topics} for ns in self.robot_namespaces}
-        self.status_online = {ns: {topic: False for topic in self.status_topics} for ns in self.robot_namespaces}
+        
+        # Store latest messages for each topic per robot (for compatibility with existing UI)
+        self.latest_status: Dict[str, Dict[str, Any]] = {ns: {topic: None for topic in self.available_topics} for ns in self.robot_namespaces}
+        self.status_last_update: Dict[str, Dict[str, Optional[float]]] = {ns: {topic: None for topic in self.available_topics} for ns in self.robot_namespaces}
+        self.status_online: Dict[str, Dict[str, bool]] = {ns: {topic: False for topic in self.available_topics} for ns in self.robot_namespaces}
+        
+        # Store latest batch data
+        self.latest_batch_data: Dict[str, Any] = {ns: None for ns in self.robot_namespaces}
+        self.batch_last_update: Dict[str, Optional[float]] = {ns: None for ns in self.robot_namespaces}  
+        self.batch_online: Dict[str, bool] = {ns: False for ns in self.robot_namespaces}
         self.offline_timeout = 5.0  # seconds without updates before marking offline
         self.offline_check_interval = 1.0
+        
+        # Health check logging control
+        self.health_check_count = 0
+        self.health_check_logged = False
         # Store websocket connections
         self.active_connections = {ns: set() for ns in self.robot_namespaces}
         self._watchdog_task = None
@@ -78,36 +88,60 @@ class FastAPIClient(Node):
         self.loop_ready.wait()
         # Subscribe to all topics for each robot namespace
         for ns in self.robot_namespaces:
-            for topic in self.status_topics:
-                full_topic = f"/{ns}/robot_status/{topic}"
-                msg_type = self.topic_types[topic]
-                self.create_subscription(
-                    msg_type,
-                    full_topic,
-                    self._make_callback(ns, topic),
-                    10
-                )
+            # Subscribe to the new integrated RobotBatchData message from robot_monitor
+            batch_topic = f"/{ns}/robot_monitor/robot_batch_data"
+            self.get_logger().info(f"Subscribing to robot batch data topic: {batch_topic}")
+            self.create_subscription(
+                RobotBatchData,
+                batch_topic,
+                self._make_batch_callback(ns),
+                10
+            )
 
-    def _make_callback(self, ns, topic):
+    def _make_batch_callback(self, ns):
+        """Create callback for RobotBatchData messages"""
         def callback(msg):
-            # Store latest message for UI compatibility
-            value = getattr(msg, 'data', msg)
-            self.latest_status[ns][topic] = value
-            self.status_last_update[ns][topic] = time.time()  # type: ignore
-            was_offline = not self.status_online[ns][topic]
-            self.status_online[ns][topic] = True
+            # Store the batch data and update individual topic values
+            self.latest_batch_data[ns] = msg
+            self.batch_last_update[ns] = time.time()
+            was_offline = not self.batch_online[ns]
+            self.batch_online[ns] = True
+            
+            # Extract individual values from batch data and update status
+            batch_values = {
+                "robot_battery_percentage": msg.robot_battery_percentage,
+                "robot_controller_mode_status": msg.robot_controller_mode_status,
+                "robot_current_station": msg.robot_current_station,
+                "robot_navigation_status": msg.robot_navigation_status,
+                "robot_fork_height": msg.robot_fork_height,
+                "robot_confidence": msg.robot_confidence,
+                "robot_state": msg.robot_state,
+            }
+            
+            # Update individual topic storage for compatibility
+            for topic, value in batch_values.items():
+                if topic in self.available_topics:
+                    self.latest_status[ns][topic] = value
+                    self.status_last_update[ns][topic] = time.time()
+                    self.status_online[ns][topic] = True
+            
             if was_offline:
-                self.get_logger().debug(f"{ns}:{topic} stream resumed")
+                self.get_logger().debug(f"{ns}:batch_data stream resumed")
+            
             if self.loop is None or not self.loop.is_running():
                 self.get_logger().warning("Event loop not running; skipping websocket broadcast")
                 return
+            
             try:
-                asyncio.run_coroutine_threadsafe(
-                    self._broadcast_status(ns, topic, value, online=True),
-                    self.loop
-                )
+                # Broadcast all updated topics
+                for topic, value in batch_values.items():
+                    if topic in self.available_topics:
+                        asyncio.run_coroutine_threadsafe(
+                            self._broadcast_status(ns, topic, value, online=True),
+                            self.loop
+                        )
             except Exception as exc:
-                self.get_logger().error(f"Failed to schedule websocket broadcast: {exc}")
+                self.get_logger().error(f"Failed to schedule websocket broadcast from batch data: {exc}")
         return callback
 
     async def _broadcast_status(self, ns, topic, value, online=True):
@@ -126,8 +160,26 @@ class FastAPIClient(Node):
         while True:
             await asyncio.sleep(self.offline_check_interval)
             now = time.time()
+            
+            # Check batch data timeouts
             for ns in self.robot_namespaces:
-                for topic in self.status_topics:
+                if self.batch_online[ns]:
+                    last_update = self.batch_last_update[ns]
+                    if last_update is not None and now - last_update > self.offline_timeout:
+                        self.batch_online[ns] = False
+                        self.latest_batch_data[ns] = None
+                        self.get_logger().warning(
+                            f"No batch updates from {ns} for {self.offline_timeout} seconds; marking offline"
+                        )
+                        # Mark all individual topics as offline too
+                        for topic in self.available_topics:
+                            if self.status_online[ns][topic]:
+                                self.status_online[ns][topic] = False
+                                self.latest_status[ns][topic] = None
+                                await self._broadcast_status(ns, topic, None, online=False)
+                
+                # Check individual topic timeouts (for backward compatibility)
+                for topic in self.available_topics:
                     if not self.status_online[ns][topic]:
                         continue
                     last_update = self.status_last_update[ns][topic]
@@ -143,13 +195,22 @@ class FastAPIClient(Node):
 
     def _robot_connectivity_state(self, robot_id):
         """Return 'online', 'offline', or 'unknown' based on recent status topics."""
+        # Check batch data first (preferred)
+        if self.batch_online.get(robot_id, False):
+            return "online"
+        
+        # Fall back to individual topics
         topics = self.status_online.get(robot_id)
         if not topics:
             return "unknown"
         if any(topics.values()):
             return "online"
-        last_updates = self.status_last_update.get(robot_id, {})
-        if any(ts is not None for ts in last_updates.values()):
+        
+        # Check if we have any historical data
+        batch_last_update = self.batch_last_update.get(robot_id)
+        individual_updates = self.status_last_update.get(robot_id, {})
+        
+        if batch_last_update is not None or any(ts is not None for ts in individual_updates.values()):
             return "offline"
         return "unknown"
 
@@ -187,7 +248,29 @@ class FastAPIClient(Node):
 
         @self.app.get("/health")
         async def health_check():
-            return {"status": "healthy", "node": node_instance.get_name()}
+            try:
+                # Increment success counter
+                node_instance.health_check_count += 1
+                
+                # Log first success immediately, then every 30 successes
+                if node_instance.health_check_count == 1:
+                    node_instance.get_logger().info('127.0.0.1 - "GET /health HTTP/1.1" 200 OK')
+                elif node_instance.health_check_count >= 30 and not node_instance.health_check_logged:
+                    node_instance.get_logger().info('127.0.0.1 - "GET /health HTTP/1.1" 200 OK')
+                    node_instance.health_check_logged = True
+                
+                # Reset counter and flag for next logging cycle after 30 attempts
+                if node_instance.health_check_count >= 30:
+                    node_instance.health_check_count = 0
+                    node_instance.health_check_logged = False
+                
+                return {"status": "healthy", "node": node_instance.get_name()}
+            except Exception as e:
+                # Reset counters on error and log immediately
+                node_instance.health_check_count = 0
+                node_instance.health_check_logged = False
+                node_instance.get_logger().error(f'127.0.0.1 - "GET /health HTTP/1.1" 500 ERROR: {str(e)}')
+                raise e
 
         @self.app.post("/assigntask/{task_type_id}/{pallet_id}/{task_id}")
         async def call_assign_task_post(task_type_id: int, pallet_id: int, task_id: str):
@@ -225,17 +308,35 @@ class FastAPIClient(Node):
             if robot_id not in node_instance.robot_namespaces:
                 return {"success": False, "error": f"Unknown robot_id: {robot_id}"}
             state = node_instance._robot_connectivity_state(robot_id)
+            
+            # Include both batch data and individual topics
+            batch_data = node_instance.latest_batch_data.get(robot_id)
+            batch_info = None
+            if batch_data:
+                batch_info = {
+                    "robot_battery_percentage": batch_data.robot_battery_percentage,
+                    "robot_controller_mode_status": batch_data.robot_controller_mode_status,
+                    "robot_current_station": batch_data.robot_current_station,
+                    "robot_navigation_status": batch_data.robot_navigation_status,
+                    "robot_fork_height": batch_data.robot_fork_height,
+                    "robot_confidence": batch_data.robot_confidence,
+                    "robot_state": batch_data.robot_state,
+                    "last_update": node_instance.batch_last_update.get(robot_id),
+                    "online": node_instance.batch_online.get(robot_id, False)
+                }
+            
             return {
                 "success": True,
                 "robot_id": robot_id,
                 "state": state,
+                "batch_data": batch_info,
                 "topics": {
                     topic: {
                         "online": node_instance.status_online[robot_id][topic],
                         "last_update": node_instance.status_last_update[robot_id][topic],
                         "value": node_instance.latest_status[robot_id][topic],
                     }
-                    for topic in node_instance.status_topics
+                    for topic in node_instance.available_topics
                 },
             }
 
@@ -248,7 +349,7 @@ class FastAPIClient(Node):
             node_instance.active_connections[robot_id].add(websocket)
             try:
                 # On connect, send the latest status for all topics
-                for topic in node_instance.status_topics:
+                for topic in node_instance.available_topics:
                     last_update = node_instance.status_last_update[robot_id][topic]
                     online = node_instance.status_online[robot_id][topic]
                     value = node_instance.latest_status[robot_id][topic]
@@ -367,7 +468,8 @@ class FastAPIClient(Node):
         # uvicorn.run blocks and manages its own shutdown, but the FastAPI
         # startup hook captures the running loop so ROS callbacks can still
         # schedule websocket broadcasts safely.
-        uvicorn.run(self.app, host="0.0.0.0", port=8000, log_level="info")
+        # Disable access_log to prevent automatic logging, we'll handle health endpoint logging manually
+        uvicorn.run(self.app, host="0.0.0.0", port=8000, log_level="info", access_log=False)
 
     async def call_assign_task_service_async(self, task_type_id: int, pallet_id: int, task_id: str):
         """Call the /assigntask service with the given data asynchronously"""

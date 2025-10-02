@@ -16,6 +16,7 @@ load_dotenv()  # Load environment variables from .env file
 #msg import
 from std_msgs.msg import Int32
 from std_srvs.srv import Trigger
+from seer_robot_interfaces.msg import RobotBatchData
 
 # srv import
 from seer_robot_interfaces.srv import (
@@ -75,10 +76,18 @@ class RobotController(Node):
         self.reentrant_callback_group = ReentrantCallbackGroup()
 
         # Subscriptions
+        # self.create_subscription(
+        #     Int32,
+        #     'robot_status/robot_navigation_status',
+        #     self._sub_check_robot_navigation_status_callback,
+        #     10,
+        #     callback_group=self.reentrant_callback_group,
+        # )
+
         self.create_subscription(
-            Int32,
-            'robot_status/robot_navigation_status',
-            self._sub_check_robot_navigation_status_callback,
+            RobotBatchData,
+            'robot_monitor/robot_batch_data',
+            self._sub_batch_data_for_robot_navigation_status_callback,
             10,
             callback_group=self.reentrant_callback_group,
         )
@@ -90,6 +99,7 @@ class RobotController(Node):
             self.get_navigation_path_callback,
             callback_group=self.reentrant_callback_group,
         )
+
         self.create_service(
             AssignTask,
             'robot_controller/assign_task',
@@ -108,6 +118,7 @@ class RobotController(Node):
             self.pause_navigation_callback,
             callback_group=self.reentrant_callback_group,
         )
+        
         self.create_service(
             Trigger,
             'robot_controller/resume_navigation',
@@ -372,25 +383,29 @@ class RobotController(Node):
                 self.get_logger().info(f"Executing PickInit for pallet {request.pallet_id}")
                 success = self.pallet_pick_init_callback(pallet_data, request.task_id)
                 response.success = bool(success)
-                response.message = "Pallet Pick Init executed successfully" if success else "Pallet Pick Init failed"
+                # response.message = "Pallet Pick Init executed successfully" if success else "Pallet Pick Init failed"
+                response.message = f"Pallet Pick Init executed successfully" if success else f"Pallet Pick Init failed for pallet {request.pallet_id}"
 
             elif request.task_type_id == 2:  # PlaceInit
                 self.get_logger().info(f"Executing PlaceInit for pallet {request.pallet_id}")
-                success, message = self.pallet_place_init(pallet_data, request.task_id)
+                success= self.pallet_place_init(pallet_data, request.task_id)
                 response.success = bool(success)
-                response.message = message
+                # response.message = message
+                response.message = f"Pallet Place Init executed successfully" if success else f"Pallet Place Init failed for pallet {request.pallet_id}"
 
             elif request.task_type_id == 3:  # PickToManipulator
                 self.get_logger().info(f"Executing PickToManipulator for pallet {request.pallet_id}")
-                success, message = self.pallet_pick_to_manipulator(pallet_data, request.task_id)
+                success = self.pallet_pick_to_manipulator(pallet_data, request.task_id)
                 response.success = bool(success)
-                response.message = message
+                # response.message = message
+                response.message = f"Pallet Pick to Manipulator executed successfully" if success else f"Pallet Pick to Manipulator failed for pallet {request.pallet_id}"
 
             elif request.task_type_id == 4:  # PickFromManipulator
                 self.get_logger().info(f"Executing PickFromManipulator for pallet {request.pallet_id}")
-                success, message = self.pallet_pick_from_manipulator(pallet_data, request.task_id)
+                success = self.pallet_pick_from_manipulator(pallet_data, request.task_id)
                 response.success = bool(success)
-                response.message = message
+                # response.message = message
+                response.message = f"Pallet Pick from Manipulator executed successfully" if success else f"Pallet Pick from Manipulator failed for pallet {request.pallet_id}"
 
             else:
                 self.get_logger().error(f"Invalid task_type_id: {request.task_type_id}. Valid values are 1-4.")
@@ -550,8 +565,11 @@ class RobotController(Node):
     ###                 Sub callback                  ###
     #####################################################
 
-    def _sub_check_robot_navigation_status_callback(self, msg):
-        self.robot_navigation_status = msg.data # Int32
+    # def _sub_check_robot_navigation_status_callback(self, msg):
+    #     self.robot_navigation_status = msg.data # Int32
+
+    def _sub_batch_data_for_robot_navigation_status_callback(self, msg):
+        self.robot_navigation_status = msg.robot_navigation_status # Int32
 
     #####################################################
     ###                    Test                       ###

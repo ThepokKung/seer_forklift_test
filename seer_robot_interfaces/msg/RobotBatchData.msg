@@ -1,0 +1,7 @@
+float32 robot_battery_percentage
+string robot_current_station
+int32 robot_navigation_status
+bool robot_controller_mode_status
+float32 robot_fork_height
+float32 robot_confidence
+string robot_state

@@ -25,22 +25,8 @@ def generate_launch_description():
         # Robot status node
         nodes.append(Node(
             package='seer_robot_pkg',
-            executable='robot_status.py',
-            name='robot_status_node',
-            namespace=robot['namespace'],
-            output='screen',
-            parameters=[{
-                'robot_id': robot['robot_id'],
-                'robot_name': robot['robot_name'],
-                'robot_ip': robot['robot_ip']
-            }]
-        ))
-
-        # Robot state node
-        nodes.append(Node(
-            package='seer_robot_pkg',
-            executable='robot_state.py',
-            name='robot_state_node',
+            executable='robot_monitor.py',
+            name='robot_monitor_node',
             namespace=robot['namespace'],
             output='screen',
             parameters=[{
@@ -81,11 +67,11 @@ def generate_launch_description():
     ))
 
     # traffic management node
-    # nodes.append(Node(
-    #     package='seer_robot_pkg',
-    #     executable='traffic_management.py',
-    #     name='traffic_management_node',
-    #     output='screen'
-    # ))
+    nodes.append(Node(
+        package='seer_robot_pkg',
+        executable='traffic_management.py',
+        name='traffic_management_node',
+        output='screen'
+    ))
 
     return LaunchDescription(nodes)

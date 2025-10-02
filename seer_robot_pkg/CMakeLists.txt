@@ -29,11 +29,10 @@ ament_python_install_package(${PROJECT_NAME})
 install(PROGRAMS
   scripts/.env
   ### Main scripts ###
-  scripts/robot_status.py
-  scripts/robot_state.py
   scripts/robot_controller.py
   scripts/task_management.py
   scripts/traffic_management.py
+  scripts/robot_monitor.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

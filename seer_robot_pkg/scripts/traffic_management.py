@@ -8,7 +8,6 @@ from rclpy.node import Node
 from rclpy.exceptions import ParameterAlreadyDeclaredException
 from ament_index_python.packages import get_package_share_directory
 from rclpy.callback_groups import (
-    MutuallyExclusiveCallbackGroup,
     ReentrantCallbackGroup,
 )  # Multiple callback groups for service clients and non-blocking subscriptions
 
@@ -16,10 +15,13 @@ from rclpy.callback_groups import (
 from std_srvs.srv import Trigger
 from std_msgs.msg import String
 
+
+from seer_robot_interfaces.msg import RobotBatchData
+
 from seer_robot_pkg.collision_buildmap import _build_geometry_from_map
 from seer_robot_pkg.collision_geom import pose_along_polyline, collide_OBB
 
-from seer_robot_interfaces.srv import CheckCollisionNavigationPath, UpdateRobotStationForCollision
+from seer_robot_interfaces.srv import CheckCollisionNavigationPath
 
 class TrafficManagement(Node):
     def __init__(self):
@@ -82,9 +84,9 @@ class TrafficManagement(Node):
 
         # Subscribe to topics
         for robot_ns in self.robot_namespaces:
-            topic = f'/{robot_ns}/robot_status/robot_current_station'
+            topic = f'/{robot_ns}/robot_monitor/robot_batch_data'  # topic ของ robot_monitor
             self.robot_station_subs[robot_ns] = self.create_subscription(
-                String,
+                RobotBatchData,
                 topic,
                 partial(self._robot_current_station_callback, robot_ns),
                 10,
@@ -294,8 +296,8 @@ class TrafficManagement(Node):
             t += dt
         return {"collision": False, "v_used": v_run, "buffer_used": buf, "loaded": loaded}
 
-    def _robot_current_station_callback(self, robot_ns: str, msg: String):
-        station = msg.data.strip() if msg.data else None
+    def _robot_current_station_callback(self, robot_ns: str, msg: RobotBatchData):
+        station = msg.robot_current_station.strip() if msg.robot_current_station else None
         if station == "":
             station = None
         self.robot_stations[robot_ns] = station

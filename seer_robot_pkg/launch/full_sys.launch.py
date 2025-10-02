@@ -36,11 +36,11 @@ def generate_launch_description():
             }]
         ))
 
-        # Robot state node
+        # Robot monitor node (previously robot state node)
         nodes.append(Node(
             package='seer_robot_pkg',
-            executable='robot_state.py',
-            name='robot_state_node',
+            executable='robot_monitor.py',
+            name='robot_monitor_node',
             namespace=robot['namespace'],
             output='screen',
             parameters=[{
