@@ -53,6 +53,11 @@ class RobotController(Node):
 
         # robot parameter
         self.robot_navigation_status = 0
+        
+        # Logging control for navigation status
+        self.navigation_status_log_counter = 0
+        self.navigation_status_log_interval = 30
+        self.last_navigation_status_was_error = False
 
         # Create RobotNavigationAPI instance
         self.robot_navigation_api = RobotNavigationAPI(self.robot_ip)
@@ -478,7 +483,43 @@ class RobotController(Node):
             # Now wait for the task to complete (status becomes 4)
             while self.robot_navigation_status != 4:
                 if self.robot_navigation_status is not None:
-                    self.get_logger().info(f"{context_name} Step {step_num} - Robot navigation status: {self.robot_navigation_status}")
+                    # Determine if this is an error status
+                    is_error_status = self.robot_navigation_status in [5, 6]  # FAILED or CANCELED
+                    
+                    # Log based on conditions:
+                    # 1. Always log errors immediately
+                    # 2. Log first time for non-errors
+                    # 3. Log every 30th time for non-errors after the first
+                    should_log = False
+                    
+                    if is_error_status:
+                        # Always log errors
+                        should_log = True
+                        # Reset counter when we encounter an error
+                        self.navigation_status_log_counter = 0
+                        self.last_navigation_status_was_error = True
+                    else:
+                        # For non-error status
+                        if self.last_navigation_status_was_error:
+                            # First time after error - log and reset
+                            should_log = True
+                            self.navigation_status_log_counter = 1
+                            self.last_navigation_status_was_error = False
+                        elif self.navigation_status_log_counter == 0:
+                            # Very first time - log
+                            should_log = True
+                            self.navigation_status_log_counter = 1
+                        elif self.navigation_status_log_counter >= self.navigation_status_log_interval:
+                            # Every 30th time - log and reset counter
+                            should_log = True
+                            self.navigation_status_log_counter = 1
+                        else:
+                            # Increment counter, don't log
+                            self.navigation_status_log_counter += 1
+                    
+                    if should_log:
+                        self.get_logger().info(f"{context_name} Step {step_num} - Robot navigation status: {self.robot_navigation_status}")
+                    
                     if self.robot_navigation_status == 4:
                         self.get_logger().info(f"{context_name} Step {step_num} completed successfully")
                         break
