@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os, json, math
 from functools import partial
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 import rclpy
 from rclpy.node import Node
@@ -10,11 +10,6 @@ from ament_index_python.packages import get_package_share_directory
 from rclpy.callback_groups import (
     ReentrantCallbackGroup,
 )  # Multiple callback groups for service clients and non-blocking subscriptions
-
-
-from std_srvs.srv import Trigger
-from std_msgs.msg import String
-
 
 from seer_robot_interfaces.msg import RobotBatchData
 

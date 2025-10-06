@@ -7,8 +7,8 @@ import json
 def main():
     #### ARG ###
     parser = argparse.ArgumentParser(description='Process input path and generate output')
-    parser.add_argument('path', nargs='?', default='seer_robot_pkg/config/Kraiwich_Map_v.0.3.7.smap', help='Input path to process')
-    parser.add_argument('-o', '--output', help='Output file path', default='seer_robot_pkg/config/map.json')
+    parser.add_argument('path', nargs='?', default='configs/Kraiwich_Map_v.0.3.15.smap', help='Input path to process')
+    parser.add_argument('-o', '--output', help='Output file path', default='configs/map.json')
     args = parser.parse_args()
     output_path = args.output
     file_path = args.path

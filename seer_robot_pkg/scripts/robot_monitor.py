@@ -3,7 +3,7 @@ import rclpy
 from rclpy.node import Node
 
 # msg imports
-from std_msgs.msg import Float32, Int32, Bool, String
+from std_msgs.msg import String
 from seer_robot_interfaces.msg import RobotBatchData
 
 # srv imports
@@ -76,13 +76,7 @@ class RobotMonitor(Node):
 
         # Publishers
         self.robot_batch_data_pub = self.create_publisher(RobotBatchData, 'robot_monitor/robot_batch_data', 10)
-        self.robot_state_pub = self.create_publisher(String, 'robot_monitor/robot_state', 10)
-        
-        # # Individual topic publishers (for compatibility with existing nodes)
-        # self.robot_battery_pub = self.create_publisher(Float32, 'robot_status/robot_battery_percentage', 10)
-        # self.robot_current_station_pub = self.create_publisher(String, 'robot_status/robot_current_station', 10)
-        # self.robot_navigation_status_pub = self.create_publisher(Int32, 'robot_monitor/robot_navigation_status', 10)
-        # self.robot_controller_mode_status_pub = self.create_publisher(Bool, 'robot_monitor/robot_controller_mode_status', 10)
+        # self.robot_state_pub = self.create_publisher(String, 'robot_monitor/robot_state', 10)
 
         # Service Servers
         self.create_service(Trigger, 'robot_monitor/check_available', self.check_robot_available_callback)
@@ -164,14 +158,8 @@ class RobotMonitor(Node):
         batch_msg.robot_state = self.robot_state
         self.robot_batch_data_pub.publish(batch_msg)
         
-        # Publish individual topics (for backward compatibility)
-        # self.robot_battery_pub.publish(Float32(data=batch_msg.robot_battery_percentage))
-        # self.robot_current_station_pub.publish(String(data=batch_msg.robot_current_station))
-        # self.robot_navigation_status_pub.publish(Int32(data=batch_msg.robot_navigation_status))
-        # self.robot_controller_mode_status_pub.publish(Bool(data=batch_msg.robot_controller_mode_status))
-        
         # Publish robot state
-        self.robot_state_pub.publish(String(data=self.robot_state))
+        # self.robot_state_pub.publish(String(data=self.robot_state))
 
     def ensure_connection(self):
         """Ensure connection to robot"""

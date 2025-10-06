@@ -25,20 +25,6 @@ def generate_launch_description():
         # Robot status node
         nodes.append(Node(
             package='seer_robot_pkg',
-            executable='robot_status.py',
-            name='robot_status_node',
-            namespace=robot['namespace'],
-            output='screen',
-            parameters=[{
-                'robot_id': robot['robot_id'],
-                'robot_name': robot['robot_name'],
-                'robot_ip': robot['robot_ip']
-            }]
-        ))
-
-        # Robot monitor node (previously robot state node)
-        nodes.append(Node(
-            package='seer_robot_pkg',
             executable='robot_monitor.py',
             name='robot_monitor_node',
             namespace=robot['namespace'],

@@ -62,7 +62,7 @@
       "className": "LocationMark",
       "instanceName": "LM24",
       "pos": {
-        "x": 8.601,
+        "x": 8.681,
         "y": 4.004
       },
       "dir": -3.141592653589793,
@@ -424,8 +424,8 @@
       "className": "LocationMark",
       "instanceName": "LM23",
       "pos": {
-        "x": 8.691,
-        "y": -1.559
+        "x": 8.681,
+        "y": -1.558
       },
       "dir": -1.5707963267948966,
       "property": [
@@ -448,7 +448,7 @@
       "instanceName": "LM22",
       "pos": {
         "x": 9.231,
-        "y": 3.051
+        "y": 4.004
       },
       "dir": -1.5707963267948966,
       "property": [
@@ -1581,6 +1581,45 @@
           "value": "VHVybiBQYWxsZXQgMTctMTg=",
           "stringValue": "Turn Pallet 17-18"
         },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "LocationMark",
+      "instanceName": "LM56",
+      "pos": {
+        "x": -3.465,
+        "y": -1.239
+      },
+      "property": [
+        {
+          "key": "label",
+          "type": "string",
+          "value": "UGFyayBGb3Jr",
+          "stringValue": "Park Fork"
+        },
+        {
+          "key": "spin",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        }
+      ]
+    },
+    {
+      "className": "ActionPoint",
+      "instanceName": "AP57",
+      "pos": {
+        "x": 8.681,
+        "y": -1.492
+      },
+      "dir": 1.5707963267948966,
+      "property": [
         {
           "key": "spin",
           "type": "bool",
@@ -3484,8 +3523,8 @@
       "endPos": {
         "instanceName": "LM23",
         "pos": {
-          "x": 8.691,
-          "y": -1.559
+          "x": 8.681,
+          "y": -1.558
         }
       },
       "property": [
@@ -3515,8 +3554,8 @@
       "startPos": {
         "instanceName": "LM23",
         "pos": {
-          "x": 8.691,
-          "y": -1.559
+          "x": 8.681,
+          "y": -1.558
         }
       },
       "endPos": {
@@ -3560,7 +3599,7 @@
       "endPos": {
         "instanceName": "LM24",
         "pos": {
-          "x": 8.601,
+          "x": 8.681,
           "y": 4.004
         }
       },
@@ -3576,6 +3615,18 @@
           "type": "int",
           "value": "MA==",
           "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
+        },
+        {
+          "key": "loadObsExpansion",
+          "type": "double",
+          "value": "MA==",
+          "doubleValue": 0
         }
       ]
     },
@@ -3585,7 +3636,7 @@
       "startPos": {
         "instanceName": "LM24",
         "pos": {
-          "x": 8.601,
+          "x": 8.681,
           "y": 4.004
         }
       },
@@ -3608,6 +3659,12 @@
           "type": "int",
           "value": "MA==",
           "int32Value": 0
+        },
+        {
+          "key": "laser",
+          "type": "bool",
+          "value": "ZmFsc2U=",
+          "boolValue": false
         }
       ]
     },
@@ -3618,7 +3675,7 @@
         "instanceName": "LM22",
         "pos": {
           "x": 9.231,
-          "y": 3.051
+          "y": 4.004
         }
       },
       "endPos": {
@@ -3681,7 +3738,7 @@
         "instanceName": "LM22",
         "pos": {
           "x": 9.231,
-          "y": 3.051
+          "y": 4.004
         }
       },
       "property": [
@@ -6213,7 +6270,7 @@
         "instanceName": "LM22",
         "pos": {
           "x": 9.231,
-          "y": 3.051
+          "y": 4.004
         }
       },
       "controlPos1": {
@@ -6222,7 +6279,7 @@
       },
       "controlPos2": {
         "x": 9.231,
-        "y": 1.915
+        "y": 1.893
       },
       "property": [
         {
@@ -6246,7 +6303,7 @@
         "instanceName": "LM22",
         "pos": {
           "x": 9.231,
-          "y": 3.051
+          "y": 4.004
         }
       },
       "endPos": {
@@ -6258,7 +6315,7 @@
       },
       "controlPos1": {
         "x": 9.231,
-        "y": 1.915
+        "y": 1.893
       },
       "controlPos2": {
         "x": 8.687,
@@ -6292,7 +6349,7 @@
       "endPos": {
         "instanceName": "LM24",
         "pos": {
-          "x": 8.601,
+          "x": 8.681,
           "y": 4.004
         }
       },
@@ -6317,7 +6374,7 @@
       "startPos": {
         "instanceName": "LM24",
         "pos": {
-          "x": 8.601,
+          "x": 8.681,
           "y": 4.004
         }
       },
@@ -6349,8 +6406,8 @@
       "startPos": {
         "instanceName": "LM23",
         "pos": {
-          "x": 8.691,
-          "y": -1.559
+          "x": 8.681,
+          "y": -1.558
         }
       },
       "endPos": {
@@ -6388,8 +6445,8 @@
       "endPos": {
         "instanceName": "LM23",
         "pos": {
-          "x": 8.691,
-          "y": -1.559
+          "x": 8.681,
+          "y": -1.558
         }
       },
       "property": [
@@ -7270,102 +7327,422 @@
           "int32Value": 0
         }
       ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM56-LM55",
+      "startPos": {
+        "instanceName": "LM56",
+        "pos": {
+          "x": -3.465,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM55",
+        "pos": {
+          "x": -4.149,
+          "y": -1.239
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM55-LM56",
+      "startPos": {
+        "instanceName": "LM55",
+        "pos": {
+          "x": -4.149,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM56",
+        "pos": {
+          "x": -3.465,
+          "y": -1.239
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM54-LM33",
+      "startPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM33",
+        "pos": {
+          "x": -1.814,
+          "y": -1.088
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM33-LM54",
+      "startPos": {
+        "instanceName": "LM33",
+        "pos": {
+          "x": -1.814,
+          "y": -1.088
+        }
+      },
+      "endPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM56-LM54",
+      "startPos": {
+        "instanceName": "LM56",
+        "pos": {
+          "x": -3.465,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM54-LM56",
+      "startPos": {
+        "instanceName": "LM54",
+        "pos": {
+          "x": -1.758,
+          "y": -1.239
+        }
+      },
+      "endPos": {
+        "instanceName": "LM56",
+        "pos": {
+          "x": -3.465,
+          "y": -1.239
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM25-AP57",
+      "startPos": {
+        "instanceName": "LM25",
+        "pos": {
+          "x": 8.691,
+          "y": 0.273
+        }
+      },
+      "endPos": {
+        "instanceName": "AP57",
+        "pos": {
+          "x": 8.681,
+          "y": -1.492
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MQ==",
+          "int32Value": 1
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP57-LM25",
+      "startPos": {
+        "instanceName": "AP57",
+        "pos": {
+          "x": 8.681,
+          "y": -1.492
+        }
+      },
+      "endPos": {
+        "instanceName": "LM25",
+        "pos": {
+          "x": 8.691,
+          "y": 0.273
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "AP57-LM23",
+      "startPos": {
+        "instanceName": "AP57",
+        "pos": {
+          "x": 8.681,
+          "y": -1.492
+        }
+      },
+      "endPos": {
+        "instanceName": "LM23",
+        "pos": {
+          "x": 8.681,
+          "y": -1.558
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
+    },
+    {
+      "className": "StraightPath",
+      "instanceName": "LM23-AP57",
+      "startPos": {
+        "instanceName": "LM23",
+        "pos": {
+          "x": 8.681,
+          "y": -1.558
+        }
+      },
+      "endPos": {
+        "instanceName": "AP57",
+        "pos": {
+          "x": 8.681,
+          "y": -1.492
+        }
+      },
+      "property": [
+        {
+          "key": "direction",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        },
+        {
+          "key": "movestyle",
+          "type": "int",
+          "value": "MA==",
+          "int32Value": 0
+        }
+      ]
     }
   ],
   "zone": {
     "AP1": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP2": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP3": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP4": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP5": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP6": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP7": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP8": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP9": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP10": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP11": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP12": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP13": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP14": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP15": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP16": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP17": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP18": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "AP19": {
       "zone": [
-        "paller_zone"
+        "pallet_zone"
       ]
     },
     "CP20": {
@@ -7546,6 +7923,16 @@
     "LM55": {
       "zone": [
         "none"
+      ]
+    },
+    "LM56": {
+      "zone": [
+        "none"
+      ]
+    },
+    "AP57": {
+      "zone": [
+        "pallet_zone"
       ]
     }
   }

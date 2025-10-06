@@ -80,15 +80,6 @@ class RobotController(Node):
         # Reentrant callback group so subscription updates can run while services execute
         self.reentrant_callback_group = ReentrantCallbackGroup()
 
-        # Subscriptions
-        # self.create_subscription(
-        #     Int32,
-        #     'robot_status/robot_navigation_status',
-        #     self._sub_check_robot_navigation_status_callback,
-        #     10,
-        #     callback_group=self.reentrant_callback_group,
-        # )
-
         self.create_subscription(
             RobotBatchData,
             'robot_monitor/robot_batch_data',
@@ -605,9 +596,6 @@ class RobotController(Node):
     #####################################################
     ###                 Sub callback                  ###
     #####################################################
-
-    # def _sub_check_robot_navigation_status_callback(self, msg):
-    #     self.robot_navigation_status = msg.data # Int32
 
     def _sub_batch_data_for_robot_navigation_status_callback(self, msg):
         self.robot_navigation_status = msg.robot_navigation_status # Int32
