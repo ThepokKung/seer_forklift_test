@@ -1,5 +1,8 @@
 # Phase Update
 
+> [!CAUTION]
+> Advises about risks or negative outcomes of certain actions.
+
 ## Phase 1
 Phase 1: API and Database Integration for Autonomous Forklift
 This phase focuses on testing the API integration with the Autonomous Forklift and its database to retrieve and utilize pallet data.
@@ -14,7 +17,7 @@ Pick Pallet to Manipulator Station: Directs the forklift to pick up a pallet and
 
 Place Pallet from Manipulator Station: Tells the forklift to place a pallet down after arriving at the manipulator station.
 
-# AssignTask (Don't using now)
+# AssignTask
 ## Assign Task type
 
 **This is Task type id when you call assign task**

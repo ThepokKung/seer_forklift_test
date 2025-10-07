@@ -439,6 +439,8 @@ class RobotController(Node):
 
                 self.get_logger().info(f"{context_name} Step {step_num} - Route lookup result: {path_message}")
 
+                # Check collision detection for the route
+                self.get_logger().info(f"{context_name} Step {step_num} - Performing collision check for route")
                 collision_ok, collision_message = self._check_collision_for_route(route)
                 if not collision_ok:
                     failure_message = f"{context_name} Step {step_num} - {collision_message}"

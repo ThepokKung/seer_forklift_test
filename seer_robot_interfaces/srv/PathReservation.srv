@@ -1,0 +1,5 @@
+int8 this_robot_id
+string[] route_for_reservation
+---
+bool has_reservation
+string message

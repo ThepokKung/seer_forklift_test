@@ -15,6 +15,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
+  ## service files
   "srv/CheckRobotNavigationTaskStatus.srv"
   "srv/GetNavigationPath.srv"
   "srv/NavigationParameter.srv"
@@ -25,6 +26,11 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/CheckCollisionNavigationPath.srv"
   "srv/CheckRobotStateNow.srv"
   "srv/UpdateRobotStationForCollision.srv"
+  "srv/PathReservation.srv"
+  "srv/PathReleaseReservationByStation.srv"
+  "srv/PathReleaseReservationByRoute.srv"
+  "srv/CheckPathReservation.srv"
+  ## message files
   "msg/RobotBatchData.msg"
   DEPENDENCIES geometry_msgs # Add packages that above messages depend on, in this case geometry_msgs for Sphere.msg
 )

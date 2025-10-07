@@ -1,0 +1,5 @@
+int8 this_robot_id
+string[] route_station_for_release
+---
+bool has_released
+string message

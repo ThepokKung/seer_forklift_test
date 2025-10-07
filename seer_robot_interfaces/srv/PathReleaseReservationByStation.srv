@@ -1,0 +1,5 @@
+int8 this_robot_id
+string station_for_release
+---
+bool has_released
+string message
