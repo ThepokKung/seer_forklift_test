@@ -130,6 +130,8 @@ class RobotMonitor(Node):
             self.robot_state = 'EXTERNAL_CONTROL'
         elif self.robot_navigation_status == NAV_RUNNING:
             self.robot_state = 'NAV_MOVING'
+        elif self.robot_charge_status:
+            self.robot_state = 'CHARGING'
         elif self.robot_navigation_status == NAV_SUSPENDED:
             self.robot_state = 'NAV_SUSPENDED'
         elif self.robot_navigation_status == NAV_COMPLETED or (self.robot_navigation_status == NAV_NONE and self.robot_battery is not None):

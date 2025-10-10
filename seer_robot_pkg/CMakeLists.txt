@@ -33,6 +33,7 @@ install(PROGRAMS
   scripts/task_management.py
   scripts/traffic_management.py
   scripts/robot_monitor.py
+  scripts/path_reservation.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

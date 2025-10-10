@@ -232,7 +232,15 @@
         try{
           const {topic,value}=JSON.parse(ev.data);
           const cell=$(`#val_${id}_${topic}`);
-          if(cell) cell.textContent=value;
+          if(cell) {
+            // Format float values to 2 decimal places for specific topics
+            if(topic === 'robot_fork_height' || topic === 'robot_confidence') {
+              const numValue = parseFloat(value);
+              cell.textContent = isNaN(numValue) ? value : numValue.toFixed(3);
+            } else {
+              cell.textContent = value;
+            }
+          }
           state.lastUpdate[id]=Date.now();
           time.textContent="Last update: "+new Date().toLocaleTimeString();
         }catch{}

@@ -74,4 +74,14 @@ def generate_launch_description():
         output='screen'
     ))
 
+    # traffic management node
+    nodes.append(Node(
+        package='seer_robot_pkg',
+        executable='path_reservation.py',
+        name='path_reservation_node',
+        output='screen'
+    ))
+
+
     return LaunchDescription(nodes)
+
