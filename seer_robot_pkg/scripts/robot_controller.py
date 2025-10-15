@@ -23,9 +23,7 @@ from seer_robot_interfaces.srv import (
     AssignTask,
     CheckRobotNavigationTaskStatus,
     GetNavigationPath,
-    CheckCollisionNavigationPath,
-    PathReservation,
-    PathReleaseReservationByRoute
+    CheckCollisionNavigationPath
 )
 
 # backend imports
@@ -47,7 +45,7 @@ class RobotController(Node):
         self.robot_id = self.get_parameter('robot_id').get_parameter_value().string_value
         self.robot_name = self.get_parameter('robot_name').get_parameter_value().string_value
         self.robot_ip = self.get_parameter('robot_ip').get_parameter_value().string_value
- 
+
         # Extract numeric ID for collision service usage
         self.robot_numeric_id = self._parse_robot_numeric_id(self.robot_id)
         if self.robot_numeric_id is None:
@@ -81,14 +79,13 @@ class RobotController(Node):
 
         # Reentrant callback group so subscription updates can run while services execute
         self.reentrant_callback_group = ReentrantCallbackGroup()
-        self.robotdata_reentrant_callback_group = ReentrantCallbackGroup()
 
         self.create_subscription(
             RobotBatchData,
             'robot_monitor/robot_batch_data',
             self._sub_batch_data_for_robot_navigation_status_callback,
             10,
-            callback_group=self.robotdata_reentrant_callback_group,
+            callback_group=self.reentrant_callback_group,
         )
 
         # Service servers
@@ -137,70 +134,6 @@ class RobotController(Node):
 
         # Start log
         self.get_logger().info(f'Robot Navigation API initialized for {self.robot_ip}')
-
-        # Setup path reservation service clients
-        self.path_reservation_client = self.create_client(PathReservation, '/path_reservation/reserve_station')
-        self.path_release_by_route_client = self.create_client(PathReleaseReservationByRoute, '/path_reservation/release_station_by_route')
-
-    def reserve_path(self, robot_numeric_id, route):
-        if not self.path_reservation_client.wait_for_service(timeout_sec=2.0):
-            self.get_logger().error("PathReservation service not available")
-            return False, "Service unavailable"
-        request = PathReservation.Request()
-        request.this_robot_id = robot_numeric_id
-        request.route_for_reservation = route   
-        future = self.path_reservation_client.call_async(request)
-        rclpy.spin_until_future_complete(self, future)
-        response = future.result()
-        if response is not None:
-            return response.has_reservation, response.message
-        else:
-            return False, "No response from PathReservation service"
-
-    def release_path_by_route(self, robot_numeric_id, route):
-        if not self.path_release_by_route_client.wait_for_service(timeout_sec=2.0):
-            self.get_logger().error("PathReleaseReservationByRoute service not available")
-            return False, "Service unavailable"
-        request = PathReleaseReservationByRoute.Request()
-        request.this_robot_id = robot_numeric_id
-        request.route_station_for_release = route
-        future = self.path_release_by_route_client.call_async(request)
-        rclpy.spin_until_future_complete(self, future)
-        response = future.result()
-        if response is not None:
-            return response.has_released, response.message
-        else:
-            return False, "No response from PathReleaseReservationByRoute service"
-
-    def call_check_robot_navigation_sync(self):
-        """Actively check robot navigation status via service call"""
-        if not self.check_robot_navigation_state_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().warning("Robot navigation status service not available")
-            return None
-        
-        request = CheckRobotNavigationTaskStatus.Request()
-        future = self.check_robot_navigation_state_client.call_async(request)
-        
-        # Use a shorter timeout for status checks
-        timeout_sec = 2.0
-        poll_interval = 0.05
-        waited = 0.0
-        while not future.done() and waited < timeout_sec:
-            time.sleep(poll_interval)
-            waited += poll_interval
-            
-        if not future.done():
-            self.get_logger().warning("Robot navigation status check timed out")
-            return None
-            
-        try:
-            response = future.result()
-            if response and response.success:
-                return response.task_status
-        except Exception as e:
-            self.get_logger().warning(f"Failed to get robot navigation status: {e}")
-        
-        return None
 
     #####################################################
     ###               Check Connection                ###
@@ -489,14 +422,14 @@ class RobotController(Node):
     # Execute command
     def execute_navigation_commands(self, command_list, context_name="Navigation"):
         self.get_logger().info(f"Generated {len(command_list)} {context_name} commands")
-
+        
+        # Execute each command and wait for completion
         for step_num, command_dict in enumerate(command_list, 1):
+            # Convert command to JSON string
             command_json = json.dumps(command_dict)
             self.get_logger().info(f"Executing {context_name} Step {step_num}: {command_json}")
 
             target_id = command_dict.get("id")
-            route_reserved = False
-            route = []
             if target_id and target_id != "SELF_POSITION":
                 self.get_logger().info(f"{context_name} Step {step_num} - Fetching navigation route to {target_id}")
                 path_ok, route, path_message = self._get_navigation_route(target_id)
@@ -514,99 +447,87 @@ class RobotController(Node):
                     return False, failure_message
 
                 self.get_logger().info(f"{context_name} Step {step_num} - Collision check passed: {collision_message}")
-
-                # Reserve the route after successful collision check
-                reserve_ok, reserve_msg = self.reserve_path(self.robot_numeric_id, route)
-                self.get_logger().info(f"{context_name} Step {step_num} - Path reservation: {reserve_msg}")
-                if not reserve_ok:
-                    failure_message = f"{context_name} Step {step_num} - {reserve_msg}"
-                    return False, failure_message
-                route_reserved = True
             else:
-                self.get_logger().info(f"{context_name} Step {step_num} - No movement target, skipping collision check and reservation")
+                self.get_logger().info(f"{context_name} Step {step_num} - No movement target, skipping collision check")
 
             # Send the navigation command
             response = self.robot_navigation_api.navigation_with_json(command_json)
             self.get_logger().info(f"Response from navigation: {response}")
 
-            # Get current status actively
-            current_status = self.call_check_robot_navigation_sync()
-            if current_status is not None:
-                self.robot_navigation_status = current_status
+            # Wait for this step to complete
+            # First, wait for status to change from 4 (if it was already 4) to something else (like 2 = in progress)
+            # robot_navigation_status = self.call_check_robot_navigation_sync()
             
             self.get_logger().info(f"{context_name} Step {step_num} - Initial status: {self.robot_navigation_status}")
 
+            # If status is already 4, wait for it to change to indicate the new task has started
             if self.robot_navigation_status == 4:
                 self.get_logger().info(f"{context_name} Step {step_num} - Status is 4, waiting for task to start...")
                 while self.robot_navigation_status == 4:
-                    # Actively check status instead of relying only on subscription
-                    current_status = self.call_check_robot_navigation_sync()
-                    if current_status is not None:
-                        self.robot_navigation_status = current_status
-                    
                     self.get_logger().info(f"Now : robot navigation Status {self.robot_navigation_status}")
+                    time.sleep(0.5)
                     if self.robot_navigation_status is not None and self.robot_navigation_status != 4:
                         self.get_logger().info(f"{context_name} Step {step_num} - Task started, status changed to: {self.robot_navigation_status}")
                         break
                     elif self.robot_navigation_status is None:
                         self.get_logger().warning(f"{context_name} Step {step_num} - Failed to get navigation status")
-                        if route_reserved:
-                            self.release_path_by_route(self.robot_numeric_id, route)
                         return False, f"Failed to get navigation status for {context_name} step {step_num}"
-                    time.sleep(0.5)
-
+            
+            # Now wait for the task to complete (status becomes 4)
             while self.robot_navigation_status != 4:
-                # Actively check status instead of relying only on subscription
-                current_status = self.call_check_robot_navigation_sync()
-                if current_status is not None:
-                    self.robot_navigation_status = current_status
                 if self.robot_navigation_status is not None:
-                    is_error_status = self.robot_navigation_status in [5, 6]
+                    # Determine if this is an error status
+                    is_error_status = self.robot_navigation_status in [5, 6]  # FAILED or CANCELED
+                    
+                    # Log based on conditions:
+                    # 1. Always log errors immediately
+                    # 2. Log first time for non-errors
+                    # 3. Log every 30th time for non-errors after the first
                     should_log = False
+                    
                     if is_error_status:
+                        # Always log errors
                         should_log = True
+                        # Reset counter when we encounter an error
                         self.navigation_status_log_counter = 0
                         self.last_navigation_status_was_error = True
                     else:
+                        # For non-error status
                         if self.last_navigation_status_was_error:
+                            # First time after error - log and reset
                             should_log = True
                             self.navigation_status_log_counter = 1
                             self.last_navigation_status_was_error = False
                         elif self.navigation_status_log_counter == 0:
+                            # Very first time - log
                             should_log = True
                             self.navigation_status_log_counter = 1
                         elif self.navigation_status_log_counter >= self.navigation_status_log_interval:
+                            # Every 30th time - log and reset counter
                             should_log = True
                             self.navigation_status_log_counter = 1
                         else:
+                            # Increment counter, don't log
                             self.navigation_status_log_counter += 1
-
+                    
                     if should_log:
                         self.get_logger().info(f"{context_name} Step {step_num} - Robot navigation status: {self.robot_navigation_status}")
-
+                    
                     if self.robot_navigation_status == 4:
                         self.get_logger().info(f"{context_name} Step {step_num} completed successfully")
                         break
                     elif self.robot_navigation_status == 5:
                         self.get_logger().error(f"{context_name} Step {step_num} failed (status: FAILED)")
-                        if route_reserved:
-                            self.release_path_by_route(self.robot_numeric_id, route)
                         return False, f"{context_name} step {step_num} failed"
                     elif self.robot_navigation_status == 6:
                         self.get_logger().error(f"{context_name} Step {step_num} canceled (status: CANCELED)")
-                        if route_reserved:
-                            self.release_path_by_route(self.robot_numeric_id, route)
                         return False, f"{context_name} step {step_num} was canceled"
                 else:
                     self.get_logger().warning(f"{context_name} Step {step_num} - Failed to get navigation status")
-                    if route_reserved:
-                        self.release_path_by_route(self.robot_numeric_id, route)
                     return False, f"Failed to get navigation status for {context_name} step {step_num}"
+                
+                # Add a small delay to avoid overwhelming the service
                 time.sleep(0.5)
-
-            # Release reservation after navigation is done
-            if route_reserved:
-                self.release_path_by_route(self.robot_numeric_id, route)
 
         return True, f"All {len(command_list)} {context_name} commands executed successfully."
 
