@@ -36,10 +36,16 @@ class PathReservationNode(Node):
         for station_id in route:
             for reservation in self.Path_reservation:
                 if reservation['station_id'] == station_id:
-                    response.has_reservation = False
-                    response.message = f"Station {station_id} is already reserved by robot_0{reservation['robot_id']}."
-                    self.get_logger().info(response.message)
-                    return response
+                    if reservation['robot_id'] == robot_id:
+                        # Same robot, pop the station
+                        self.Path_reservation.remove(reservation)
+                        self.get_logger().info(f"Station {station_id} popped from reservation for robot {robot_id}.")
+                    else:
+                        # Different robot, cannot reserve
+                        response.has_reservation = False
+                        response.message = f"Station {station_id} is already reserved by robot_0{reservation['robot_id']}."
+                        self.get_logger().info(response.message)
+                        return response
 
         # Reserve stations for the robot
         for station_id in route:
@@ -58,7 +64,7 @@ class PathReservationNode(Node):
             response.message = f"Failed to reserve stations {route} for robot {robot_id}: {str(e)}"
             self.get_logger().error(response.message)
             return response
-
+    
     #####################################################
     ###             Path Release Reservation          ###
     #####################################################
